@@ -1,36 +1,9 @@
-import pandas as pd
-import os
 from flask import Flask, render_template, request,jsonify
 from flask_cors import (CORS)
-import numpy as np
+from BdManager import *
 app = Flask(__name__)
 CORS(app)
-def readData():
-    execls = "excels/"
-    for file in os.listdir(execls):
-        df = pd.read_excel(execls + file, header=None)
-    df = df.values
-    data = []
-    for i in range(2, len(df), 3):
-        for j in range(1, len(df[i])):
-            if j % 7 == 0:
-                continue
-            if df[i + 1][j] is np.nan or df[i][j] is np.nan:
-                continue
-            case = {}
-            case["room"] = df[i][0]
-            case["day"] = df[0][((j // 7) * 7) + 1]
-            case["class"] = df[i][j]
-            if case["class"].find("|")!=-1:
-                case["time"] = case["class"][case["class"].index("|") + 1:]
-                case["class"] = case["class"][:case["class"].index("|")]
-            else:
-                case["time"] = df[1][j]
-            case["teacher"] = df[i + 1][j]
-            case["subject"] = df[i + 2][j]
-            data.append(case)
-    print("read data completed")
-    return data
+
 def returnByTeacher(teacher):
     data = readData()
     s=[]
@@ -38,8 +11,8 @@ def returnByTeacher(teacher):
         if i["teacher"] == teacher:
             s.append(i)
     return s
-@app.route('/returnByStudent', methods=['POST'])
-def returnByStudent():
+@app.route('/returnByClass', methods=['POST'])
+def returnByClass():
     s=[]
     request_data = request.get_json()
     if not request_data or "class" not in request_data:
@@ -56,7 +29,7 @@ def returnBySubject(subject):
         if i["subject"] == subject:
             s.append(i)
     return s
-def returnByClass(classroom):
+def returnByClassroom(classroom):
     s=[]
     for i in data:
         if i["classroom"] == classroom:

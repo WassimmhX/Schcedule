@@ -18,7 +18,7 @@ const Schedule = () => {
 
   const callPythonFunction = async () => {
     try {
-      const res = await axios.post("http://127.0.0.1:5000/returnByStudent", { class:name });
+      const res = await axios.post("http://127.0.0.1:5000/returnByClass", { class:name });
       setResponse(res.data.message);
       
     } catch (error) {

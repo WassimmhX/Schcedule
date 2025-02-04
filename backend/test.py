@@ -23,9 +23,7 @@ def readData():
             case["subject"] = df[i + 2][j]
             if case["class"].find("|")!=-1:
                 case["time"]=case["class"][case["class"].index("|")+1:]
-                print(case["class"])
                 case["class"]=case["class"][:case["class"].index("|")]
-                print(case)
             else:
                 case["time"] = df[1][j]
             data.append(case)

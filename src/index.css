@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.fc-timegrid-slot {
+    height: 40px !important; /* Increase height of each time slot */
+  }

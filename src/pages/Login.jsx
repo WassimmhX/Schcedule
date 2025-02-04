@@ -2,12 +2,26 @@
 
 import { useState } from 'react';
 import { User, Mail, Lock } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
+  
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    login(name, password);
+    navigate("/Schcedule"); // Redirect on successful login
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-500">
       <div className="relative w-[750px] h-[450px] bg-white rounded-lg shadow-lg overflow-hidden flex">
         {/* SVG Border Frame */}
         <svg 
@@ -35,6 +49,8 @@ const AuthForm = () => {
               <input 
                 type="text" 
                 placeholder="Username"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300" 
               />
               <User className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
@@ -43,11 +59,14 @@ const AuthForm = () => {
               <input 
                 type="password" 
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300" 
               />
               <Lock className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
             </div>
-            <button className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3 mt-6 transition-colors duration-300">
+            <button className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3 mt-6 transition-colors duration-300"
+            onClick={handleLogin}>
               Login
             </button>
             <p className="text-center text-gray-600 mt-6">
@@ -68,6 +87,8 @@ const AuthForm = () => {
               <input 
                 type="text" 
                 placeholder="Username"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300" 
               />
               <User className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
@@ -76,6 +97,8 @@ const AuthForm = () => {
               <input 
                 type="email" 
                 placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300" 
               />
               <Mail className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
@@ -84,11 +107,14 @@ const AuthForm = () => {
               <input 
                 type="password" 
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300" 
               />
               <Lock className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
             </div>
-            <button className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3 mt-6 transition-colors duration-300">
+            <button className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3 mt-6 transition-colors duration-300"
+            onClick={() => signUp()}>
               Sign Up
             </button>
             <p className="text-center text-gray-600 mt-6">

@@ -1,7 +1,16 @@
 import { useState } from "react";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import { Navigate } from "react-router-dom";
+
 
 export default function Test() {
+  const { isLoggedIn } = useAuth();
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" />;
+  }
+
   const [name, setName] = useState("");
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);

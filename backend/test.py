@@ -13,13 +13,21 @@ def readData():
         for j in range(1, len(df[i])):
             if j % 7 == 0:
                 continue
+            if df[i + 1][j] is np.nan or df[i][j] is np.nan:
+                continue
             case = {}
             case["room"] = df[i][0]
             case["day"] = df[0][((j // 7) * 7) + 1]
-            case["time"] = df[1][j]
             case["class"] = df[i][j]
             case["teacher"] = df[i + 1][j]
             case["subject"] = df[i + 2][j]
+            if case["class"].find("|")!=-1:
+                case["time"]=case["class"][case["class"].index("|")+1:]
+                print(case["class"])
+                case["class"]=case["class"][:case["class"].index("|")]
+                print(case)
+            else:
+                case["time"] = df[1][j]
             data.append(case)
     print("read data completed")
     return data
@@ -35,4 +43,10 @@ def returnByStudent(name):
         emp[days.index(i["day"])][times.index(i["time"])]=cell
     print("function completed")
     return s
-print(str(returnByStudent("L2_TIC")).replace("}, {","}\n{"))
+def allTeachers():
+    teachers=[]
+    data=readData()
+    for i in data:
+        teachers.append(i["teacher"])
+    return teachers
+print(allTeachers())

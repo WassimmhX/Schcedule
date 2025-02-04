@@ -4,6 +4,7 @@ import Planning from "./pages/Planning";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Schedule from "./components/Schedule";
+import Test from "./pages/Test";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/planning" element={<Planning />} />
         <Route path="/login" element={<Login />} />
         <Route path="/Schcedule" element={<Schedule />} />
+        <Route path="/Test" element={<Test />} />
       </Routes>
     </Router>
   );

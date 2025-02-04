@@ -4,8 +4,15 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
+import { useAuth } from "../context/AuthContext";
+import { Navigate } from "react-router-dom";
 
 const Schedule = () => {
+  const { isLoggedIn } = useAuth();
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" />;
+  }
 
   const [filters, setFilters] = useState({
     professor: '',

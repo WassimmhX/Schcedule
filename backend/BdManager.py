@@ -7,20 +7,48 @@ def get_db():
     client = MongoClient("mongodb://localhost:27017/")
     db = client["SchcedulePrj"]
     return db
-def teachers_list(db):
-    return db["teachers_list"]
-def classes_list(db):
-    return db["classes_list"]
-def rooms_list(db):
-    return db["rooms_list"]
-def teachers_schedule(db):
-    return db["teachers_schedule"]
-def classes_schedule(db):
-    return db["classes_schedule"]
-def rooms_schedule(db):
-    return db["rooms_schedule"]
-def schedules(db):
-    return db["schedules"]
+def teachers_list(db,id=False):
+    if id :
+        return list(db["teachers_list"].find())
+    else:
+        return list(db["teachers_list"].find({},{"_id":0}))
+
+def classes_list(db,id=False):
+    if id :
+        return list(db["classes_list"].find())
+    else:
+        return list(db["classes_list"].find({},{"_id":0}))
+
+def rooms_list(db,id=False):
+    if id :
+        return list(db["rooms_list"].find())
+    else:
+        return list(db["rooms_list"].find({},{"_id":0}))
+
+def teachers_schedule(db,id=False):
+    if id :
+        return list(db["teachers_schedule"].find())
+    else:
+        return list(db["teachers_schedule"].find({},{"_id":0}))
+
+def classes_schedule(db,id=False):
+    if id :
+        return list(db["classes_schedule"].find())
+    else:
+        return list(db["classes_schedule"].find({},{"_id":0}))
+
+def rooms_schedule(db,id=False):
+    if id :
+        return list(db["rooms_schedule"].find())
+    else:
+        return list(db["rooms_schedule"].find({},{"_id":0}))
+
+def schedules(db,id=False):
+    if id :
+        return list(db["schedules"].find())
+    else:
+        return list(db["schedules"].find({},{"_id":0}))
+
 def readData():
     execls = "excels/"
     for file in os.listdir(execls):

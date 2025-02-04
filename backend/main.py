@@ -5,7 +5,6 @@ app = Flask(__name__)
 CORS(app)
 
 def returnByTeacher(teacher):
-    data = readData()
     s=[]
     for i in data:
         if i["teacher"] == teacher:
@@ -37,25 +36,11 @@ def returnByClassroom(classroom):
     return s
 
 def allTeachers():
-    teachers=set()
-    for i in data:
-        teachers.add(i["teacher"])
-    return list(teachers)
+    return teachers_list(db)
 def allClasses():
-    classes=set()
-    for i in data:
-        classes.add(i["class"])
-    return list(classes)
-def allSubjects():
-    subjects=set()
-    for i in data:
-        subjects.add(i["subject"])
-    return list(subjects)
+    return classes_list(db)
 def allRooms():
-    rooms=set()
-    for i in data:
-        rooms.add(i["room"])
-    return list(rooms)
+    return rooms_list(db)
 
 @app.route('/getData', methods=['POST'])
 def getData():
@@ -66,9 +51,6 @@ def getData():
     if name=="teachers":
         print("function completed")
         return jsonify({"message": allTeachers()}), 200
-    if name=="subjects":
-        print("function completed")
-        return jsonify({"message": allSubjects()}), 200
     if name=="rooms":
         print("function completed")
         return jsonify({"message": allRooms()}), 200
@@ -76,5 +58,6 @@ def getData():
         print("function completed")
         return jsonify({"message": allClasses()}), 200
 if __name__ == '__main__':
-    data = readData()
+    db=get_db()
+    data=schedules(db)
     app.run(debug=True)

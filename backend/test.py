@@ -47,4 +47,7 @@ def allTeachers():
     for i in data:
         teachers.append(i["teacher"])
     return teachers
-print(allTeachers())
+test={"id":"1","name":5}
+print(test)
+print(test.pop("id"))
+print(test)

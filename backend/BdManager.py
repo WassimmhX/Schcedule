@@ -2,52 +2,91 @@ from pymongo import MongoClient
 import pandas as pd
 import os
 import numpy as np
-db={}
+import bcrypt
+
 def get_db():
     client = MongoClient("mongodb://localhost:27017/")
     db = client["SchcedulePrj"]
     return db
+def schedules(db,id=False):
+    if id :
+        return list(db["schedules"].find())
+    else:
+        return list(db["schedules"].find({},{"_id":0}))
+
 def teachers_list(db,id=False):
     if id :
         return list(db["teachers_list"].find())
     else:
         return list(db["teachers_list"].find({},{"_id":0}))
+def teachers_schedule(db,id=False):
+    if id :
+        return list(db["teachers_schedule"].find())
+    else:
+        return list(db["teachers_schedule"].find({},{"_id":0}))
+def add_teacher(db,teacher):
+    return addToTable(db["teachers_list"],teacher)
 
 def classes_list(db,id=False):
     if id :
         return list(db["classes_list"].find())
     else:
         return list(db["classes_list"].find({},{"_id":0}))
+def classes_schedule(db,id=False):
+    if id :
+        return list(db["classes_schedule"].find())
+    else:
+        return list(db["classes_schedule"].find({},{"_id":0}))
+def add_class(db,cl):
+    return addToTable(db["classes_list"],cl)
 
 def rooms_list(db,id=False):
     if id :
         return list(db["rooms_list"].find())
     else:
         return list(db["rooms_list"].find({},{"_id":0}))
-
-def teachers_schedule(db,id=False):
-    if id :
-        return list(db["teachers_schedule"].find())
-    else:
-        return list(db["teachers_schedule"].find({},{"_id":0}))
-
-def classes_schedule(db,id=False):
-    if id :
-        return list(db["classes_schedule"].find())
-    else:
-        return list(db["classes_schedule"].find({},{"_id":0}))
-
 def rooms_schedule(db,id=False):
     if id :
         return list(db["rooms_schedule"].find())
     else:
         return list(db["rooms_schedule"].find({},{"_id":0}))
+def add_room(db,room):
+    return addToTable(db["rooms_list"],room)
 
-def schedules(db,id=False):
+def users_list(db,id=False):
     if id :
-        return list(db["schedules"].find())
+        return list(db["users"].find())
     else:
-        return list(db["schedules"].find({},{"_id":0}))
+        return list(db["users"].find({},{"_id":0}))
+def add_user(db,user):
+    users=db["users"]
+    if exists(users,"email",user["email"]):
+        return False,"user already exists"
+    users.insert_one(user)
+    return True,"success"
+def verifUser(db,email,password):
+    users=db["users"]
+    user=users.find_one({"email":email},{'_id':0})
+    if not user:
+        return "email does not exist",None
+    if verify_password(user["password"],password):
+        user.pop("password")
+        return "user is correct",user
+    else:
+        return "wrong password",None
+
+def addToTable(table,row):
+    try:
+        table.insert_one(row)
+        return True
+    except:
+        return False
+def exists(table,attribute,value):
+    row=table.find_one({attribute: value})
+    if row:
+        return True
+    else:
+        return False
 
 def readData():
     execls = "excels/"
@@ -75,9 +114,9 @@ def readData():
             data.append(case)
     print("read data completed")
     return data
-def addToTable(table,row):
-    try:
-        table.insert_one(row)
-        return True
-    except:
-        return False
+def hash_password(password):
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode(), salt)
+
+def verify_password(stored_password, provided_password):
+    return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password)

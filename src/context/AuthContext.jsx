@@ -1,3 +1,4 @@
+import axios from "axios";
 import { createContext, useState, useContext } from "react";
 
 const AuthContext = createContext();
@@ -11,13 +12,24 @@ export const AuthProvider = ({ children }) => {
     { id: 3, name: "John", password: "azerty12", role:"enseignat" },
     { id: 4, name: "John", password: "azerty1230", role:"etudiant" },
   ];
-
+  const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
-
+  const testUser= async (email, password)=>{
+    try {
+      const res = await axios.post("http://localhost:5000/testLogin", { 'email':email, 'password':password});
+      console.log(res);
+      return res.data.message;
+    } catch (err) {
+      console.log(err.response);
+      setError(err.response ? err.response.data : "Server not reachable");
+      return null;
+    }
+  }
   // Login function
-  const login = (username, password) => {
-    const foundUser = users.find((u) => u.name === username && u.password === password);
-    if (foundUser) {
+  const login = async (email, password) => {
+    const foundUser = await testUser(email, password);
+    console.log(foundUser);
+    if (foundUser!=null) {
       setUser(foundUser);
       localStorage.setItem("user", JSON.stringify(foundUser));
       localStorage.setItem("loggedIn", true);

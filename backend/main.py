@@ -57,6 +57,21 @@ def getData():
     if name=="classes":
         print("function completed")
         return jsonify({"message": allClasses()}), 200
+
+@app.route("/testLogin", methods=['POST'])
+def testLogin():
+    request_data = request.get_json()
+    if not request_data or "email" not in request_data:
+        return jsonify({"error": "Missing 'email' parameter"}), 400 # Return 400 if missing
+    if not request_data or "password" not in request_data:
+        return jsonify({"error": "Missing 'password' parameter"}), 400  # Return 400 if missing
+    email = request_data["email"]
+    password = request_data["password"]
+    message,user=verifUser(db,email,password)
+    if user==None:
+        return jsonify({"error":message}), 400
+    else:
+        return jsonify({"message":user}), 200
 if __name__ == '__main__':
     db=get_db()
     data=schedules(db)

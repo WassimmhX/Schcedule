@@ -1,26 +1,20 @@
 import copy
-
+import bcrypt
 from pymongo import MongoClient
 from test import readData
 client = MongoClient("mongodb://localhost:27017/")
 db = client["SchcedulePrj"]
-collection = [i["name"] for i in list(db["classes_list"].find({},{"_id": 0}))]
-t_schedule=db["classes_schedule"]
-data=readData()
-times={"Lundi":[""],"Mardi":[""],"Mercredi":[""],"Jeudi":[""],"Vendredi":[""],"Samedi":[""]}
-all={}
-for i in collection:
-    all[i]=copy.deepcopy(times)
-for i in data:
-    t=False
-    for j in collection:
-        if i["class"] in j or j in i["class"] :
-            t=True
-            break
-    if t:
-        all[j][i["day"]].append(i["time"])
-
-for key,value in all.items():
-    print(key,value)
-    t_schedule.insert_one({key:value})
-print(list(t_schedule.find()))
+collection=db["users"]
+# def hash_password(password):
+#     salt = bcrypt.gensalt()
+#     return bcrypt.hashpw(password.encode(), salt)
+# def verify_password(stored_password, provided_password):
+#     return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password)
+# collection.insert_one({"name":"Admin","email":"Admin@gmail.com","password":hash_password("admin"),"phoneNumber":"12345678","role":"admin"})
+# user=collection.find_one({"email":"Admin@gmail.com"})
+# print(verify_password(user["password"],"admin"))
+# teachers=collection.find()
+# for i,user in enumerate(teachers):
+#     collection.update_one({"_id":user["_id"]},{"$set":{"email":"teacher"+str(i+1)+"@gmail.com"}})
+user=collection.find_one({"email":"Admin@gmail.com"},{"password":0,'_id':0})
+print(user)

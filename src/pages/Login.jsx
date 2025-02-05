@@ -20,7 +20,7 @@ const AuthForm = () => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    login(name, password);
+    login(email, password);
     navigate("/"); // Redirect on successful login
   };
 
@@ -58,9 +58,9 @@ const AuthForm = () => {
             <div className="relative mb-4">
               <input 
                 type="text" 
-                placeholder="Username"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300" 
               />
               <User className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
@@ -80,7 +80,7 @@ const AuthForm = () => {
               Login
             </button>
             <p className="text-center text-gray-600 mt-6">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <button 
                 onClick={() => setIsLogin(false)} 
                 className="text-black font-semibold hover:underline"

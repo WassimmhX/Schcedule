@@ -21,7 +21,7 @@ export default function Test() {
     setError(null);
 
     try {
-      const res = await axios.post("http://localhost:5000/getData", { name });
+      const res = await axios.post("http://localhost:5000/getData", { 'name':name });
       setResponse(res.data);
     } catch (err) {
       setError(err.response ? err.response.data : "Server not reachable");

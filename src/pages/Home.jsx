@@ -10,7 +10,7 @@ const Dashboard = () => {
 
   return (
     <div>
-      <h1>Welcome to the Home page</h1>
+      <h1>{localStorage.getItem('user') }</h1>
     </div>
   );
 };

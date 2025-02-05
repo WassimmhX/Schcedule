@@ -17,7 +17,7 @@ const AuthForm = () => {
 
   const handleLogin = () => {
     login(name, password);
-    navigate("/Schcedule"); // Redirect on successful login
+    navigate("/Schedule"); // Redirect on successful login
   };
 
   return (

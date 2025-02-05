@@ -1,4 +1,103 @@
-"
+
+
+"""
+from pymongo import MongoClient
+import os
+import pandas as pd
+import numpy as np
+def readData():
+    execls = "excels/"
+    for file in os.listdir(execls):
+        df = pd.read_excel(execls + file, header=None)
+    df = df.values
+    data = []
+    for i in range(2, len(df), 3):
+        for j in range(1, len(df[i])):
+            if j % 7 == 0:
+                continue
+            if df[i + 1][j] is np.nan or df[i][j] is np.nan:
+                continue
+            case = {}
+            case["room"] = df[i][0]
+            case["day"] = df[0][((j // 7) * 7) + 1]
+            case["class"] = df[i][j]
+            case["teacher"] = df[i + 1][j]
+            case["subject"] = df[i + 2][j]
+            if case["class"].find("|")!=-1:
+                case["time"]=case["class"][case["class"].index("|")+1:]
+                case["class"]=case["class"][:case["class"].index("|")]
+            else:
+                case["time"] = df[1][j]
+            data.append(case)
+    print("read data completed")
+    return data
+
+
+data = readData()
+client=MongoClient("mongodb://localhost:27017/")
+db = client["SchcedulePrj"]
+table=db["rooms_list"]
+rooms=set()
+for i in data:
+    rooms.add(i["room"])
+
+table.insert_many([{"name":i} for i in rooms])
+"""
+
+"""
+from pymongo import MongoClient
+import os
+import pandas as pd
+import numpy as np
+def readData():
+    execls = "excels/"
+    for file in os.listdir(execls):
+        df = pd.read_excel(execls + file, header=None)
+    df = df.values
+    data = []
+    for i in range(2, len(df), 3):
+        for j in range(1, len(df[i])):
+            if j % 7 == 0:
+                continue
+            if df[i + 1][j] is np.nan or df[i][j] is np.nan:
+                continue
+            case = {}
+            case["room"] = df[i][0]
+            case["day"] = df[0][((j // 7) * 7) + 1]
+            case["class"] = df[i][j]
+            case["teacher"] = df[i + 1][j]
+            case["subject"] = df[i + 2][j]
+            if case["class"].find("|")!=-1:
+                case["time"]=case["class"][case["class"].index("|")+1:]
+                case["class"]=case["class"][:case["class"].index("|")]
+            else:
+                case["time"] = df[1][j]
+            data.append(case)
+    print("read data completed")
+    return data
+
+
+data = readData()
+client=MongoClient("mongodb://localhost:27017/")
+db = client["SchcedulePrj"]
+table=db["schedules"]
+table.insert_many(data)
+"""
+
+"""
+from pymongo import MongoClient
+import os
+import pandas as pd
+import numpy as np
+
+client=MongoClient("mongodb://localhost:27017/")
+db = client["SchcedulePrj"]
+table =db["classes_list"]
+
+table.insert_many([{"name":i} for i in ["L2_TIC","L3_INFO_TD1","L3_INFO_TD2","L3_INFO_TD3","CPI_1_TD1","CPI_1_TD2"]])
+"""
+
+"""
 import copy
 
 from pymongo import MongoClient
@@ -24,9 +123,9 @@ for i in data:
 for key,value in all.items():
     print(key,value)
     t_schedule.insert_one({key:value})
-print(list(t_schedule.find()))
-"
-"
+print(list(t_schedule.find()))"""
+
+"""
 import copy
 
 from pymongo import MongoClient
@@ -40,8 +139,8 @@ times={"Lundi":[""],"Mardi":[""],"Mercredi":[""],"Jeudi":[""],"Vendredi":[""],"S
 all={}
 for i in collection:
     all[i]=copy.deepcopy(times)
-"""for i in data:
-    all[i["room"]][i["day"]].append(i["time"])"""
+# for i in data:
+#     all[i["room"]][i["day"]].append(i["time"])
 for i in data:
     all[i["teacher"]][i["day"]].append(i["time"])
 
@@ -49,8 +148,10 @@ for key,value in all.items():
     print(key,value)
     t_schedule.insert_one({key:value})
 print(list(t_schedule.find()))
-"
-"
+"""
+
+
+"""
 import copy
 
 from pymongo import MongoClient
@@ -70,7 +171,9 @@ for key,value in all.items():
     print(key,value)
     t_schedule.insert_one({key:value})
 print(list(t_schedule.find()))
-"
+"""
+
+
 "
 
 "

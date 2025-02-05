@@ -10,7 +10,7 @@ const Navbar = () => {
       <div className="space-x-4">
         <Link to="/" className="hover:underline">Dashboard</Link>
         <Link to="/planning" className="hover:underline">Planning</Link>
-        <Link to="/Schedule" className="hover:underline">Schedule</Link>
+        <Link to="/Schedule" className="hover:underline">Shcedule</Link>
         <Link to="/Test" className="hover:underline">Test</Link>
         {isLoggedIn ?<button onClick={()=>logout()} className="text-black font-semibold hover:underline">LogOut</button> 
                     :<Link to="/login" className="hover:underline">Login</Link>}

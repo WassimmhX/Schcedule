@@ -21,6 +21,9 @@ function App() {
         <Route path="/planning" element={<Planning />} />
         <Route path="/login" element={<Login />} />
         <Route path="/Schedule" element={<Schedule />} />
+        {/* <Route path={localStorage.getItem('user')['role']=='admin' ? "/Schedule":"/planning"} element={<Schedule />} /> */}
+        {/* <Route path="/Schedule" element={JSON.parse(localStorage.getItem('user'))?.role === 'admin' 
+            ? <Schedule /> : <Planning /> } /> */}
         <Route path="/Test" element={<Test />} />
       </Routes>
     </Router>

@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 
 const AuthContext = createContext();
 export function useAuth() {
@@ -9,10 +10,10 @@ export const AuthProvider = ({ children }) => {
 
   // Users list
   const users = [
-    { id: 1, name: "John Doe", password: "azerty" },
-    { id: 2, name: "John Son", password: "azerty123" },
-    { id: 3, name: "John Did", password: "azerty12" },
-    { id: 4, name: "John Go", password: "azerty1230" },
+    { id: 1, name: "wassim", password: "azerty", role:"admin" },
+    { id: 2, name: "ahmed", password: "azerty123", role:"admin" },
+    { id: 3, name: "John", password: "azerty12", role:"enseignat" },
+    { id: 4, name: "John", password: "azerty1230", role:"etudiant" },
   ];
 
 
@@ -34,6 +35,7 @@ export const AuthProvider = ({ children }) => {
       setUser(foundUser);
       setIsLoggedIn(true);
       localStorage.setItem("user", JSON.stringify(foundUser));
+      console.log('foundUser = '+foundUser.name+'\nlocalStorage = '+ localStorage.getItem('user'))
     } else {
       alert("Invalid username or password");
     }
@@ -44,6 +46,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setIsLoggedIn(false);
     localStorage.removeItem("user");
+    Navigate("/login");
   };
 
 

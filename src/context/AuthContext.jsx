@@ -17,25 +17,26 @@ export const AuthProvider = ({ children }) => {
   const testUser= async (email, password)=>{
     try {
       const res = await axios.post("http://localhost:5000/testLogin", { 'email':email, 'password':password});
-      console.log(res);
-      return res.data.message;
+      return [res.data.message,"success"];
     } catch (err) {
-      console.log(err.response);
-      setError(err.response ? err.response.data : "Server not reachable");
-      return null;
+      console.log(err.response.data.error);
+      setError(err.response ? err.response.data.error : "Server not reachable");
+      console.log(error)
+      return [null,err.response.data.error];
     }
   }
   // Login function
   const login = async (email, password) => {
-    const foundUser = await testUser(email, password);
-    console.log(foundUser);
+    const response = await testUser(email, password);
+    const foundUser=response[0];
+    const responseMessage=response[1];
     if (foundUser!=null) {
       setUser(foundUser);
       localStorage.setItem("user", JSON.stringify(foundUser));
       localStorage.setItem("loggedIn", true);
       console.log('foundUser = '+foundUser.name+'\nlocalStorage = '+ localStorage.getItem('user'))
     } else {
-      alert("Invalid username or password");
+      alert(responseMessage);
     }
   };
 

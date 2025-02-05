@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import PermissionDenied from "./error/PermissionDenied";
 import { useEffect, useState } from "react";
 import ProtectedRoute from "./context/ProtectedRoute";
+import SchedulesTable from "./pages/SchedulesTable";
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
                 } 
               />
         <Route path="/planning" element={<Planning />} />
+        <Route path="/schedulesTable" element={<SchedulesTable />} />
         
         <Route path="/Test" element={<Test />} />
 

@@ -23,6 +23,7 @@ const Navbar = () => {
         { role==='admin'? <Link to="/schedule" className="hover:underline">Shcedule</Link> : <></>}
         <Link to="/planning" className="hover:underline">Planning</Link>
         <Link to="/Test" className="hover:underline">Test</Link>
+        <Link to="/schedulesTable" className="hover:underline">schedulesTable</Link>
         {user ? <button onClick={handleLogOut} className="text-black font-semibold hover:underline">LogOut</button> 
                     :<Link to="/login" className="hover:underline">Login</Link>}
       </div>

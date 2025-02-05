@@ -5,9 +5,8 @@ import { Navigate } from "react-router-dom";
 
 
 export default function Test() {
-  const { isLoggedIn } = useAuth();
 
-  if (!isLoggedIn) {
+  if (!localStorage.getItem('loggedIn')) {
     return <Navigate to="/login" />;
   }
 

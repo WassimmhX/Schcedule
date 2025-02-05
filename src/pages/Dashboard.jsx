@@ -2,15 +2,13 @@ import React, { useEffect } from 'react';
 import $ from 'jquery'; // jQuery is required for DataTables
 import 'datatables.net-dt'; // Import DataTable CSS
 import 'datatables.net'; // Import DataTable
-import { useAuth } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
 
 
 const Dashboard = () => {
 
-  const { isLoggedIn } = useAuth();
 
-  if (!isLoggedIn) {
+  if (!localStorage.getItem('loggedIn')) {
     return <Navigate to="/login" />;
   }
 

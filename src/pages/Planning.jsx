@@ -3,14 +3,12 @@ import axios from "axios";
 import 'datatables.net-responsive-dt';
 import 'datatables.net-react';
 import "./App.css";
-import { useAuth } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
 
 const Planning = () => {
 
-  const { isLoggedIn } = useAuth();
 
-  if (!isLoggedIn) {
+  if (!localStorage.getItem('loggedIn')) {
     return <Navigate to="/login" />;
   }
 

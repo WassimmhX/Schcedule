@@ -27,6 +27,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // sign up function
+  const signUp = (username, email, password, phone, role) => {
+    const newUser = { name: username, email: email, password: password, phone: phone, role: role } ;
+    
+    setUser(newUser);
+    localStorage.setItem("user", JSON.stringify(newUser));
+    localStorage.setItem("loggedIn", true);
+    console.log('newUser = '+newUser.name+'\nlocalStorage = '+ localStorage.getItem('user'))
+    
+  };
   // Logout function
   const logout = () => {
     localStorage.removeItem("user");
@@ -37,7 +47,7 @@ export const AuthProvider = ({ children }) => {
 
   
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, login, signUp, logout }}>{children}</AuthContext.Provider>
   )
 };
 

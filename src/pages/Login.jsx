@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { User, Mail, Lock } from 'lucide-react';
+import { User, Mail, Lock, Phone, UserCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,15 +10,25 @@ const AuthForm = () => {
   
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
+
   
   const { login } = useAuth();
+  const { signUp } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = () => {
     login(name, password);
     navigate("/"); // Redirect on successful login
   };
+
+  const handleSignUp = () => {
+    signUp(name, email, password, phone, role);
+    navigate("/"); // Redirect on successful login
+  };
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-500">
@@ -82,8 +92,8 @@ const AuthForm = () => {
 
           {/* Sign Up Form */}
           <div className={`transform transition-all duration-500 ${!isLogin ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0 absolute'}`}>
-            <h2 className="text-2xl font-semibold mb-6">Sign Up</h2>
-            <div className="relative mb-4">
+            <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
+            <div className="relative mb-3">
               <input 
                 type="text" 
                 placeholder="Username"
@@ -93,7 +103,7 @@ const AuthForm = () => {
               />
               <User className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
             </div>
-            <div className="relative mb-4">
+            <div className="relative mb-3">
               <input 
                 type="email" 
                 placeholder="Email"
@@ -103,7 +113,7 @@ const AuthForm = () => {
               />
               <Mail className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
             </div>
-            <div className="relative mb-4">
+            <div className="relative mb-3">
               <input 
                 type="password" 
                 placeholder="Password"
@@ -113,11 +123,48 @@ const AuthForm = () => {
               />
               <Lock className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
             </div>
-            <button className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3 mt-6 transition-colors duration-300"
-            onClick={() => signUp()}>
+            <div className="relative mb-3">
+              <input 
+                type="number" 
+                placeholder="Phone Number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300" 
+              />
+              <Phone className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
+            </div>
+            <div className="mb-3 relative">
+              <div className="flex items-center justify-center space-x-4">
+                <label className="inline-flex items-center">
+                  <input 
+                    type="radio" 
+                    name="role" 
+                    value="student"
+                    checked={role === "student"}
+                    onChange={() => setRole("student")}
+                    className="form-radio"
+                  />
+                  <span className="ml-2">Student</span>
+                </label>
+                <label className="inline-flex items-center">
+                  <input 
+                    type="radio" 
+                    name="role" 
+                    value="teacher"
+                    checked={role === "teacher"}
+                    onChange={() => setRole("teacher")}
+                    className="form-radio"
+                  />
+                  <span className="ml-2">Teacher</span>
+                </label>
+              </div>
+              <UserCheck className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
+            </div>
+            <button className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3 mt-1.5 transition-colors duration-300"
+            onClick={handleSignUp}>
               Sign Up
             </button>
-            <p className="text-center text-gray-600 mt-6">
+            <p className="text-center text-gray-600 mt-4">
               Already have an account?{' '}
               <button 
                 onClick={() => setIsLogin(true)} 

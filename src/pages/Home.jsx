@@ -9,11 +9,11 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative h-[90vh] bg-cover bg-center bg-[url('http://www.isimm.rnu.tn//storage/app/public/thematiques/May2017/CSWMDNJbDZvpQPAQozGF.png')] flex items-center justify-center text-center text-white">
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
-        <div className="relative z-10 max-w-4xl mx-auto p-8">
-          <h1 className="text-5xl md:text-7xl font-bold leading-tight animate-fade-in">
+        <div className="relative z-10 max-w-4xl mx-auto p-8 leading-tight animate-fade-in">
+          <h1 className="text-5xl md:text-7xl font-bold  text-blue-300">
             Welcome to Our University
           </h1>
-          <p className="mt-6 text-xl md:text-2xl text-gray-200">
+          <p className="mt-6 text-xl md:text-2xl text-blue-100">
             Empowering minds, shaping futures, and fostering innovation for tomorrow's leaders.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
@@ -23,7 +23,7 @@ const Home = () => {
               Login Now
               <LogIn className="ml-2 h-5 w-5" />
             </a>)}
-            <a href="/schedulesTable" className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold py-3 px-7 rounded-lg transition-all">
+            <a href="/schedules" className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold py-3 px-7 rounded-lg transition-all">
               Explore Schedules
             </a>
           </div>

@@ -83,7 +83,7 @@ def testSingUp():
         return jsonify({"error": "Missing 'user' parameter"}), 400
     user=request_data["user"]
     for i in user.keys():
-        if user[i]=="":
+        if user[i]=="" and i!="mySchedule":
             return jsonify({"error":i+" is empty!!"}), 400
     if not re.match(r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', user["email"]):
         return jsonify({"error": "Invalid email"}), 400

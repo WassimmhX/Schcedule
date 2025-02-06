@@ -60,7 +60,7 @@ const Navbar = () => {
   const isActivePath = (path) => location.pathname === path;
 
   return (
-    <nav className="fixed bg-white w-full z-50 transition-all duration-300 bg-light">
+    <nav className="fixed w-full z-50 transition-all duration-300 bg-white/30 backdrop-blur-md shadow-sm rounded-lg">
       <div className="max-w-8xl mx-8 px-4 sm:px-6 lg:px-0">
         <div className="flex items-center justify-between h-16 ">
           {/* Logo */}
@@ -85,7 +85,7 @@ const Navbar = () => {
                   className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActivePath(link.path)
                       ? 'text-blue-600 bg-blue-100'
-                      : 'text-gray-600 hover:text-blue-600 hover:bg-gray-200'
+                      : 'text-gray-800 hover:text-blue-600 hover:bg-gray-200'
                   }`}
                   onClick={() => window.location.href = link.path}
                 >

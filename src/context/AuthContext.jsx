@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
   }
   // sign up function
   const signUp = async (username, email, password, phone, role) => {
-    const newUser = { name: username, email: email, password: password, phoneNumber: phone, role: role } ;
+    const newUser = { name: username, email: email, password: password, phoneNumber: phone, role: role, mySchedule: "" } ;
     const result=await verifSingUp(newUser);
     console.log(result)
     const resultMessage=result[1];

@@ -113,17 +113,17 @@ const Schedules = () => {
         <div className="min-h-screen py-8">
           {/* Header */}
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-green-400 drop-shadow-lg mb-4">
+            <div className="text-center mb-12 leading-tight animate-fade-in">
+              <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-green-400 drop-shadow-lg mb-4">
                 University Class Schedules
               </h1>
-              <p className="text-xl text-cyan-300 drop-shadow-md">
+              <p className="text-2xl text-cyan-300 drop-shadow-md">
                 Browse and find your class schedules
               </p>
             </div>
 
             {/* Search and Filters */}
-            <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between leading-tight animate-fade-in">
               <div className="relative w-full md:w-64 ml-4">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
@@ -156,7 +156,7 @@ const Schedules = () => {
             </div>
 
             {/* Schedule Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 leading-tight animate-fade-in">
               {filteredSchedules.map((schedule) => (
                 <div
                   key={schedule.id}

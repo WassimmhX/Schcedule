@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Calendar, Clock, Users, Search, BookOpen, GraduationCap, Building2, Filter } from "lucide-react"
 import "./SchedulesTable.css"
 import Aurora from "./Aurora"
+import SpotlightCard from './../components/SpotlightCard';
 const Schedules = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [activeFilter, setActiveFilter] = useState("all")
@@ -10,7 +11,7 @@ const Schedules = () => {
     {
       id: 1,
       title: "Software Engineering",
-      type: "lecture",
+      type: "Master",
       time: "09:00 - 10:30",
       location: "Room 101",
       professor: "Dr. Smith",
@@ -21,7 +22,7 @@ const Schedules = () => {
     {
       id: 2,
       title: "Database Systems",
-      type: "lab",
+      type: "Ing",
       time: "11:00 - 12:30",
       location: "Lab 203",
       professor: "Dr. Johnson",
@@ -32,7 +33,7 @@ const Schedules = () => {
     {
       id: 3,
       title: "Digital Marketing",
-      type: "seminar",
+      type: "Licence",
       time: "14:00 - 15:30",
       location: "Room 305",
       professor: "Prof. Williams",
@@ -43,7 +44,7 @@ const Schedules = () => {
     {
       id: 4,
       title: "Artificial Intelligence",
-      type: "lecture",
+      type: "Master",
       time: "10:00 - 11:30",
       location: "Auditorium A",
       professor: "Dr. Brown",
@@ -54,7 +55,7 @@ const Schedules = () => {
     {
       id: 5,
       title: "Business Ethics",
-      type: "seminar",
+      type: "Licence",
       time: "13:00 - 14:30",
       location: "Room 402",
       professor: "Dr. Davis",
@@ -65,7 +66,7 @@ const Schedules = () => {
     {
       id: 6,
       title: "Network Security",
-      type: "lab",
+      type: "Ing",
       time: "15:00 - 16:30",
       location: "Lab 105",
       professor: "Prof. Miller",
@@ -76,7 +77,7 @@ const Schedules = () => {
     {
       id: 7,
       title: "Data Structures",
-      type: "lecture",
+      type: "Master",
       time: "09:00 - 10:30",
       location: "Room 201",
       professor: "Dr. Wilson",
@@ -87,7 +88,7 @@ const Schedules = () => {
     {
       id: 8,
       title: "Marketing Strategy",
-      type: "lecture",
+      type: "Master",
       time: "11:00 - 12:30",
       location: "Room 304",
       professor: "Prof. Taylor",
@@ -98,7 +99,7 @@ const Schedules = () => {
     {
       id: 9,
       title: "Web Development",
-      type: "lab",
+      type: "Ing",
       time: "14:00 - 15:30",
       location: "Lab 202",
       professor: "Dr. Anderson",
@@ -109,7 +110,7 @@ const Schedules = () => {
     {
       id: 10,
       title: "Financial Management",
-      type: "lecture",
+      type: "Master",
       time: "10:00 - 11:30",
       location: "Room 403",
       professor: "Dr. Thomas",
@@ -120,7 +121,7 @@ const Schedules = () => {
     {
       id: 11,
       title: "Operating Systems",
-      type: "lecture",
+      type: "Master",
       time: "13:00 - 14:30",
       location: "Room 102",
       professor: "Prof. Martin",
@@ -131,7 +132,7 @@ const Schedules = () => {
     {
       id: 12,
       title: "Project Management",
-      type: "seminar",
+      type: "Licence",
       time: "15:00 - 16:30",
       location: "Room 301",
       professor: "Dr. Clark",
@@ -143,18 +144,21 @@ const Schedules = () => {
 
   const filters = [
     { id: "all", label: "All Classes" },
-    { id: "lecture", label: "Lectures" },
-    { id: "lab", label: "Labs" },
-    { id: "seminar", label: "Seminars" },
+    { id: "Ing", label: "Ings" },
+    { id: "Master", label: "Masters" },
+    { id: "Licence", label: "Licences" },
+    { id: "Prepa", label: "Prepas" },
   ]
 
   const getTypeColor = (type) => {
     switch (type) {
-      case "lecture":
+      case "Ing":
         return "bg-blue-100 text-blue-800"
-      case "lab":
+      case "Master":
         return "bg-green-100 text-green-800"
-      case "seminar":
+      case "Licence":
+        return "bg-purple-100 text-purple-800"
+      case "Prepa":
         return "bg-purple-100 text-purple-800"
       default:
         return "bg-gray-100 text-gray-800"
@@ -192,7 +196,7 @@ const Schedules = () => {
                 <input
                   type="text"
                   placeholder="Search by class, professor, or department..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -221,10 +225,10 @@ const Schedules = () => {
               {filteredSchedules.map((schedule) => (
                 <div
                   key={schedule.id}
-                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
+                  className="rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
                 >
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
+                  <SpotlightCard className="custom-spotlight-card" spotlightColor="rgba(0, 77, 186, 0.74)">
+                  <div className="flex items-start justify-between mb-4">
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900 mb-1">{schedule.title}</h3>
                         <p className="text-gray-600 text-sm">{schedule.professor}</p>
@@ -256,7 +260,8 @@ const Schedules = () => {
                         <span className="text-sm">{schedule.department}</span>
                       </div>
                     </div>
-                  </div>
+                  </SpotlightCard>
+                  
                 </div>
               ))}
             </div>

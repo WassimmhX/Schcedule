@@ -1,5 +1,6 @@
 import React from "react";
 import { Calendar, BookOpen, Users, ArrowRight, Facebook, Twitter, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
+import Schedule from './../components/Schedule';
 
 const Home = () => {
   return (
@@ -16,11 +17,11 @@ const Home = () => {
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/apply" className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-lg">
-              {localStorage.getItem("loggedIn")?'login':'login'}
+              {localStorage.getItem("loggedIn")?'login':''}
               <ArrowRight className="ml-2 h-5 w-5" />
             </a>
             <a href="/programs" className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold py-3 px-8 rounded-lg transition-all">
-              Explore Programs
+              Check Schedule
             </a>
           </div>
         </div>

@@ -65,8 +65,8 @@ const Navbar = () => {
                   to={link.path}
                   className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActivePath(link.path)
-                      ? "text-blue-600 bg-blue-50"
-                      : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                      ? "text-blue-600 bg-blue-100"
+                      : "text-gray-600 hover:text-blue-600 hover:bg-gray-200"
                   }`}
                 >
                   <Icon className="w-4 h-4 mr-2" />

@@ -1,8 +1,9 @@
 import React from "react";
-import { Calendar, BookOpen, Users, ArrowRight, Facebook, Twitter, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
-import Schedule from './../components/Schedule';
+import { Calendar, BookOpen, Users, ArrowRight, Facebook, Twitter, Linkedin, Mail, Phone, MapPin, LogIn } from 'lucide-react';
 
 const Home = () => {
+  const user = localStorage.getItem('user');
+
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}
@@ -16,12 +17,14 @@ const Home = () => {
             Empowering minds, shaping futures, and fostering innovation for tomorrow's leaders.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/apply" className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-lg">
-              {localStorage.getItem("loggedIn")?'login':''}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </a>
-            <a href="/programs" className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold py-3 px-8 rounded-lg transition-all">
-              Check Schedule
+          {user ? (
+            <></>
+            ) : (<a href="/login" className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg">
+              Login Now
+              <LogIn className="ml-2 h-5 w-5" />
+            </a>)}
+            <a href="/schedulesTable" className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold py-3 px-7 rounded-lg transition-all">
+              Explore Schedules
             </a>
           </div>
         </div>

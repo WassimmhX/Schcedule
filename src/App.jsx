@@ -33,7 +33,10 @@ function App() {
   return (
 
     <Router>
-      <Navbar />
+      <div className="pb-10">
+        <Navbar/>
+      </div>
+      
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />

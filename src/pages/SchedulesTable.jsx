@@ -1,201 +1,126 @@
-import { useState } from "react"
-import { Calendar, Clock, Users, Search, BookOpen, GraduationCap, Building2, Filter } from "lucide-react"
-import "./SchedulesTable.css"
-import Aurora from "./Aurora"
+import { useState } from 'react';
+import { Calendar, Search, GraduationCap, Filter } from 'lucide-react';
+import './SchedulesTable.css';
+import Aurora from './Aurora';
 import SpotlightCard from './../components/SpotlightCard';
+import scheduleLogo from '/src/assets/calendar.png';
+
 const Schedules = () => {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [activeFilter, setActiveFilter] = useState("all")
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState('all');
 
   const schedules = [
     {
       id: 1,
-      title: "Software Engineering",
-      type: "Master",
-      time: "09:00 - 10:30",
-      location: "Room 101",
-      professor: "Dr. Smith",
-      students: 45,
-      day: "Monday",
-      department: "Computer Science",
+      name: 'L2_TIC',
+      type: 'Licence',
     },
     {
       id: 2,
-      title: "Database Systems",
-      type: "Ing",
-      time: "11:00 - 12:30",
-      location: "Lab 203",
-      professor: "Dr. Johnson",
-      students: 30,
-      day: "Monday",
-      department: "Computer Science",
+      name: 'L3_INFO_TD1',
+      type: 'Licence',
     },
     {
       id: 3,
-      title: "Digital Marketing",
-      type: "Licence",
-      time: "14:00 - 15:30",
-      location: "Room 305",
-      professor: "Prof. Williams",
-      students: 60,
-      day: "Tuesday",
-      department: "Business",
+      name: 'CPI_1_TD1',
+      type: 'Prepa',
     },
     {
       id: 4,
-      title: "Artificial Intelligence",
-      type: "Master",
-      time: "10:00 - 11:30",
-      location: "Auditorium A",
-      professor: "Dr. Brown",
-      students: 80,
-      day: "Wednesday",
-      department: "Computer Science",
+      name: 'L3_INFO_TD2',
+      type: 'Licence',
     },
     {
       id: 5,
-      title: "Business Ethics",
-      type: "Licence",
-      time: "13:00 - 14:30",
-      location: "Room 402",
-      professor: "Dr. Davis",
-      students: 40,
-      day: "Thursday",
-      department: "Business",
+      name: 'CPI_1_TD2',
+      type: 'Prepa',
     },
     {
       id: 6,
-      title: "Network Security",
-      type: "Ing",
-      time: "15:00 - 16:30",
-      location: "Lab 105",
-      professor: "Prof. Miller",
-      students: 25,
-      day: "Thursday",
-      department: "Computer Science",
+      name: 'L3_INFO_TD3',
+      type: 'Licence',
     },
     {
       id: 7,
-      title: "Data Structures",
-      type: "Master",
-      time: "09:00 - 10:30",
-      location: "Room 201",
-      professor: "Dr. Wilson",
-      students: 50,
-      day: "Friday",
-      department: "Computer Science",
+      name: 'ING_1_INFO',
+      type: 'Ing',
     },
     {
       id: 8,
-      title: "Marketing Strategy",
-      type: "Master",
-      time: "11:00 - 12:30",
-      location: "Room 304",
-      professor: "Prof. Taylor",
-      students: 55,
-      day: "Friday",
-      department: "Business",
+      name: 'MP_1',
+      type: 'Master',
     },
     {
       id: 9,
-      title: "Web Development",
-      type: "Ing",
-      time: "14:00 - 15:30",
-      location: "Lab 202",
-      professor: "Dr. Anderson",
-      students: 35,
-      day: "Wednesday",
-      department: "Computer Science",
+      name: 'MR_2',
+      type: 'Master',
     },
-    {
-      id: 10,
-      title: "Financial Management",
-      type: "Master",
-      time: "10:00 - 11:30",
-      location: "Room 403",
-      professor: "Dr. Thomas",
-      students: 65,
-      day: "Tuesday",
-      department: "Business",
-    },
-    {
-      id: 11,
-      title: "Operating Systems",
-      type: "Master",
-      time: "13:00 - 14:30",
-      location: "Room 102",
-      professor: "Prof. Martin",
-      students: 45,
-      day: "Monday",
-      department: "Computer Science",
-    },
-    {
-      id: 12,
-      title: "Project Management",
-      type: "Licence",
-      time: "15:00 - 16:30",
-      location: "Room 301",
-      professor: "Dr. Clark",
-      students: 40,
-      day: "Friday",
-      department: "Business",
-    },
-  ]
+  ];
+
+  // {
+  //   id: 9,
+  //   title: "MR_2",
+  //   type: "Master",
+  //   time: "15:00 - 16:30",
+  //   location: "Room 301",
+  //   professor: "Dr. Clark",
+  //   students: 40,
+  //   day: "Friday",
+  //   department: "Business",
+  // },
 
   const filters = [
-    { id: "all", label: "All Classes" },
-    { id: "Ing", label: "Ings" },
-    { id: "Master", label: "Masters" },
-    { id: "Licence", label: "Licences" },
-    { id: "Prepa", label: "Prepas" },
-  ]
+    { id: 'all', label: 'All Classes' },
+    { id: 'Ing', label: 'Ings' },
+    { id: 'Master', label: 'Masters' },
+    { id: 'Licence', label: 'Licences' },
+    { id: 'Prepa', label: 'Prepas' },
+  ];
 
   const getTypeColor = (type) => {
     switch (type) {
-      case "Ing":
-        return "bg-blue-100 text-blue-800"
-      case "Master":
-        return "bg-green-100 text-green-800"
-      case "Licence":
-        return "bg-purple-100 text-purple-800"
-      case "Prepa":
-        return "bg-purple-100 text-purple-800"
+      case 'Ing':
+        return 'bg-blue-100 text-blue-800';
+      case 'Master':
+        return 'bg-green-100 text-green-800';
+      case 'Licence':
+        return 'bg-purple-100 text-purple-800';
+      case 'Prepa':
+        return 'bg-yellow-100 text-yellow-800';
       default:
-        return "bg-gray-100 text-gray-800"
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   const filteredSchedules = schedules.filter(
     (schedule) =>
-      (activeFilter === "all" || schedule.type === activeFilter) &&
-      (schedule.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        schedule.professor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        schedule.department.toLowerCase().includes(searchTerm.toLowerCase())),
-  )
+      (activeFilter === 'all' || schedule.type === activeFilter) &&
+      (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   return (
     <div className="app">
-      <Aurora colorStops={["#ff00ff", "#00d8ff", "#7cff67"]} amplitude={1.5} />
+      <Aurora colorStops={['#ff00ff', '#00d8ff', '#7cff67']} amplitude={1.5} />
       <div className="content">
         <div className="min-h-screen py-8">
           {/* Header */}
           <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-green-400 drop-shadow-lg mb-4">
-              University Class Schedules
-            </h1>
-            <p className="text-xl text-cyan-300 drop-shadow-md">
-              Browse and find your class schedules
-            </p>
-          </div>
+            <div className="text-center mb-12">
+              <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-green-400 drop-shadow-lg mb-4">
+                University Class Schedules
+              </h1>
+              <p className="text-xl text-cyan-300 drop-shadow-md">
+                Browse and find your class schedules
+              </p>
+            </div>
 
             {/* Search and Filters */}
             <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
-              <div className="relative w-full md:w-96">
+              <div className="relative w-full md:w-64 ml-4">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="text"
-                  placeholder="Search by class, professor, or department..."
+                  placeholder="Search by class..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -210,7 +135,9 @@ const Schedules = () => {
                       onClick={() => setActiveFilter(filter.id)}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
                         ${
-                          activeFilter === filter.id ? "bg-blue-500 text-white" : "bg-white text-gray-600 hover:bg-gray-100"
+                          activeFilter === filter.id
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white text-gray-600 hover:bg-gray-100'
                         }`}
                     >
                       {filter.label}
@@ -227,41 +154,49 @@ const Schedules = () => {
                   key={schedule.id}
                   className="rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
                 >
-                  <SpotlightCard className="custom-spotlight-card" spotlightColor="rgba(0, 77, 186, 0.74)">
-                  <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1">{schedule.title}</h3>
-                        <p className="text-gray-600 text-sm">{schedule.professor}</p>
+                  <SpotlightCard
+                    className="custom-spotlight-card"
+                    spotlightColor="rgba(0, 77, 186, 0.74)"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center space-x-2">
+                        {/* <Calendar className="h-5 w-5 text-blue-600" /> */}
+                        <img
+                          src={scheduleLogo}
+                          alt="Schedule Logo"
+                          className="h-10 w-auto " // Adjust size as needed
+                        />
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeColor(schedule.type)}`}>
-                        {schedule.type.charAt(0).toUpperCase() + schedule.type.slice(1)}
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeColor(
+                          schedule.type
+                        )}`}
+                      >
+                        {schedule.name.startsWith("L")?'Licence':
+                          schedule.name.startsWith("M")?'Master':
+                          schedule.name.startsWith("I")?'Ing':
+                          schedule.name.startsWith("C")?'Prepa':
+                          ""
+                        }
                       </span>
+                    </div>
+                    <div className="flex items-start justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {schedule.name}
+                    </h3>
                     </div>
 
                     <div className="space-y-3">
-                      <div className="flex items-center text-gray-600">
+                      <div className="flex items-center text-gray-600 mb-2">
                         <Calendar className="h-4 w-4 mr-2" />
-                        <span className="text-sm">{schedule.day}</span>
+                        <span className="text-sm">Monday-Saturday</span>
                       </div>
-                      <div className="flex items-center text-gray-600">
-                        <Clock className="h-4 w-4 mr-2" />
-                        <span className="text-sm">{schedule.time}</span>
-                      </div>
-                      <div className="flex items-center text-gray-600">
-                        <Building2 className="h-4 w-4 mr-2" />
-                        <span className="text-sm">{schedule.location}</span>
-                      </div>
-                      <div className="flex items-center text-gray-600">
-                        <Users className="h-4 w-4 mr-2" />
-                        <span className="text-sm">{schedule.students} students</span>
-                      </div>
-                      <div className="flex items-center text-gray-600">
-                        <BookOpen className="h-4 w-4 mr-2" />
-                        <span className="text-sm">{schedule.department}</span>
-                      </div>
+
+                      <button className=" bg-gradient-to-br from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 text-white font-medium py-3 px-4 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0">
+                        Check Schedule
+                      </button>
                     </div>
                   </SpotlightCard>
-                  
                 </div>
               ))}
             </div>
@@ -269,16 +204,19 @@ const Schedules = () => {
             {filteredSchedules.length === 0 && (
               <div className="text-center py-12">
                 <GraduationCap className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No schedules found</h3>
-                <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No schedules found
+                </h3>
+                <p className="text-gray-600">
+                  Try adjusting your search or filter criteria
+                </p>
               </div>
             )}
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Schedules
-
+export default Schedules;

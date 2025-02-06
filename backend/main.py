@@ -75,7 +75,7 @@ def testLogin():
         return jsonify({"error":message}), 400
     else:
         return jsonify({"message":user}), 200
-    
+
 @app.route("/testSignUp",methods=["POST"])
 def testSingUp():
     request_data = request.get_json()
@@ -105,7 +105,25 @@ def json_serializable(obj):
         return str(obj)  # Convert ObjectId to string
     return obj
 
-
+@app.route('/updateUserSchedule', methods=['POST'])
+def updateUserSchedule():
+    request_data = request.get_json()
+    if not request_data or "schedule" not in request_data:
+        return jsonify({"error": "Missing 'schedule' parameter"}), 400
+    if not "email" in request_data:
+        return jsonify({"error": "Missing 'email' parameter"}), 400
+    schedule = request_data["schedule"]
+    email=request_data["email"]
+    update_MySchedule(db,schedule,email)
+    return jsonify({"message": "User schedule updated successfully"}), 200
+@app.route("/getMySchedule", methods=["GET"])
+def getMySchedule():
+    request_data = request.get_json()
+    if not "email" in request_data:
+        return jsonify({"error": "Missing 'email' parameter"}), 400
+    email=request_data["email"]
+    schedule=getUserAttribute(db,email,"mySchedule")
+    return jsonify({"schedule":schedule}), 200
 if __name__ == '__main__':
     db=get_db()
     data=schedules(db)

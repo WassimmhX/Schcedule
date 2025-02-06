@@ -75,6 +75,14 @@ def verifUser(db,email,password):
         return "user is correct",user
     else:
         return "wrong password",None
+def update_MySchedule(db,email,schedule):
+    users=db["users"]
+    users.update_one({"email":email},{"$set":{"schedule":schedule}})
+def getUserAttribute(db,email,attribute):
+    users=db["users"]
+    user=users.find_one({"email":email},{'_id':0})
+    return user[attribute]
+
 
 def addToTable(table,row):
     try:
@@ -88,6 +96,7 @@ def exists(table,attribute,value):
         return True
     else:
         return False
+
 
 def readData():
     execls = "excels/"
@@ -115,6 +124,8 @@ def readData():
             data.append(case)
     print("read data completed")
     return data
+
+
 def hash_password(password):
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode(), salt)

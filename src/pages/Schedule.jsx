@@ -12,43 +12,66 @@ import './SchedulesTable.css';
 
 const Schedule = () => {
   const {name}=useParams();
-  const [loggedIn, setLoggedIn] = useState(localStorage.getItem('loggedIn')); // Moved loggedIn state here
-  const [showMySchedule, setMySchedule] = useState(false);
+  const mySchedule=name?name:getMySchedule();
+  const [showMySchedule, setMySchedule] = useState(localStorage.getItem('mySchedule')==name);
+  const [response, setResponse] = useState([]);
+  const filters = useState({professor: '',class: '',room: '',});
+  
 
-  if (!loggedIn) {
+  useEffect(() => {
+    callPythonFunction();
+  },[]);
+  useEffect(() => {
+    setEvents(convertToFullCalendarEvents(response));
+  }, [response]);
+
+  const myScheduleChecked=async (e)=>{
+    
+    setMySchedule(e.target.checked);
+    const user=JSON.parse(localStorage.getItem('user'));
+    console.log(user.email);
+      try {
+        const res = await axios.post('http://127.0.0.1:5000/updateUserSchedule', {
+          schedule: e.target.checked? mySchedule:"",
+          email:user.email,
+        });
+        console.log(res.data.message);
+      } catch (error) {
+        console.error('Error calling Python function', error);
+      }
+  }
+  if (!localStorage.getItem('loggedIn')) {
     return <Navigate to="/login" />;
   }
+  const getMySchedule=async()=>{
+    try {
+      const res = await axios.get('http://127.0.0.1:5000/getMySchedule', {
+        email:localStorage.getItem('user').email,
+      });
+      console.log(res.data.message);
+      return res.data.schedule;
+    } catch (error) {
+      console.error('Error calling Python function', error);
+      return null;
+    }
+  }
+  
 
-  const [filters, setFilters] = useState({
-    professor: '',
-    class: '',
-    room: '',
-  });
-
-  const [response, setResponse] = useState([]);
-  const [events, setEvents] = useState([]); // Moved events state here
+  
 
   const callPythonFunction = async () => {
     try {
       const res = await axios.post('http://127.0.0.1:5000/returnByClass', {
-        class: name,
+        class: mySchedule,
       });
       setResponse(res.data.message);
     } catch (error) {
       console.error('Error calling Python function', error);
     }
   };
-  useEffect(() => {
-    callPythonFunction();
-  }, []);
 
-  useEffect(() => {
-    setEvents(convertToFullCalendarEvents(response));
-  }, [response]);
+  
 
-  const handleFilterChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
-  };
   const daysOfWeek = {
     Lundi: 1,
     Mardi: 2,
@@ -97,7 +120,7 @@ const Schedule = () => {
       };
     });
   };
-
+  const [events,setEvents]=useState(convertToFullCalendarEvents(response));
   const filteredEvents = events.filter(
     (event) =>
       (!filters.professor || event.professor.includes(filters.professor)) &&
@@ -113,14 +136,14 @@ const Schedule = () => {
 
           
           <h1 className="text-5xl md:text-7xl font-bold leading-tight animate-fade-in mb-8 text-white text-opacity-90 drop-shadow-lg">
-            {name}'s Schedules
+            {name}&apos;s Schedules
           </h1>
           <div className="flex justify-end mb-4">
             <label className="inline-flex items-center cursor-pointer group">
               <input
                 type="checkbox"
                 checked={showMySchedule}
-                onChange={(e) => setMySchedule(e.target.checked)}
+                onChange={(e) => myScheduleChecked(e)}
                 className="sr-only peer"
               />
               <div className="relative w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>

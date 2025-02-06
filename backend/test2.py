@@ -18,3 +18,5 @@ collection=db["users"]
 #     collection.update_one({"_id":user["_id"]},{"$set":{"email":"teacher"+str(i+1)+"@gmail.com"}})
 user=collection.find_one({"email":"Admin@gmail.com"},{"password":0,'_id':0})
 print(user)
+collection.update_many({},{"$set":{"MySchedule": ""}})
+print(collection.find_one({"email":"Admin@gmail.com"},{"password":0,'_id':0}))

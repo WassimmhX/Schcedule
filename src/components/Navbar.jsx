@@ -42,9 +42,8 @@ const Navbar = () => {
   const mySchedule=localStorage.getItem("mySchedule")?localStorage.getItem("mySchedule"):""
   const navLinks = [
     { path: '/', label: 'Home', icon: Home },
-    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     ...(role
-      ? [{ path: '/schedules/'+mySchedule, label: 'Schedule', icon: Calendar }]
+      ? [{ path: '/schedules/'+mySchedule, label: 'My Schedule', icon: Calendar }]
       : []),
     // { path: '/Test', label: 'Test', icon: ClipboardList },
     {
@@ -52,6 +51,10 @@ const Navbar = () => {
       label: 'Schedules',
       icon: ClipboardList,
     },
+    ...(role=="admin"
+      ? [{ path: '/dashboard', label: 'Admin Dashboard', icon: LayoutDashboard }]
+      : [])
+    
   ];
 
   const isActivePath = (path) => location.pathname === path;
@@ -84,6 +87,7 @@ const Navbar = () => {
                       ? 'text-blue-600 bg-blue-100'
                       : 'text-gray-600 hover:text-blue-600 hover:bg-gray-200'
                   }`}
+                  onClick={() => window.location.href = link.path}
                 >
                   <Icon className="w-4 h-4 mr-1.5" />
                   {link.label}

@@ -4,8 +4,12 @@ import './SchedulesTable.css';
 import Aurora from './Aurora';
 import SpotlightCard from './../components/SpotlightCard';
 import scheduleLogo from '/src/assets/calendar.png';
+import { useNavigate } from 'react-router-dom';
 
 const Schedules = () => {
+
+  const navigate = useNavigate();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
 
@@ -97,6 +101,11 @@ const Schedules = () => {
       (activeFilter === 'all' || schedule.type === activeFilter) &&
       (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const chekSchedule = (name) => {
+    localStorage.setItem('name',name);
+    navigate('/schedule');
+  }
 
   return (
     <div className="app">
@@ -192,9 +201,11 @@ const Schedules = () => {
                         <span className="text-sm">Monday-Saturday</span>
                       </div>
 
-                      <button className=" bg-gradient-to-br from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 text-white font-medium py-3 px-4 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0">
+                      <button className=" bg-gradient-to-br from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 
+                      text-white font-medium py-3 px-4 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform 
+                      hover:-translate-y-1 active:translate-y-0" onClick={() => chekSchedule(schedule.name)}>
                         Check Schedule
-                      </button>
+                      </button >
                     </div>
                   </SpotlightCard>
                 </div>

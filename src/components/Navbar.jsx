@@ -46,12 +46,11 @@ const Navbar = () => {
     ...(role === 'admin'
       ? [{ path: '/schedule', label: 'Schedule', icon: Calendar }]
       : []),
-    { path: '/planning', label: 'Planning', icon: ClipboardList },
-    { path: '/Test', label: 'Test', icon: ClipboardList },
+    // { path: '/Test', label: 'Test', icon: ClipboardList },
     {
       path: '/schedulesTable',
       label: 'Schedules',
-      icon: FileSpreadsheet,
+      icon: ClipboardList,
     },
   ];
 

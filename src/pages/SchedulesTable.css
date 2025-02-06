@@ -11,4 +11,12 @@
     color: white;
     padding: 20px;
   }
-  
+  .fc-day {
+    background-color: #ffffff !important;
+  }
+  .fc-timegrid-slots {
+    background-color: #ffffff !important;
+  }
+  .fc-scroller-harness {
+    background-color: #ffffff !important;
+  }

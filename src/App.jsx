@@ -3,7 +3,7 @@ import Dashboard from "./pages/Dashboard";
 import Planning from "./pages/Planning";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
-import Schedule from "./components/Schedule";
+import Schedule from "./pages/Schedule";
 import Test from "./pages/Test";
 import Home from "./pages/Home";
 import PermissionDenied from "./error/PermissionDenied";

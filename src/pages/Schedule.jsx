@@ -5,6 +5,8 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
 import { Navigate } from "react-router-dom";
+import Aurora from './Aurora';
+import "./SchedulesTable.css";
 
 const Schedule = () => {
 
@@ -138,94 +140,97 @@ const Schedule = () => {
 
 
   return (
-    <div className="p-4 m-4">
-  <div className="flex space-x-2 items-center">
-    <input
-      type="text"
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-      placeholder="Name"
-      className="border p-1 text-sm"
-    />
-    <button onClick={callPythonFunction} className="bg-blue-500 text-white px-2 py-1 rounded text-sm">
-      Call Python
-    </button>
-  </div>
-
-  <h1 className="text-lg font-bold mb-2">Emploi du Temps</h1>
-
-  {/* Filtres */}
-  <div className="flex space-x-2 mb-2">
-    <input
-      type="text"
-      name="professor"
-      placeholder="Professeur"
-      className="border p-1 text-sm"
-      onChange={handleFilterChange}
-    />
-    <input
-      type="text"
-      name="class"
-      placeholder="Classe"
-      className="border p-1 text-sm"
-      onChange={handleFilterChange}
-    />
-    <input
-      type="text"
-      name="room"
-      placeholder="Salle"
-      className="border p-1 text-sm"
-      onChange={handleFilterChange}
-    />
-  </div>
-
-  <FullCalendar
-    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-    initialView="timeGridWeek"
-    events={filteredEvents}
-    slotMinTime="08:00:00"
-    slotMaxTime="19:00:00"
-    allDaySlot={false}
-    hiddenDays={[0]}
-    headerToolbar={{
-      left: "prev,next today",
-      center: "title",
-      right: "dayGridMonth,timeGridWeek,timeGridDay",
-    }}
-    editable={true}
-    selectable={true}
-    eventContent={(eventInfo) => {
-      const startTime = eventInfo.event.start.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      const endTime = eventInfo.event.end.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-
-      return (
-        <div className="w-full h-full bg-gradient-to-r from-blue-400 to-blue-600 p-1 rounded shadow-md hover:scale-105 transform transition-all duration-200 flex flex-col justify-center text-center">
-          <div className="text-white font-bold text-xs">{eventInfo.event.title}</div>
-          <div className="text-white text-[10px] mt-0.5">
-            {startTime} - {endTime}
+    <div className="app">
+          <Aurora colorStops={['#ff00ff', '#00d8ff', '#7cff67']} amplitude={1.5} />
+          <div className="content"></div>
+        <div className="p-4 m-4">
+          <div className="flex space-x-2 items-center">
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Name"
+              className="border p-1 text-sm"
+            />
+            <button onClick={callPythonFunction} className="bg-blue-500 text-white px-2 py-1 rounded text-sm">
+              Call Python
+            </button>
           </div>
-          <div className="mt-0.5">
-            <div className="text-white text-[10px]">
-              🏫 <span className="text-black">{eventInfo.event.extendedProps.room}</span>
-            </div>
-            <div className="text-white text-[10px]">
-              👨‍🏫 <span className="text-black">{eventInfo.event.extendedProps.professor}</span>
-            </div>
-            <div className="text-white text-[10px]">
-              🎓 <span className="text-black">{eventInfo.event.extendedProps.class}</span>
-            </div>
+
+          <h1 className="text-lg font-bold mb-2">Emploi du Temps</h1>
+
+          {/* Filtres */}
+          <div className="flex space-x-2 mb-2">
+            <input
+              type="text"
+              name="professor"
+              placeholder="Professeur"
+              className="border p-1 text-sm"
+              onChange={handleFilterChange}
+            />
+            <input
+              type="text"
+              name="class"
+              placeholder="Classe"
+              className="border p-1 text-sm"
+              onChange={handleFilterChange}
+            />
+            <input
+              type="text"
+              name="room"
+              placeholder="Salle"
+              className="border p-1 text-sm"
+              onChange={handleFilterChange}
+            />
           </div>
-        </div>
-      );
-    }}
-  />
-</div>
+            <FullCalendar
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              initialView="timeGridWeek"
+              events={filteredEvents}
+              slotMinTime="08:00:00"
+              slotMaxTime="19:00:00"
+              allDaySlot={false}
+              hiddenDays={[0]}
+              headerToolbar={{
+                left: "prev,next today",
+                center: "title",
+                right: "dayGridMonth,timeGridWeek,timeGridDay",
+              }}
+              editable={true}
+              selectable={true}
+              eventContent={(eventInfo) => {
+                const startTime = eventInfo.event.start.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+                const endTime = eventInfo.event.end.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+
+                return (
+                  <div className="w-full h-full bg-gradient-to-r from-blue-400 to-blue-600 p-1 rounded shadow-md hover:scale-105 transform transition-all duration-200 flex flex-col justify-center text-center">
+                    <div className="text-white font-bold text-xs">{eventInfo.event.title}</div>
+                    <div className="text-white text-[10px] mt-0.5">
+                      {startTime} - {endTime}
+                    </div>
+                    <div className="mt-0.5">
+                      <div className="text-white text-[10px]">
+                        🏫 <span className="text-black">{eventInfo.event.extendedProps.room}</span>
+                      </div>
+                      <div className="text-white text-[10px]">
+                        👨‍🏫 <span className="text-black">{eventInfo.event.extendedProps.professor}</span>
+                      </div>
+                      <div className="text-white text-[10px]">
+                        🎓 <span className="text-black">{eventInfo.event.extendedProps.class}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }}
+            />
+    </div>
+  </div>
 
   );
 };

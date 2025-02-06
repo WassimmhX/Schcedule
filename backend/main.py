@@ -75,6 +75,7 @@ def testLogin():
         return jsonify({"error":message}), 400
     else:
         return jsonify({"message":user}), 200
+    
 @app.route("/testSignUp",methods=["POST"])
 def testSingUp():
     request_data = request.get_json()
@@ -103,6 +104,8 @@ def json_serializable(obj):
     if isinstance(obj, ObjectId):
         return str(obj)  # Convert ObjectId to string
     return obj
+
+
 if __name__ == '__main__':
     db=get_db()
     data=schedules(db)

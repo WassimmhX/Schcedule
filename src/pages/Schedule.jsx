@@ -6,12 +6,13 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import Aurora from './Aurora';
 import './SchedulesTable.css';
 
 const Schedule = () => {
-  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('loggedIn')); // Moved loggedIn state here
+  const {name}=useParams();
+  const [loggedIn, setLoggedIn] = useState(localStorage.getItem('loggedIn')); // Moved loggedIn state here
 
   if (!loggedIn) {
     return <Navigate to="/login" />;
@@ -23,14 +24,13 @@ const Schedule = () => {
     room: '',
   });
 
-  const [name, setName] = useState(localStorage.getItem('name')?localStorage.getItem('name'):'');
   const [response, setResponse] = useState([]);
   const [events, setEvents] = useState([]); // Moved events state here
 
   const callPythonFunction = async () => {
     try {
       const res = await axios.post('http://127.0.0.1:5000/returnByClass', {
-        class: localStorage.getItem('name')?localStorage.getItem('name'):'',
+        class: name,
       });
       setResponse(res.data.message);
     } catch (error) {
@@ -110,23 +110,9 @@ const Schedule = () => {
         <div className="p-4 m-4 text-center">
           {/* Supprimer cette div */}
 
-          <div className="flex space-x-2 items-center">
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Name"
-              className="border p-1 text-sm text-black"
-            />
-            <button
-              onClick={callPythonFunction}
-              className="bg-blue-500 text-white px-2 py-1 rounded text-sm"
-            >
-              Call Python
-            </button>
-          </div>
+          
           <h1 className="text-5xl md:text-7xl font-bold leading-tight animate-fade-in mb-8 text-white text-opacity-90 drop-shadow-lg">
-            Schedule Of {name}
+            {name}'s Schedules
           </h1>
 
           <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-xl p-6 shadow-xl">
@@ -165,19 +151,16 @@ const Schedule = () => {
                     </div>
                     <div className="space-y-0.5">
                       <div className="text-white text-[12px] flex items-center justify-center">
-                        <span className="mr-1">🏫</span>
                         <span className="text-purple-100">
                           {eventInfo.event.extendedProps.room}
                         </span>
                       </div>
                       <div className="text-white text-[12px] flex items-center justify-center">
-                        <span className="mr-1">👨‍🏫</span>
                         <span className="text-purple-100">
                           {eventInfo.event.extendedProps.professor}
                         </span>
                       </div>
                       <div className="text-white text-[12px] flex items-center justify-center">
-                        <span className="mr-1">🎓</span>
                         <span className="text-purple-100">
                           {eventInfo.event.extendedProps.class}
                         </span>

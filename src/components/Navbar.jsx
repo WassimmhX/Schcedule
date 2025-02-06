@@ -24,7 +24,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const user = localStorage.getItem('user');
-  const role = user ? JSON.parse(user).role : 'guest';
+  const role = user ? JSON.parse(user).role : null;
 
   // Handle scroll effect
   useEffect(() => {
@@ -39,16 +39,16 @@ const Navbar = () => {
     navigate(0);
     logout();
   };
-
+  const mySchedule=localStorage.getItem("mySchedule")?localStorage.getItem("mySchedule"):""
   const navLinks = [
     { path: '/', label: 'Home', icon: Home },
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    ...(role === 'admin'
-      ? [{ path: '/schedule', label: 'Schedule', icon: Calendar }]
+    ...(role
+      ? [{ path: '/schedules/'+mySchedule, label: 'Schedule', icon: Calendar }]
       : []),
     // { path: '/Test', label: 'Test', icon: ClipboardList },
     {
-      path: '/schedulesTable',
+      path: '/schedules',
       label: 'Schedules',
       icon: ClipboardList,
     },

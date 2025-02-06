@@ -42,14 +42,14 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         {console.log("User role:", role + "  User:", user)}
         
-              <Route path="/schedule" element={
+              <Route path="/schedules/:name" element={
                   <ProtectedRoute>
                     <Schedule />
                   </ProtectedRoute>
                 } 
               />
         <Route path="/planning" element={<Planning />} />
-        <Route path="/schedulesTable" element={<SchedulesTable />} />
+        <Route path="/schedules" element={<SchedulesTable />} />
         
         <Route path="/Test" element={<Test />} />
 

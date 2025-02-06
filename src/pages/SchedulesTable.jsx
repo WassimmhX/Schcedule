@@ -103,8 +103,7 @@ const Schedules = () => {
   );
 
   const chekSchedule = (name) => {
-    localStorage.setItem('name',name);
-    navigate('/schedule');
+    navigate('/schedules/' + name);
   }
 
   return (

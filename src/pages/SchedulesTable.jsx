@@ -1,77 +1,35 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Calendar, Search, GraduationCap, Filter } from 'lucide-react';
 import './SchedulesTable.css';
 import Aurora from './Aurora';
 import SpotlightCard from './../components/SpotlightCard';
 import scheduleLogo from '/src/assets/calendar.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const Schedules = () => {
 
   const navigate = useNavigate();
-
+  const {role}=useParams();
+  const name=role=="students"?"classes":"teachers";
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
-
-  const schedules = [
-    {
-      id: 1,
-      name: 'L2_TIC',
-      type: 'Licence',
-    },
-    {
-      id: 2,
-      name: 'L3_INFO_TD1',
-      type: 'Licence',
-    },
-    {
-      id: 3,
-      name: 'CPI_1_TD1',
-      type: 'Prepa',
-    },
-    {
-      id: 4,
-      name: 'L3_INFO_TD2',
-      type: 'Licence',
-    },
-    {
-      id: 5,
-      name: 'CPI_1_TD2',
-      type: 'Prepa',
-    },
-    {
-      id: 6,
-      name: 'L3_INFO_TD3',
-      type: 'Licence',
-    },
-    {
-      id: 7,
-      name: 'ING_1_INFO',
-      type: 'Ing',
-    },
-    {
-      id: 8,
-      name: 'MP_1',
-      type: 'Master',
-    },
-    {
-      id: 9,
-      name: 'MR_2',
-      type: 'Master',
-    },
-  ];
-
-  // {
-  //   id: 9,
-  //   title: "MR_2",
-  //   type: "Master",
-  //   time: "15:00 - 16:30",
-  //   location: "Room 301",
-  //   professor: "Dr. Clark",
-  //   students: 40,
-  //   day: "Friday",
-  //   department: "Business",
-  // },
+  const [schedules,setSchedules]=useState([]);
+  const getList=async()=>{
+    try {
+      const res = await axios.post('http://127.0.0.1:5000/getData', {
+        name:name
+      });
+      console.log(res.data.message);
+      return res.data.message;
+    } catch (error) {
+      console.error('Error calling Python function', error);
+      return [];
+    }
+  }
+  useEffect(async()=>{
+    setSchedules(await getList());
+  },[])
 
   const filters = [
     { id: 'all', label: 'All Classes' },
@@ -177,7 +135,11 @@ const Schedules = () => {
                       </div>
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeColor(
-                          schedule.type
+                          schedule.name.startsWith("L")?'Licence':
+                          schedule.name.startsWith("M")?'Master':
+                          schedule.name.startsWith("I")?'Ing':
+                          schedule.name.startsWith("C")?'Prepa':
+                          ""
                         )}`}
                       >
                         {schedule.name.startsWith("L")?'Licence':

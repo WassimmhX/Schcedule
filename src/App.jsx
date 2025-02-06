@@ -53,7 +53,7 @@ function App() {
           }
         />
         <Route path="/planning" element={<Planning />} />
-        <Route path="/schedules/:role" element={<SchedulesTable />} />
+        <Route path="/schedules/:role" element={<SchedulesTable name={"classes"} />} />
 
         <Route path="/Test" element={<Test />} />
 

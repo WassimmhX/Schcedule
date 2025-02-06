@@ -13,12 +13,14 @@ import {
   ClipboardList,
   FileSpreadsheet,
   LogIn,
+  ChevronDown,
 } from 'lucide-react';
 import isimmLogo from "/src/assets/isimmLogo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
   const { logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -26,7 +28,6 @@ const Navbar = () => {
   const user = localStorage.getItem('user');
   const role = user ? JSON.parse(user).role : null;
 
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -35,47 +36,104 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.schedule-dropdown')) {
+        setIsScheduleOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
   const handleLogOut = () => {
     navigate(0);
     logout();
   };
-  const mySchedule=localStorage.getItem("mySchedule")?localStorage.getItem("mySchedule"):""
+
+  const mySchedule = localStorage.getItem("mySchedule") ? localStorage.getItem("mySchedule") : "";
+
+  const scheduleOptions = [
+    { path: '/schedules/students', label: 'Students' },
+    { path: '/schedules/teachers', label: 'Teachers' },
+    { path: '/schedules/rooms', label: 'Rooms' },
+  ];
+
   const navLinks = [
     { path: '/', label: 'Home', icon: Home },
     ...(role
       ? [{ path: '/schedules/'+mySchedule, label: 'My Schedule', icon: Calendar }]
       : []),
-    // { path: '/Test', label: 'Test', icon: ClipboardList },
-    {
-      path: '/schedules',
-      label: 'Schedules',
-      icon: ClipboardList,
-    },
     ...(role=="admin"
       ? [{ path: '/dashboard', label: 'Admin Dashboard', icon: LayoutDashboard }]
       : [])
-    
   ];
 
   const isActivePath = (path) => location.pathname === path;
+  const isScheduleActive = scheduleOptions.some(option => location.pathname === option.path);
+
+  const ScheduleDropdown = () => (
+    <div className="relative schedule-dropdown">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsScheduleOpen(!isScheduleOpen);
+        }}
+        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+          isScheduleActive
+            ? 'text-blue-600 bg-blue-100'
+            : 'text-gray-800 hover:text-blue-600 hover:bg-gray-200'
+        }`}
+      >
+        <ClipboardList className="w-4 h-4 mr-1.5" />
+        Schedules
+        <ChevronDown className={`w-4 h-4 ml-1 transition-transform ${isScheduleOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      {isScheduleOpen && (
+        <div className="absolute top-full left-0 mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+          <div className="py-1">
+            {scheduleOptions.map((option) => (
+              <Link
+                key={option.path}
+                to={option.path}
+                onClick={() => {
+                  setIsScheduleOpen(false);
+                  window.location.href = option.path;
+                }}
+                className={`block px-4 py-2 text-sm ${
+                  isActivePath(option.path)
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                }`}
+              >
+                {option.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <nav className="fixed w-full z-50 transition-all duration-300 bg-white/30 backdrop-blur-md shadow-sm rounded-lg">
       <div className="max-w-8xl mx-8 px-4 sm:px-6 lg:px-0">
-        <div className="flex items-center justify-between h-16 ">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
               <img
                 src={isimmLogo}
                 alt="ISIMM Logo"
-                className="h-14 w-auto" // Adjust size as needed
+                className="h-14 w-auto"
               />
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-2 ">
+          <div className="hidden md:flex md:items-center md:space-x-2">
             {navLinks.map((link) => {
               const Icon = link.icon;
               return (
@@ -94,6 +152,7 @@ const Navbar = () => {
                 </Link>
               );
             })}
+            <ScheduleDropdown />
             {user ? (
               <button
                 onClick={handleLogOut}
@@ -151,6 +210,24 @@ const Navbar = () => {
               </Link>
             );
           })}
+          {/* Mobile Schedule Options */}
+          <div className="px-3 py-2">
+            <div className="text-sm font-medium text-gray-500 mb-2">Schedules</div>
+            {scheduleOptions.map((option) => (
+              <Link
+                key={option.path}
+                to={option.path}
+                onClick={() => setIsOpen(false)}
+                className={`block px-3 py-2 rounded-md text-base font-medium  ${
+                  isActivePath(option.path)
+                    ? 'text-blue-600 bg-blue-50 '
+                    : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                }`}
+              >
+                {option.label}
+              </Link>
+            ))}
+          </div>
           {user ? (
             <button
               onClick={() => {

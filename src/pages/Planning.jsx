@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import 'datatables.net-responsive-dt';
 import 'datatables.net-react';
-import "./App.css";
 import { Navigate } from "react-router-dom";
 
 const Planning = () => {

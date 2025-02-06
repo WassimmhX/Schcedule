@@ -52,7 +52,10 @@ const Navbar = () => {
     logout();
   };
 
-  const mySchedule = localStorage.getItem("mySchedule") ? localStorage.getItem("mySchedule") : "";
+  const mySchedule = localStorage.getItem("mySchedule") ? localStorage.getItem("user") ? 
+                                                          "/" + JSON.parse(localStorage.getItem("user")).role + 
+                                                          "/" + localStorage.getItem("mySchedule") 
+                                                          : localStorage.getItem("mySchedule") : "" ;
 
   const scheduleOptions = [
     { path: '/schedules/students', label: 'Students' },
@@ -63,7 +66,7 @@ const Navbar = () => {
   const navLinks = [
     { path: '/', label: 'Home', icon: Home },
     ...(role
-      ? [{ path: '/schedules/'+mySchedule, label: 'My Schedule', icon: Calendar }]
+      ? [{ path: '/schedules'+mySchedule, label: 'My Schedule', icon: Calendar }]
       : []),
     ...(role=="admin"
       ? [{ path: '/dashboard', label: 'Admin Dashboard', icon: LayoutDashboard }]
@@ -93,7 +96,7 @@ const Navbar = () => {
       
       {isScheduleOpen && (
         <div className="absolute top-full left-0 mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-          <div className="py-1">
+          <div className="py-1 ">
             {scheduleOptions.map((option) => (
               <Link
                 key={option.path}

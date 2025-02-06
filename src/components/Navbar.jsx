@@ -48,15 +48,14 @@ const Navbar = () => {
   }, []);
 
   const handleLogOut = () => {
-    navigate(0);
+    navigate('/');
     logout();
   };
 
   const mySchedule = localStorage.getItem("mySchedule") ? localStorage.getItem("user") ? 
-                                                          "/" + JSON.parse(localStorage.getItem("user")).role + 
-                                                          "/" + localStorage.getItem("mySchedule") 
-                                                          : localStorage.getItem("mySchedule") : "" ;
-
+                     "/" + JSON.parse(localStorage.getItem("user")).role + "s/" + localStorage.getItem("mySchedule") 
+                                                          : localStorage.getItem("mySchedule") : "/noScheduleSaved" ;
+  console.log('from navbar :', localStorage.getItem("mySchedule"))
   const scheduleOptions = [
     { path: '/schedules/students', label: 'Students' },
     { path: '/schedules/teachers', label: 'Teachers' },

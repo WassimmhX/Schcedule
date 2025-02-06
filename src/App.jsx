@@ -41,13 +41,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />
         {console.log("User role:", role + "  User:", user)}
-        {/* <Route path="/schedule" element={user && 
-            JSON.parse(localStorage.getItem("user")).role === "admin" 
-              ? <Schedule /> 
-              : <PermissionDenied />}/> */}
-              <Route 
-                path="/schedule" 
-                element={
+        
+              <Route path="/schedule" element={
                   <ProtectedRoute>
                     <Schedule />
                   </ProtectedRoute>

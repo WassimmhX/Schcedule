@@ -141,7 +141,7 @@ const Home = () => {
                 </a>
                 <a href="tel:+1234567890" className="flex items-center text-gray-300 hover:text-white transition-colors">
                   <Phone className="h-5 w-5 mr-2" />
-                  (123) 456-7890
+                  (+216) 12 345 678
                 </a>
                 <div className="flex items-center text-gray-300">
                   <MapPin className="h-5 w-5 mr-2" />
@@ -184,7 +184,7 @@ const Home = () => {
           </div>
           <div className="mt-12 pt-8 border-t border-gray-800 text-center">
             <p className="text-gray-400">
-              &copy; {new Date().getFullYear()} University Name. All rights reserved.
+              &copy; {new Date().getFullYear()} ISIMM. All rights reserved.
             </p>
           </div>
         </div>

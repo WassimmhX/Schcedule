@@ -77,7 +77,9 @@ def verifUser(db,email,password):
         return "wrong password",None
 def update_MySchedule(db,email,schedule):
     users=db["users"]
-    users.update_one({"email":email},{"$set":{"schedule":schedule}})
+    print(email)
+    users.update_one({"email":email},{"$set":{"mySchedule":schedule}})
+    print(users.find_one({"email":email}))
 def getUserAttribute(db,email,attribute):
     users=db["users"]
     user=users.find_one({"email":email},{'_id':0})

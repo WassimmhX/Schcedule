@@ -114,7 +114,7 @@ def updateUserSchedule():
         return jsonify({"error": "Missing 'email' parameter"}), 400
     schedule = request_data["schedule"]
     email=request_data["email"]
-    update_MySchedule(db,schedule,email)
+    update_MySchedule(db,email,schedule)
     return jsonify({"message": "User schedule updated successfully"}), 200
 @app.route("/getMySchedule", methods=["GET"])
 def getMySchedule():

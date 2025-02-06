@@ -29,13 +29,17 @@ const Schedule = () => {
     
     setMySchedule(e.target.checked);
     const user=JSON.parse(localStorage.getItem('user'));
+    console.log(mySchedule)
     console.log(user.email);
+    const schedule=e.target.checked? mySchedule:"";
       try {
         const res = await axios.post('http://127.0.0.1:5000/updateUserSchedule', {
-          schedule: e.target.checked? mySchedule:"",
+          schedule: schedule,
           email:user.email,
         });
         console.log(res.data.message);
+        localStorage.removeItem("mySchedule");
+        localStorage.setItem('mySchedule', schedule);
       } catch (error) {
         console.error('Error calling Python function', error);
       }
@@ -43,18 +47,7 @@ const Schedule = () => {
   if (!localStorage.getItem('loggedIn')) {
     return <Navigate to="/login" />;
   }
-  const getMySchedule=async()=>{
-    try {
-      const res = await axios.get('http://127.0.0.1:5000/getMySchedule', {
-        email:localStorage.getItem('user').email,
-      });
-      console.log(res.data.message);
-      return res.data.schedule;
-    } catch (error) {
-      console.error('Error calling Python function', error);
-      return null;
-    }
-  }
+  
   
 
   

@@ -23,7 +23,7 @@ const Home = () => {
               Login Now
               <LogIn className="ml-2 h-5 w-5" />
             </a>)}
-            <a href="/schedules" className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold py-3 px-7 rounded-lg transition-all">
+            <a href={localStorage.getItem('isLogged') ? "/schedules":"/permission-denied"} className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold py-3 px-7 rounded-lg transition-all">
               Explore Schedules
             </a>
           </div>

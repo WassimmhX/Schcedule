@@ -11,7 +11,7 @@ const Schedules = () => {
 
   const navigate = useNavigate();
   const {role}=useParams();
-  const name=role=="students"?"classes":"teachers";
+  const name = role=="students" ? "classes": role=="teachers" ? "teachers" : "rooms" ;
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [schedules,setSchedules]=useState([]);

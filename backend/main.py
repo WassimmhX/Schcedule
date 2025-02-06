@@ -5,13 +5,18 @@ import re
 from BdManager import *
 app = Flask(__name__)
 CORS(app)
-
+@app.route('/returnByteachers', methods=['POST'])
 def returnByTeacher(teacher):
-    s=[]
+    s = []
+    request_data = request.get_json()
+    if not request_data or "name" not in request_data:
+        return jsonify({"error": "Missing 'name' parameter"}), 400  # Return 400 if missing
+    teacher = request_data["name"]
     for i in data:
-        if i["teacher"] == teacher:
+        if i["teacher"]==teacher:
             s.append(i)
-    return s
+    print("function completed")
+    return jsonify({"message": s}), 200
 @app.route('/returnByClass', methods=['POST'])
 def returnByClass():
     s=[]
@@ -24,18 +29,18 @@ def returnByClass():
             s.append(i)
     print("function completed")
     return jsonify({"message": s}), 200
-def returnBySubject(subject):
-    s=[]
-    for i in data:
-        if i["subject"] == subject:
-            s.append(i)
-    return s
+@app.route('/returnByrooms', methods=['POST'])
 def returnByClassroom(classroom):
-    s=[]
+    s = []
+    request_data = request.get_json()
+    if not request_data or "name" not in request_data:
+        return jsonify({"error": "Missing 'name' parameter"}), 400  # Return 400 if missing
+    room = request_data["name"]
     for i in data:
-        if i["classroom"] == classroom:
+        if i["room"] == room:
             s.append(i)
-    return s
+    print("function completed")
+    return jsonify({"message": s}), 200
 
 def allTeachers():
     return teachers_list(db)
@@ -56,7 +61,7 @@ def getData():
     if name=="rooms":
         print("function completed")
         return jsonify({"message": allRooms()}), 200
-    if name=="classes":
+    if name=="students":
         print("function completed")
         return jsonify({"message": allClasses()}), 200
 

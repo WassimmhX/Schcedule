@@ -4,33 +4,35 @@ import './SchedulesTable.css';
 import Aurora from './Aurora';
 import SpotlightCard from './../components/SpotlightCard';
 import scheduleLogo from '/src/assets/calendar.png';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Schedules = () => {
+const StudentsSchedules = () => {
 
   const navigate = useNavigate();
-  const {role}=useParams();
-  console.log(role)
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [schedules,setSchedules]=useState([]);
   const getList=async()=>{
     try {
-      const res = await axios.post('http://127.0.0.1:5000/getData', {
-        name:role
-      });
-      console.log(res.data.message);
-      return res.data.message;
-    } catch (error) {
-      console.error('Error calling Python function', error);
-      return [];
-    }
+        const res = await axios.post('http://127.0.0.1:5000/getData', {
+          name:"students"
+        });
+        console.log(res.data.message);
+        return( res.data.message);
+      } catch (error) {
+        console.error('Error calling Python function', error);
+        return [];
+      };
   }
-  useEffect(async()=>{
-    setSchedules(await getList());
-  },[])
-
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      const data = await getList();
+      setSchedules(data);
+    };
+    fetchSchedules();
+  }, []);
+  console.log(schedules);
   const filters = [
     { id: 'all', label: 'All Classes' },
     { id: 'Ing', label: 'Ings' },
@@ -53,13 +55,14 @@ const Schedules = () => {
         return 'bg-gray-100 text-gray-800';
     }
   };
-
-  const filteredSchedules = schedules.filter(
+  const[filteredSchedules,setFilteredSchedules]=useState([])
+  useEffect(() => {
+    setFilteredSchedules(schedules.filter(
     (schedule) =>
       (activeFilter === 'all' || schedule.type === activeFilter) &&
       (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
+  ));
+  },[schedules]);
   const chekSchedule = (name) => {
     navigate('/schedules/a/'+ name);
   }
@@ -191,4 +194,4 @@ const Schedules = () => {
   );
 };
 
-export default Schedules;
+export default StudentsSchedules;

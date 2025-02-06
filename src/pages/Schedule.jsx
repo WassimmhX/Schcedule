@@ -12,7 +12,7 @@ import './SchedulesTable.css';
 
 const Schedule = () => {
   const {name}=useParams();
-  const mySchedule=name?name:getMySchedule();
+  const mySchedule=name?name:"";
   const [showMySchedule, setMySchedule] = useState(localStorage.getItem('mySchedule')==name);
   const [response, setResponse] = useState([]);
   const filters = useState({professor: '',class: '',room: '',});
@@ -38,7 +38,7 @@ const Schedule = () => {
           email:user.email,
         });
         console.log(res.data.message);
-        localStorage.removeItem("mySchedule");
+        localStorage.removeItem("mySchedule")
         localStorage.setItem('mySchedule', schedule);
       } catch (error) {
         console.error('Error calling Python function', error);

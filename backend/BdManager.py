@@ -18,7 +18,7 @@ def teachers_list(db,id=False):
     if id :
         return list(db["teachers_list"].find())
     else:
-        return list(db["teachers_list"].find({},{"_id":0}))
+        return (list(db["teachers_list"].find({},{"_id":0})))
 def teachers_schedule(db,id=False):
     if id :
         return list(db["teachers_schedule"].find())

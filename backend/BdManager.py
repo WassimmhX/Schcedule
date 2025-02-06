@@ -61,7 +61,8 @@ def users_list(db,id=False):
 def add_user(db,user):
     users=db["users"]
     if exists(users,"email",user["email"]):
-        return False,"user already exists"
+        return False,"Email already exists"
+    user["password"]=hash_password(user["password"])
     users.insert_one(user)
     return True,"success"
 def verifUser(db,email,password):

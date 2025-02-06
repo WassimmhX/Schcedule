@@ -19,14 +19,24 @@ const AuthForm = () => {
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    login(email, password);
-    navigate("/"); // Redirect on successful login
+  const handleLogin = async () => {
+    const result=await login(email, password);
+    const resultState=result[0];
+    const resultMessage = result[1];
+    if (resultState){
+      navigate("/"); // Redirect on successful login
+    }
+    alert(resultMessage);
   };
 
-  const handleSignUp = () => {
-    signUp(name, email, password, phone, role);
-    navigate("/"); // Redirect on successful login
+  const handleSignUp = async () => {
+    const result=await signUp(name, email, password, phone, role);
+    const resultState=result[0];
+    const resultMessage = result[1];
+    if (resultState){
+      navigate("/"); // Redirect on successful login
+    }
+    alert(resultMessage);
   };
   
 

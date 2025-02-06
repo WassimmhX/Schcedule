@@ -13,6 +13,7 @@ import './SchedulesTable.css';
 const Schedule = () => {
   const {name}=useParams();
   const [loggedIn, setLoggedIn] = useState(localStorage.getItem('loggedIn')); // Moved loggedIn state here
+  const [showMySchedule, setMySchedule] = useState(false);
 
   if (!loggedIn) {
     return <Navigate to="/login" />;
@@ -114,7 +115,20 @@ const Schedule = () => {
           <h1 className="text-5xl md:text-7xl font-bold leading-tight animate-fade-in mb-8 text-white text-opacity-90 drop-shadow-lg">
             {name}'s Schedules
           </h1>
-
+          <div className="flex justify-end mb-4">
+            <label className="inline-flex items-center cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={showMySchedule}
+                onChange={(e) => setMySchedule(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="relative w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+              <span className="ml-3 text-sm font-medium text-white group-hover:text-purple-200 transition-colors">
+                My Schedule
+              </span>
+            </label>
+          </div>
           <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-xl p-6 shadow-xl">
             <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

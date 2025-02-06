@@ -173,7 +173,3 @@ for key,value in all.items():
 print(list(t_schedule.find()))
 """
 
-
-"
-
-"

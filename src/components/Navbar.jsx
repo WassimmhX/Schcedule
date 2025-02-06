@@ -1,34 +1,160 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+"use client"
+
+import { useState, useEffect } from "react"
+import { Link, useNavigate, useLocation } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
+import { Menu, X, LogOut, Home, LayoutDashboard, Calendar, ClipboardList, FileSpreadsheet, LogIn } from "lucide-react"
 
 const Navbar = () => {
-  const { logout } = useAuth();
+  const [isOpen, setIsOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const { logout } = useAuth()
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  const user = localStorage.getItem("user");
-  const role = user ? JSON.parse(user).role : "guest";
+  const user = localStorage.getItem("user")
+  const role = user ? JSON.parse(user).role : "guest"
 
-  const navigate = useNavigate();
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const handleLogOut = () => {
-    navigate(0);
-    logout();
+    navigate(0)
+    logout()
   }
-  
+
+  const navLinks = [
+    { path: "/", label: "Home", icon: Home },
+    { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    ...(role === "admin" ? [{ path: "/schedule", label: "Schedule", icon: Calendar }] : []),
+    { path: "/planning", label: "Planning", icon: ClipboardList },
+    { path: "/Test", label: "Test", icon: ClipboardList },
+    { path: "/schedulesTable", label: "Schedules Table", icon: FileSpreadsheet },
+  ]
+
+  const isActivePath = (path) => location.pathname === path
+
   return (
-    <nav className="bg-blue-600 p-4 text-white flex justify-between">
-      <h1 className="text-lg font-bold">ISIMM Planning</h1>
-      <div className="space-x-4">
-        <Link to="/" className="hover:underline">Home</Link>
-        <Link to="/dashboard" className="hover:underline">Dashboard</Link>
-        { role==='admin'? <Link to="/schedule" className="hover:underline">Shcedule</Link> : <></>}
-        <Link to="/planning" className="hover:underline">Planning</Link>
-        <Link to="/Test" className="hover:underline">Test</Link>
-        <Link to="/schedulesTable" className="hover:underline">schedulesTable</Link>
-        {user ? <button onClick={handleLogOut} className="text-black font-semibold hover:underline">LogOut</button> 
-                    :<Link to="/login" className="hover:underline">Login</Link>}
+    <nav
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        isScrolled ? "bg-white/80 backdrop-blur-md shadow-md" : "bg-white"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <Link to="/" className="flex items-center">
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                ISIMM 
+              </span>
+            </Link>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex md:items-center md:space-x-8">
+            {navLinks.map((link) => {
+              const Icon = link.icon
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActivePath(link.path)
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                  }`}
+                >
+                  <Icon className="w-4 h-4 mr-2" />
+                  {link.label}
+                </Link>
+              )
+            })}
+            {user ? (
+              <button
+                onClick={handleLogOut}
+                className="flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className="flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                Login
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-blue-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+            >
+              <span className="sr-only">Open main menu</span>
+              {isOpen ? <X className="block h-6 w-6" /> : <Menu className="block h-6 w-6" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      <div className={`md:hidden ${isOpen ? "block" : "hidden"}`}>
+        <div className="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg rounded-b-lg">
+          {navLinks.map((link) => {
+            const Icon = link.icon
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
+                  isActivePath(link.path)
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                }`}
+              >
+                <Icon className="w-5 h-5 mr-3" />
+                {link.label}
+              </Link>
+            )
+          })}
+          {user ? (
+            <button
+              onClick={() => {
+                setIsOpen(false)
+                handleLogOut()
+              }}
+              className="flex w-full items-center px-3 py-2 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
+            >
+              <LogOut className="w-5 h-5 mr-3" />
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setIsOpen(false)}
+              className="flex w-full items-center px-3 py-2 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
+            >
+              <LogIn className="w-5 h-5 mr-3" />
+              Login
+            </Link>
+          )}
+        </div>
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar
+

@@ -5,7 +5,7 @@ const Home = () => {
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}
-      <section className="relative h-[90vh] bg-cover bg-center bg-[url('https://source.unsplash.com/1600x900/?university')] flex items-center justify-center text-center text-white">
+      <section className="relative h-[90vh] bg-cover bg-center bg-[url('http://www.isimm.rnu.tn//storage/app/public/thematiques/May2017/CSWMDNJbDZvpQPAQozGF.png')] flex items-center justify-center text-center text-white">
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
         <div className="relative z-10 max-w-4xl mx-auto p-8">
           <h1 className="text-5xl md:text-7xl font-bold leading-tight animate-fade-in">
@@ -16,7 +16,7 @@ const Home = () => {
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/apply" className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-lg">
-              Apply Now
+              {localStorage.getItem("loggedIn")?'login':'login'}
               <ArrowRight className="ml-2 h-5 w-5" />
             </a>
             <a href="/programs" className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold py-3 px-8 rounded-lg transition-all">

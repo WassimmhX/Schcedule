@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   const verifSingUp=async (user)=>{
     try {
       const res = await axios.post("http://localhost:5000/testSignUp",{ user});
-      return [res.data.user,"User Added successfully"];
+      return [res.data,"User Added successfully"];
     } catch (err) {
       console.log(err.response.data.error);
       setError(err.response ? err.response.data.error : "Server not reachable");
@@ -50,6 +50,7 @@ export const AuthProvider = ({ children }) => {
   const signUp = async (username, email, password, phone, role) => {
     const newUser = { name: username, email: email, password: password, phoneNumber: phone, role: role } ;
     const result=await verifSingUp(newUser);
+    console.log(result)
     const resultMessage=result[1];
     const userResult=result[0]
     if (userResult){
@@ -57,9 +58,10 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("user", JSON.stringify(userResult));
       localStorage.setItem("loggedIn", true);
       console.log('newUser = '+userResult.name+'\nlocalStorage = '+ localStorage.getItem('user'))
+      return [true,resultMessage]
     }
     else{
-      alert(resultMessage);
+      return [false,resultMessage]
     }
     
     

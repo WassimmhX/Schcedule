@@ -1,3 +1,4 @@
+from bson import ObjectId
 from flask import Flask, render_template, request,jsonify
 from flask_cors import (CORS)
 import re
@@ -87,7 +88,6 @@ def testSingUp():
         return jsonify({"error": "Invalid email"}), 400
     if len(user["phoneNumber"])!=8:
         return jsonify({"error": "Invalid phoneNumber"}), 400
-    print(user)
     if not re.match(r"^[a-zA-Z\s'-]+$",user["name"]):
         return jsonify({"error": "Invalid name"}), 400
     if len(user["password"].strip())<4:
@@ -95,9 +95,14 @@ def testSingUp():
     state,message=add_user(db,user)
     if state:
         user.pop("password")
-        return jsonify({"message":message,"user":user}), 200
+        user.pop("_id")
+        return jsonify(user), 200
     else:
         return jsonify({"error": message}), 400
+def json_serializable(obj):
+    if isinstance(obj, ObjectId):
+        return str(obj)  # Convert ObjectId to string
+    return obj
 if __name__ == '__main__':
     db=get_db()
     data=schedules(db)

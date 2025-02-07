@@ -4,6 +4,7 @@ import axios from "axios";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
+  const currentUserMail=JSON.parse(localStorage.getItem("user")).email;
   const [editingUser, setEditingUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const getList=async()=>{
@@ -71,7 +72,7 @@ const UserList = () => {
         </div>
       </div>
       
-      <div className="overflow-x-auto">
+      <div className="table-container overflow-auto max-h-[70vh]">
         <table className="w-full border-collapse border border-gray-700 shadow-lg rounded-lg">
           <thead className="bg-gray-800 text-gray-300">
             <tr>
@@ -82,26 +83,30 @@ const UserList = () => {
               <th className="px-6 py-3 text-left text-xs font-medium uppercase">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-gray-900 text-gray-200 divide-y divide-gray-700">
+          <tbody className={"bg-gray-900 text--200 divide-y divide-gray-700"}>
             {filteredUsers.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-800 transition-all">
+              <tr key={user.id} className={currentUserMail==user.email?"bg-slate-700 ":" "+"  transition-all hover:bg-gray-800 "}>
                 <td className="px-6 py-4">{user.name}</td>
                 <td className="px-6 py-4">{user.email}</td>
                 <td className="px-6 py-4">{user.phoneNumber}</td>
                 <td className="px-6 py-4">{user.role}</td>
-                <td className="px-6 py-4 flex space-x-4">
+                <td className="px-6 py-4 flex space-x-4 items-center justify-center">
                   <button
                     onClick={() => handleEdit(user)}
                     className="text-blue-400 hover:text-blue-600 transition-transform transform hover:scale-110"
                   >
                     <Pencil className="h-5 w-5" />
                   </button>
-                  <button
+                  {currentUserMail!=user.email?
+                    <button
                     onClick={() => handleDelete(user.id)}
                     className="text-red-400 hover:text-red-600 transition-transform transform hover:scale-110"
                   >
                     <Trash2 className="h-5 w-5" />
                   </button>
+                  :""
+                  }
+                  
                 </td>
               </tr>
             ))}

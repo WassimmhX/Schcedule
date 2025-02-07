@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
         <aside className="w-64 bg-gradient-to-br from-gray-800 via-gray-900 to-black shadow-xl backdrop-blur-md rounded-l-3xl">
           <div className="p-6">
             <h1 className="text-3xl font-bold text-white tracking-wide">
-              Uni Admin
+              Dashboard
             </h1>
           </div>
           <nav className="mt-8 space-y-4">
@@ -45,7 +45,7 @@ const Layout = ({ children }) => {
         <main className="flex-1 bg-gray-900/80 backdrop-blur-sm text-gray-300 rounded-r-3xl">
           <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-black shadow-md rounded-tr-3xl">
             <div className="max-w-7xl mx-auto py-4 px-6 flex justify-between items-center">
-              <h2 className="text-2xl font-semibold tracking-wide">Dashboard</h2>
+              <h2 className="text-2xl font-semibold tracking-wide">University Admin</h2>
               <div className="flex items-center">
                 <UserCircle className="w-8 h-8 text-gray-400" />
                 <span className="ml-2 text-gray-200">Admin</span>

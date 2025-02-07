@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Search } from "lucide-react";
 
 const UserList = () => {
-  const [users, setUsers] = useState([JSON.parse(localStorage.getItem('user')),JSON.parse(localStorage.getItem('user')),JSON.parse(localStorage.getItem('user')),JSON.parse(localStorage.getItem('user')),JSON.parse(localStorage.getItem('user')),JSON.parse(localStorage.getItem('user')),JSON.parse(localStorage.getItem('user')),JSON.parse(localStorage.getItem('user')),]);
+  const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const storedUsers = localStorage.getItem("users");
     if (storedUsers) {
-      // setUsers(JSON.parse(storedUsers));
+      setUsers(JSON.parse(storedUsers));
     }
   }, []);
 
@@ -30,9 +31,27 @@ const UserList = () => {
     }
   };
 
+  const filteredUsers = users.filter(user => 
+    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold text-gray-300 mb-6">User List</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold text-gray-300">User List</h2>
+        <div className="flex items-center bg-gray-700 p-2 rounded-md shadow-md w-64">
+          <Search className="text-gray-400 w-5 h-5 mr-2" />
+          <input 
+            type="text" 
+            placeholder="Search users..." 
+            value={searchQuery} 
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-transparent text-gray-200 border-none focus:outline-none"
+          />
+        </div>
+      </div>
+      
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-700 shadow-lg rounded-lg">
           <thead className="bg-gray-800 text-gray-300">
@@ -45,7 +64,7 @@ const UserList = () => {
             </tr>
           </thead>
           <tbody className="bg-gray-900 text-gray-200 divide-y divide-gray-700">
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <tr key={user.id} className="hover:bg-gray-800 transition-all">
                 <td className="px-6 py-4">{user.name}</td>
                 <td className="px-6 py-4">{user.email}</td>
@@ -90,6 +109,7 @@ const UserList = () => {
                 <label className="block text-sm font-medium text-gray-400">Email</label>
                 <input
                   type="email"
+                  disabled
                   value={editingUser.email}
                   onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
                   className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"

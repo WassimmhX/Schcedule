@@ -4,6 +4,8 @@ import TeacherForm from "./TeacherForm";
 import UserForm from "./UserForm";
 import TeacherList from "./TeacherList";
 import UserList from "./UserList";
+import RoomList from "./RoomList";
+
 
 const Dashboard = () => {
   const [activePage, setActivePage] = useState("addTeacher");
@@ -18,6 +20,8 @@ const Dashboard = () => {
         return <TeacherList />;
       case "userList":
         return <UserList />;
+      case "roomList":
+        return <RoomList />;
       default:
         return <TeacherForm />;
     }
@@ -29,10 +33,11 @@ const Dashboard = () => {
         {/* Navigation Buttons */}
         <div className="mb-6 flex space-x-4 justify-center">
           {[
-            { label: "Add Teacher", page: "addTeacher" },
             { label: "Add User", page: "addUser" },
-            { label: "Teacher List", page: "teacherList" },
+            { label: "Add Teacher", page: "addTeacher" },
             { label: "User List", page: "userList" },
+            { label: "Teacher List", page: "teacherList" },
+            { label: "Rooms", page: "roomList" },
           ].map(({ label, page }) => (
             <button
               key={page}

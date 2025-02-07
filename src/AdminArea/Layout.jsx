@@ -8,9 +8,9 @@ const Layout = ({ children }) => {
       <Aurora colorStops={["#ff00ff", "#00d8ff", "#7cff67"]} amplitude={1.5} />
 
       {/* Content Wrapper */}
-      <div className="relative z-10 flex h-full">
+      <div className="relative z-10 flex h-full ">
         {/* Sidebar */}
-        <aside className="w-64 bg-gradient-to-br from-gray-800 via-gray-900 to-black shadow-xl backdrop-blur-md">
+        <aside className="w-64 bg-gradient-to-br from-gray-800 via-gray-900 to-black shadow-xl backdrop-blur-md rounded-l-3xl">
           <div className="p-6">
             <h1 className="text-3xl font-bold text-white tracking-wide">
               Uni Admin
@@ -42,8 +42,8 @@ const Layout = ({ children }) => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 bg-gray-900/80 backdrop-blur-sm text-gray-300">
-          <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-black shadow-md">
+        <main className="flex-1 bg-gray-900/80 backdrop-blur-sm text-gray-300 rounded-r-3xl">
+          <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-black shadow-md rounded-tr-3xl">
             <div className="max-w-7xl mx-auto py-4 px-6 flex justify-between items-center">
               <h2 className="text-2xl font-semibold tracking-wide">Dashboard</h2>
               <div className="flex items-center">

@@ -1,16 +1,16 @@
-
+import { UserPlus } from "lucide-react";
 import { useState } from "react"
 
 const UserForm = () => {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [phoneNumber, setPhoneNumber] = useState("")
-  const [password, setPassword] = useState("")
-  const [schedule, setSchedule] = useState("")
-  const [role, setRole] = useState("")
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
+  const [schedule, setSchedule] = useState("");
+  const [role, setRole] = useState("");
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     const newUser = {
       id: Date.now(),
       name,
@@ -19,120 +19,92 @@ const UserForm = () => {
       password,
       schedule,
       role,
-    }
-
-    // Get existing users from localStorage
-    const existingUsers = JSON.parse(localStorage.getItem("users") || "[]")
-
-    // Add new user
-    const updatedUsers = [...existingUsers, newUser]
-
-    // Save updated users to localStorage
-    localStorage.setItem("users", JSON.stringify(updatedUsers))
+    };
 
     // Reset form
-    setName("")
-    setEmail("")
-    setPhoneNumber("")
-    setPassword("")
-    setSchedule("")
-    setRole("")
+    setName("");
+    setEmail("");
+    setPhoneNumber("");
+    setPassword("");
+    setSchedule("");
+    setRole("");
 
-    console.log("User added:", newUser)
-  }
+    console.log("User added:", newUser);
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Name
-        </label>
-        <input
-          type="text"
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-        />
-      </div>
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email
-        </label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-        />
-      </div>
-      <div>
-        <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
-          Phone Number
-        </label>
-        <input
-          type="tel"
-          id="phoneNumber"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-        />
-      </div>
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          Password
-        </label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-        />
-      </div>
-      <div>
-        <label htmlFor="schedule" className="block text-sm font-medium text-gray-700">
-          My Schedule
-        </label>
-        <textarea
-          id="schedule"
-          value={schedule}
-          onChange={(e) => setSchedule(e.target.value)}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-        ></textarea>
-      </div>
-      <div>
-        <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-          Role
-        </label>
-        <select
-          id="role"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-        >
-          <option value="">Select a role</option>
-          <option value="student">Student</option>
-          <option value="teacher">Teacher</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
-      <button
-        type="submit"
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-      >
-        Add User
-      </button>
-    </form>
-  )
-}
+    <div className="bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 shadow-lg rounded-2xl p-8">
+      <h2 className="text-xl font-semibold text-gray-200 mb-4">Add a New User</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-400">Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="mt-1 w-full bg-gray-700 text-gray-200 border-none rounded-md shadow-sm focus:ring focus:ring-blue-500 p-2"
+          />
+        </div>
 
-export default UserForm
+        <div>
+          <label className="block text-sm font-medium text-gray-400">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="mt-1 w-full bg-gray-700 text-gray-200 border-none rounded-md shadow-sm focus:ring focus:ring-blue-500 p-2"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-400">Phone Number</label>
+          <input
+            type="tel"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            required
+            className="mt-1 w-full bg-gray-700 text-gray-200 border-none rounded-md shadow-sm focus:ring focus:ring-blue-500 p-2"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-400">Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="mt-1 w-full bg-gray-700 text-gray-200 border-none rounded-md shadow-sm focus:ring focus:ring-blue-500 p-2"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-400">Role</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            required
+            className="mt-1 w-full bg-gray-700 text-gray-200 border-none rounded-md shadow-sm focus:ring focus:ring-blue-500 p-2"
+          >
+            <option value="">Select a role</option>
+            <option value="student">Student</option>
+            <option value="teacher">Teacher</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full py-2 px-4 text-sm font-semibold text-white bg-gradient-to-r from-blue-700 to-purple-900 hover:from-blue-500 hover:to-purple-600 rounded-lg shadow-md transform transition-transform duration-200 hover:scale-105 flex items-center justify-center space-x-2"        >
+          <UserPlus className="w-5 h-5" />
+          <span>Add User</span>
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default UserForm;
 

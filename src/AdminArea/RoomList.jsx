@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Trash2, Search, PlusCircle } from "lucide-react";
+import { Trash2, Search, PlusCircle, UserPlus } from "lucide-react";
 
 const RoomList = () => {
   const [rooms, setRooms] = useState([]);
@@ -49,19 +49,25 @@ const RoomList = () => {
         </div>
       </div>
       
-      <form onSubmit={handleAddRoom} className="mb-6 flex justify-between space-x-4 ">
+      <form onSubmit={handleAddRoom} className="mb-6 flex space-x-4 ">
         <input 
           type="text" 
           placeholder="Enter room name" 
           value={newRoomName} 
           onChange={(e) => setNewRoomName(e.target.value)}
-          className="w-4/6 p-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          className="w-4/5 p-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
         />
-        <button 
+        {/* <button 
           type="submit"
           className="flex items-center space-x-2 bg-blue-600 text-white px-3 py-2 rounded-md shadow-md hover:bg-blue-700 transition-transform transform hover:scale-105"
         >
           <PlusCircle className="h-5 w-5" />
+          <span>Add Room</span>
+        </button> */}
+        <button
+          type="submit"
+          className="flex items-center space-x-2 justify-center  py-2 px-4 text-sm font-semibold text-white bg-gradient-to-r from-blue-700 to-purple-900 hover:from-blue-500 hover:to-purple-600 rounded-lg shadow-md transform transition-transform duration-200 hover:scale-105 "        >
+          <UserPlus className="w-5 h-5" />
           <span>Add Room</span>
         </button>
       </form>

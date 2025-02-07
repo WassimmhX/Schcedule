@@ -29,9 +29,11 @@ const StudentsSchedules = () => {
     const fetchSchedules = async () => {
       const data = await getList();
       setSchedules(data);
+      localStorage.setItem('currentSchedule','Class');
     };
     fetchSchedules();
   }, []);
+
   console.log(schedules);
   const filters = [
     { id: 'all', label: 'All Classes' },

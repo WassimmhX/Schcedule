@@ -29,6 +29,8 @@ const TeachersSchedules = () => {
     const fetchSchedules = async () => {
       const data = await getList();
       setSchedules(data);
+      localStorage.setItem('currentSchedule','Teacher');
+
     };
     fetchSchedules();
   }, []);

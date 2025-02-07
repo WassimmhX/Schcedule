@@ -11,52 +11,57 @@ import Aurora from './Aurora';
 import './SchedulesTable.css';
 
 const Schedule = () => {
-  const {name}=useParams();
+  const { name } = useParams();
   const location = useLocation();
-  const mySchedule=name?name:"";
-  const [showMySchedule, setMySchedule] = useState(localStorage.getItem('mySchedule')==name);
+  const mySchedule = name ? name : '';
+  const [showMySchedule, setMySchedule] = useState(
+    localStorage.getItem('mySchedule') == name
+  );
   const [response, setResponse] = useState([]);
-  const filters = useState({professor: '',class: '',room: '',});
+  const filters = useState({ professor: '', class: '', room: '' });
   const { yourLocation } = location.state || {};
-  console.log('param = 1',yourLocation)
+  console.log('param = 1', yourLocation);
 
   useEffect(() => {
     callPythonFunction();
-  },[]);
+  }, []);
   useEffect(() => {
     setEvents(convertToFullCalendarEvents(response));
   }, [response]);
 
-  const myScheduleChecked=async (e)=>{
-    
+  const myScheduleChecked = async (e) => {
     setMySchedule(e.target.checked);
-    const user=JSON.parse(localStorage.getItem('user'));
-    console.log(mySchedule)
+    const user = JSON.parse(localStorage.getItem('user'));
+    console.log(mySchedule);
     console.log(user.email);
-    const schedule=e.target.checked? mySchedule:"";
-      try {
-        const res = await axios.post('http://127.0.0.1:5000/updateUserSchedule', {
-          schedule: schedule,
-          email:user.email,
-        });
-        console.log(res.data.message);
-        localStorage.removeItem("mySchedule")
-        localStorage.setItem('mySchedule', schedule);
-        localStorage.setItem('ScheduleType', yourLocation);
-      } catch (error) {
-        console.error('Error calling Python function', error);
-      }
-  }
+    const schedule = e.target.checked ? mySchedule : '';
+    try {
+      const res = await axios.post('http://127.0.0.1:5000/updateUserSchedule', {
+        schedule: schedule,
+        email: user.email,
+      });
+      console.log(res.data.message);
+      localStorage.removeItem('mySchedule');
+      localStorage.setItem('mySchedule', schedule);
+      localStorage.setItem('ScheduleType', yourLocation);
+    } catch (error) {
+      console.error('Error calling Python function', error);
+    }
+  };
   if (!localStorage.getItem('loggedIn')) {
     return <Navigate to="/login" />;
   }
-  
-  
-  
+
   const callPythonFunction = async () => {
     try {
-      const ScheduleType=localStorage.getItem('ScheduleType');
-      const res = await axios.post('http://127.0.0.1:5000/returnBy'+ScheduleType, {
+      // const ScheduleType=localStorage.getItem('ScheduleType');
+      let x;
+      if (showMySchedule) {
+        x = localStorage.getItem('ScheduleType');
+      } else {
+        x = localStorage.getItem('currentSchedule');
+      }
+      const res = await axios.post('http://127.0.0.1:5000/returnBy' + x, {
         class: mySchedule,
       });
       setResponse(res.data.message);
@@ -64,8 +69,6 @@ const Schedule = () => {
       console.error('Error calling Python function', error);
     }
   };
-
-  
 
   const daysOfWeek = {
     Lundi: 1,
@@ -115,7 +118,7 @@ const Schedule = () => {
       };
     });
   };
-  const [events,setEvents]=useState(convertToFullCalendarEvents(response));
+  const [events, setEvents] = useState(convertToFullCalendarEvents(response));
   const filteredEvents = events.filter(
     (event) =>
       (!filters.professor || event.professor.includes(filters.professor)) &&
@@ -129,7 +132,6 @@ const Schedule = () => {
         <div className="p-4 m-4 text-center">
           {/* Supprimer cette div */}
 
-          
           <h1 className="text-5xl md:text-7xl font-bold leading-tight animate-fade-in mb-8 text-white text-opacity-90 drop-shadow-lg">
             {name}&apos;s Schedules
           </h1>

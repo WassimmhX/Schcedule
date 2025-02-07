@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserPlus } from "lucide-react";
+import { User, Mail, UserPlus } from "lucide-react";
 
 const TeacherForm = () => {
   const [name, setName] = useState("");
@@ -12,7 +12,7 @@ const TeacherForm = () => {
       name,
       email,
     };
-    
+
     // Get existing teachers from localStorage
     const existingTeachers = JSON.parse(localStorage.getItem("teachers") || "[]");
 
@@ -33,28 +33,37 @@ const TeacherForm = () => {
     <div className="bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 shadow-lg rounded-2xl p-8">
       <h2 className="text-xl font-semibold text-gray-200 mb-4">Add a New Teacher</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
+        {/* Name Input */}
+        <div className="relative">
           <label className="block text-sm font-medium text-gray-400">Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="mt-1 w-full bg-gray-700 text-gray-200 border-none rounded-md shadow-sm focus:ring focus:ring-teal-500 p-2"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="mt-1 w-full bg-gray-700 text-gray-200 border-none rounded-md shadow-sm focus:ring focus:ring-teal-500 p-2 pl-9"
+            />
+            <User className="absolute left-2 top-6 transform -translate-y-1/2 text-gray-400" size={22} />
+          </div>
         </div>
 
-        <div>
+        {/* Email Input */}
+        <div className="relative">
           <label className="block text-sm font-medium text-gray-400">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="mt-1 w-full bg-gray-700 text-gray-200 border-none rounded-md shadow-sm focus:ring focus:ring-teal-500 p-2"
-          />
+          <div className="relative">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="mt-1 w-full bg-gray-700 text-gray-200 border-none rounded-md shadow-sm focus:ring focus:ring-teal-500 p-2 pl-9"
+            />
+            <Mail className="absolute left-2.5 top-6 transform -translate-y-1/2 text-gray-400" size={20} />
+          </div>
         </div>
 
+        {/* Submit Button */}
         <button
           type="submit"
           className="w-full py-2 px-4 text-sm font-semibold text-white bg-gradient-to-r from-blue-700 to-purple-900 hover:from-blue-500 hover:to-purple-600 rounded-lg shadow-md transform transition-transform duration-200 hover:scale-105 flex items-center justify-center space-x-2"

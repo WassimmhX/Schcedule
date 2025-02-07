@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
-<<<<<<< HEAD
-import { Trash2, Search, UserPlus } from "lucide-react";
-=======
+
 import { Trash2, Search, PlusCircle } from "lucide-react";
 import axios from "axios";
->>>>>>> 3ecc709e77248ee0ce551c6da83a26233c50b488
+
 
 const RoomList = () => {
   const [rooms, setRooms] = useState([]);

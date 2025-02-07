@@ -127,8 +127,11 @@ def updateUser(db,user):
     if not re.match(r"^[a-zA-Z\s'-]+$", user["name"]):
         return {"error": "Invalid name"}, 400
     users=db["users"]
-    if not users.find_one({"email":user["email"]}):
+    oldUser=users.find_one({"email":user["email"]})
+    if not oldUser:
         return {"error": "Email does not exist"}, 400
+    if oldUser.role=="admin"!=user.role:
+        return {"error": "You can't change the role of an admin"}, 400
     users.update_one({"email":user["email"]},{"$set":{"name":user["name"],"phoneNumber":user["phoneNumber"],"role":user["role"]}})
 def deleteUser(db,email):
     users=db["users"]

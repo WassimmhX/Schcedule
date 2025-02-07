@@ -156,6 +156,7 @@ const UserList = () => {
                   value={editingUser.role}
                   onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
                   className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                  disabled={currentUserMail==editingUser.email}
                 >
                   <option value="student">Student</option>
                   <option value="teacher">Teacher</option>

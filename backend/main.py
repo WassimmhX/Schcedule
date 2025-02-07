@@ -75,7 +75,7 @@ def testLogin():
         return jsonify({"error": "Missing 'password' parameter"}), 400  # Return 400 if missing
     email = request_data["email"]
     password = request_data["password"]
-    message,user=verifUser(db,email,password)
+    message,user= verifLogin(db, email, password)
     if user==None:
         return jsonify({"error":message}), 400
     else:
@@ -129,6 +129,37 @@ def getMySchedule():
     email=request_data["email"]
     schedule=getUserAttribute(db,email,"mySchedule")
     return jsonify({"schedule":schedule}), 200
+@app.route("/editData", methods=["POST"])
+def editData():
+    request_data = request.get_json()
+    if not request_data and "name" not in request_data:
+        return jsonify({"error": "Missing 'name' parameter"}), 400
+    if not "data" in request_data:
+        return jsonify({"error": "Missing 'data' parameter"}), 400
+    name = request_data["name"]
+    data = request_data["data"]
+    message={"error":"error occured"}
+    responseType=400
+    if name=="user":
+        message,responseType=updateUser(db,data)
+    if name=="teacher":
+        message,responseType=updateTeacher(db,data)
+    return jsonify(message),responseType
+@app.route("/deleteData", methods=["POST"])
+def deleteData():
+    request_data = request.get_json()
+    if not request_data or "name" not in request_data or "key" not in request_data:
+        return jsonify({"error": "Missing 'data' parameter"}), 400
+    key = request_data["key"]
+    name = request_data["name"]
+    if name=="user":
+        message=deleteUser(db,key)
+    elif name=="teacher":
+        message=deleteTeacher(db,key)
+    elif name=="room":
+        message=deleteRoom(db,key)
+    return jsonify({"message":message}), 200
+
 if __name__ == '__main__':
     db=get_db()
     data=schedules(db)

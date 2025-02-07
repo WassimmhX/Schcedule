@@ -5,13 +5,13 @@ import re
 from BdManager import *
 app = Flask(__name__)
 CORS(app)
-@app.route('/returnByteachers', methods=['POST'])
-def returnByTeacher(teacher):
+@app.route('/returnByTeacher', methods=['POST'])
+def returnByTeacher():
     s = []
     request_data = request.get_json()
-    if not request_data or "name" not in request_data:
-        return jsonify({"error": "Missing 'name' parameter"}), 400  # Return 400 if missing
-    teacher = request_data["name"]
+    if not request_data or "class" not in request_data:
+        return jsonify({"error": "Missing 'class' parameter"}), 400  # Return 400 if missing
+    teacher = request_data["class"]
     for i in data:
         if i["teacher"]==teacher:
             s.append(i)

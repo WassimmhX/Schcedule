@@ -66,11 +66,7 @@ const StudentsSchedules = () => {
   
   const param = {yourLocation :'Class'}
   const chekSchedule = (name) => {
-<<<<<<< HEAD
     navigate(`/schedules/schedule/${name}`, { state: param });
-=======
-    navigate('/schedules/schedule/'+ name);
->>>>>>> 488c686e582d6fb0976e4636c36be559ce0bd01f
   }
 
   return (

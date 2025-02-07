@@ -50,7 +50,7 @@ const Schedule = () => {
   
   const location = useLocation();
   const { yourLocation } = location.state || {};
-  console.log('param = ',yourLocation)
+  console.log('param = 1',yourLocation)
   
   const callPythonFunction = async () => {
     try {

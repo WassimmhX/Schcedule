@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Trash2, Search, PlusCircle, UserPlus } from "lucide-react";
+import { Trash2, Search, UserPlus } from "lucide-react";
 
 const RoomList = () => {
   const [rooms, setRooms] = useState([]);

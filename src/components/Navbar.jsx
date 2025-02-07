@@ -11,7 +11,6 @@ import {
   LayoutDashboard,
   Calendar,
   ClipboardList,
-  FileSpreadsheet,
   LogIn,
   ChevronDown,
 } from 'lucide-react';

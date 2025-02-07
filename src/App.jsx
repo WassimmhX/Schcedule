@@ -2,9 +2,7 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate,
 } from 'react-router-dom';
-import Dashboard from './pages/Dashboard';
 import Planning from './pages/Planning';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
@@ -16,6 +14,7 @@ import { useEffect, useState } from 'react';
 import ProtectedRoute from './context/ProtectedRoute';
 import TeachersSchedules from './pages/TeachersSchedules';
 import StudentsSchedules from './pages/StudentsSchedules';
+import Dashboard from './AdminArea/Dashboard';
 
 function App() {
   const [user, setUser] = useState(null);

@@ -100,6 +100,7 @@ const Navbar = () => {
                 onClick={() => {
                   setIsScheduleOpen(false);
                   window.location.href = option.path;
+                  
                 }}
                 className={`block px-4 py-2 text-sm ${
                   isActivePath(option.path)
@@ -144,7 +145,7 @@ const Navbar = () => {
                       ? 'text-blue-600 bg-blue-100'
                       : 'text-gray-800 hover:text-blue-600 hover:bg-gray-200'
                   }`}
-                  // onClick={() => window.location.href = link.path}
+                  onClick={() => window.location.href = link.path}
                 >
                   <Icon className="w-4 h-4 mr-1.5" />
                   {link.label}

@@ -17,7 +17,8 @@ const Schedule = () => {
   const [showMySchedule, setMySchedule] = useState(localStorage.getItem('mySchedule')==name);
   const [response, setResponse] = useState([]);
   const filters = useState({professor: '',class: '',room: '',});
-  
+  const { yourLocation } = location.state || {};
+  console.log('param = 1',yourLocation)
 
   useEffect(() => {
     callPythonFunction();
@@ -41,6 +42,7 @@ const Schedule = () => {
         console.log(res.data.message);
         localStorage.removeItem("mySchedule")
         localStorage.setItem('mySchedule', schedule);
+        localStorage.setItem('ScheduleType', yourLocation);
       } catch (error) {
         console.error('Error calling Python function', error);
       }
@@ -49,12 +51,12 @@ const Schedule = () => {
     return <Navigate to="/login" />;
   }
   
-  const { yourLocation } = location.state || {};
-  console.log('param = 1',yourLocation)
+  
   
   const callPythonFunction = async () => {
     try {
-      const res = await axios.post('http://127.0.0.1:5000/returnBy'+yourLocation, {
+      const ScheduleType=localStorage.getItem('ScheduleType');
+      const res = await axios.post('http://127.0.0.1:5000/returnBy'+ScheduleType, {
         class: mySchedule,
       });
       setResponse(res.data.message);

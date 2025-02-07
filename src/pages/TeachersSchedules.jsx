@@ -32,7 +32,6 @@ const TeachersSchedules = () => {
     };
     fetchSchedules();
   }, []);
-  console.log(schedules);
 
   const filters = [
     { id: 'all', label: 'All Classes' },

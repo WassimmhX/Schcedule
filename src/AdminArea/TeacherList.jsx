@@ -1,11 +1,30 @@
 import { useState, useEffect } from "react";
 import { Pencil, Trash2, Search } from "lucide-react";
+import axios from "axios";
 
 const TeacherList = () => {
   const [teachers, setTeachers] = useState([]);
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const getList=async()=>{
+    try {
+        const res = await axios.post('http://127.0.0.1:5000/getData', {
+          name:"teachers"
+        });
+        console.log(res.data.message);
+        return( res.data.message);
+      } catch (error) {
+        console.error('Error calling Python function', error);
+        return [];
+      };
+  }
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      const data = await getList();
+      setTeachers(data);
+    };
+    fetchSchedules();
+  }, []);
   useEffect(() => {
     const storedTeachers = localStorage.getItem("users");
     if (storedTeachers) {
@@ -52,7 +71,7 @@ const TeacherList = () => {
         </div>
       </div>
       
-      <div className="overflow-x-auto">
+      <div className="table-container overflow-auto max-h-[70vh]">
         <table className="w-full border-collapse border border-gray-700 shadow-lg rounded-lg">
           <thead className="bg-gray-800 text-gray-300">
             <tr>
@@ -85,7 +104,6 @@ const TeacherList = () => {
           </tbody>
         </table>
       </div>
-
       {editingTeacher && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black p-6 rounded-xl shadow-2xl w-96 backdrop-blur-md border border-gray-700">

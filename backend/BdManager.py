@@ -58,6 +58,13 @@ def classes_schedule(db,id=False):
         return list(db["classes_schedule"].find({},{"_id":0}))
 def add_class(db,cl):
     return addToTable(db["classes_list"],cl)
+def deleteClass(db,name):
+    classes=db["classes_list"]
+    try:
+        classes.delete_one({"name":name})
+        return "deleted successfully"
+    except:
+        return  "Email does not exist"
 
 def rooms_list(db,id=False):
     if id :
@@ -83,7 +90,7 @@ def users_list(db,id=False):
     if id :
         return list(db["users"].find())
     else:
-        return list(db["users"].find({},{"_id":0}))
+        return list(db["users"].find({},{"_id":0,"password":0}))
 def add_user(db,user):
     users=db["users"]
     if exists(users,"email",user["email"]):

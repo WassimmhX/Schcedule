@@ -1,11 +1,34 @@
 import { useState, useEffect } from "react";
+<<<<<<< HEAD
 import { Trash2, Search, UserPlus } from "lucide-react";
+=======
+import { Trash2, Search, PlusCircle } from "lucide-react";
+import axios from "axios";
+>>>>>>> 3ecc709e77248ee0ce551c6da83a26233c50b488
 
 const RoomList = () => {
   const [rooms, setRooms] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [newRoomName, setNewRoomName] = useState("");
-
+  const getList=async()=>{
+    try {
+        const res = await axios.post('http://127.0.0.1:5000/getData', {
+          name:"rooms"
+        });
+        console.log(res.data.message);
+        return( res.data.message);
+      } catch (error) {
+        console.error('Error calling Python function', error);
+        return [];
+      };
+  }
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      const data = await getList();
+      setRooms(data);
+    };
+    fetchSchedules();
+  }, []);
   useEffect(() => {
     const storedRooms = localStorage.getItem("rooms");
     if (storedRooms) {
@@ -67,12 +90,12 @@ const RoomList = () => {
         <button
           type="submit"
           className="flex items-center space-x-2 justify-center  py-2 px-4 text-sm font-semibold text-white bg-gradient-to-r from-blue-700 to-purple-900 hover:from-blue-500 hover:to-purple-600 rounded-lg shadow-md transform transition-transform duration-200 hover:scale-105 "        >
-          <UserPlus className="w-5 h-5" />
+          <PlusCircle className="w-5 h-5" />
           <span>Add Room</span>
         </button>
       </form>
       
-      <div className="overflow-x-auto ">
+      <div className="table-container overflow-auto max-h-[70vh]">
         <table className="w-full border-collapse border border-gray-700 shadow-lg rounded-lg">
           <thead className="bg-gray-800 text-gray-300">
             <tr>

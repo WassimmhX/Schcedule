@@ -1,3 +1,4 @@
+import axios from "axios";
 import { UserPlus } from "lucide-react";
 import { useState } from "react"
 
@@ -6,27 +7,36 @@ const UserForm = () => {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-  const [schedule, setSchedule] = useState("");
   const [role, setRole] = useState("");
-
-  const handleSubmit = (e) => {
+  const [error, setError] = useState(null);
+  const addUser=async (user)=>{
+    try {
+      const res = await axios.post("http://localhost:5000/testSignUp",{ user});
+      return [res.data,"User Added successfully"];
+    } catch (err) {
+      console.log(err.response.data.error);
+      setError(err.response ? err.response.data.error : "Server not reachable");
+      console.log(error)
+      return [null,err.response.data.error];
+    }
+  }
+  const handleSubmit = async(e) => {
     e.preventDefault();
     const newUser = {
-      id: Date.now(),
-      name,
-      email,
-      phoneNumber,
-      password,
-      schedule,
-      role,
+      name:name,
+      email:email,
+      phoneNumber:phoneNumber,
+      password:password,
+      role:role,
     };
-
+    const result=await addUser(newUser);
+    console.log(result)
+    alert("User Added")
     // Reset form
     setName("");
     setEmail("");
     setPhoneNumber("");
     setPassword("");
-    setSchedule("");
     setRole("");
 
     console.log("User added:", newUser);

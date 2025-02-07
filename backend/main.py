@@ -29,7 +29,7 @@ def returnByClass():
             s.append(i)
     print("function completed")
     return jsonify({"message": s}), 200
-@app.route('/returnByrooms', methods=['POST'])
+@app.route('/returnByRooms', methods=['POST'])
 def returnByClassroom(classroom):
     s = []
     request_data = request.get_json()

@@ -46,7 +46,7 @@ function App() {
         {console.log('User role:', role + '  User:', user)}
 
         <Route
-          path="/schedules/a/:name"
+          path="/schedules/schedule/:name"
           element={
             <ProtectedRoute>
               <Schedule />

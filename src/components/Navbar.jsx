@@ -52,9 +52,7 @@ const Navbar = () => {
     logout();
   };
 
-  const mySchedule = localStorage.getItem("mySchedule") ? localStorage.getItem("user") ? 
-                     "/" + JSON.parse(localStorage.getItem("user")).role + "s/" + localStorage.getItem("mySchedule") 
-                                                          : localStorage.getItem("mySchedule") : "/noScheduleSaved" ;
+  const mySchedule = localStorage.getItem("mySchedule");
   console.log('from navbar :', localStorage.getItem("mySchedule"))
   const scheduleOptions = [
     { path: '/schedules/students', label: 'Students' },
@@ -65,7 +63,7 @@ const Navbar = () => {
   const navLinks = [
     { path: '/', label: 'Home', icon: Home },
     ...(role
-      ? [{ path: '/schedules'+mySchedule, label: 'My Schedule', icon: Calendar }]
+      ? [{ path: '/schedules/schedule/'+mySchedule, label: 'My Schedule', icon: Calendar }]
       : []),
     ...(role=="admin"
       ? [{ path: '/dashboard', label: 'Admin Dashboard', icon: LayoutDashboard }]

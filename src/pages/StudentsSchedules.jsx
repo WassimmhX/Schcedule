@@ -64,7 +64,7 @@ const StudentsSchedules = () => {
   ));
   },[schedules]);
   const chekSchedule = (name) => {
-    navigate('/schedules/a/'+ name);
+    navigate('/schedules/schedule/'+ name);
   }
 
   return (

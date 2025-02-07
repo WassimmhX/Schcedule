@@ -12,6 +12,7 @@ import './SchedulesTable.css';
 
 const Schedule = () => {
   const {name}=useParams();
+  const location = useLocation();
   const mySchedule=name?name:"";
   const [showMySchedule, setMySchedule] = useState(localStorage.getItem('mySchedule')==name);
   const [response, setResponse] = useState([]);
@@ -48,7 +49,6 @@ const Schedule = () => {
     return <Navigate to="/login" />;
   }
   
-  const location = useLocation();
   const { yourLocation } = location.state || {};
   console.log('param = 1',yourLocation)
   

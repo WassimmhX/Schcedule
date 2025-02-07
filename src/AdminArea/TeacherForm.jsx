@@ -12,7 +12,7 @@ const TeacherForm = () => {
       name,
       email,
     };
-
+    
     // Get existing teachers from localStorage
     const existingTeachers = JSON.parse(localStorage.getItem("teachers") || "[]");
 

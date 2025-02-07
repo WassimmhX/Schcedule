@@ -1,11 +1,30 @@
 import { useState, useEffect } from "react";
 import { Pencil, Trash2, Search } from "lucide-react";
+import axios from "axios";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const getList=async()=>{
+    try {
+        const res = await axios.post('http://127.0.0.1:5000/getData', {
+          name:"users"
+        });
+        console.log(res.data.message);
+        return( res.data.message);
+      } catch (error) {
+        console.error('Error calling Python function', error);
+        return [];
+      };
+  }
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      const data = await getList();
+      setUsers(data);
+    };
+    fetchSchedules();
+  }, []);
   useEffect(() => {
     const storedUsers = localStorage.getItem("users");
     if (storedUsers) {

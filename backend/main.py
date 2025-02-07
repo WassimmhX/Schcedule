@@ -48,6 +48,8 @@ def allClasses():
     return classes_list(db)
 def allRooms():
     return rooms_list(db)
+def allUsers():
+    return users_list(db)
 
 @app.route('/getData', methods=['POST'])
 def getData():
@@ -64,6 +66,9 @@ def getData():
     if name=="students":
         print("function completed")
         return jsonify({"message": allClasses()}), 200
+    if name=="users":
+        print("function completed")
+        return jsonify({"message": allUsers()}), 200
 
 @app.route("/testLogin", methods=['POST'])
 def testLogin():
@@ -158,6 +163,8 @@ def deleteData():
         message=deleteTeacher(db,key)
     elif name=="room":
         message=deleteRoom(db,key)
+    elif name=="class":
+        message=deleteClass(db,key)
     return jsonify({"message":message}), 200
 
 if __name__ == '__main__':

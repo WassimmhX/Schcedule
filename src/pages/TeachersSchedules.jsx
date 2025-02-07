@@ -4,65 +4,72 @@ import './SchedulesTable.css';
 import Aurora from './Aurora';
 import SpotlightCard from './../components/SpotlightCard';
 import scheduleLogo from '/src/assets/calendar.png';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Schedules = () => {
+const TeachersSchedules = () => {
 
   const navigate = useNavigate();
-  const {role}=useParams();
-  const name = role=="students" ? "classes": role=="teachers" ? "teachers" : "rooms" ;
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [schedules,setSchedules]=useState([]);
   const getList=async()=>{
     try {
-      const res = await axios.post('http://127.0.0.1:5000/getData', {
-        name:name
-      });
-      console.log(res.data.message);
-      return res.data.message;
-    } catch (error) {
-      console.error('Error calling Python function', error);
-      return [];
-    }
+        const res = await axios.post('http://127.0.0.1:5000/getData', {
+          name:"teachers"
+        });
+        console.log(res.data.message);
+        return( res.data.message);
+      } catch (error) {
+        console.error('Error calling Python function', error);
+        return [];
+      };
   }
-  useEffect(async()=>{
-    setSchedules(await getList());
-  },[])
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      const data = await getList();
+      setSchedules(data);
+    };
+    fetchSchedules();
+  }, []);
+  console.log(schedules);
 
   const filters = [
     { id: 'all', label: 'All Classes' },
-    { id: 'Ing', label: 'Ings' },
-    { id: 'Master', label: 'Masters' },
-    { id: 'Licence', label: 'Licences' },
-    { id: 'Prepa', label: 'Prepas' },
+    { id: 'Ing', label: 'Informatique' },
+    { id: 'Master', label: 'Physique' },
+    { id: 'Licence', label: 'Mathémathique' },
   ];
 
   const getTypeColor = (type) => {
     switch (type) {
-      case 'Ing':
+      case 'Informatique':
         return 'bg-blue-100 text-blue-800';
-      case 'Master':
+      case 'Physique':
         return 'bg-green-100 text-green-800';
-      case 'Licence':
+      case 'Mathémathique':
         return 'bg-purple-100 text-purple-800';
-      case 'Prepa':
-        return 'bg-yellow-100 text-yellow-800';
+    //   case 'Prepa':
+    //     return 'bg-yellow-100 text-yellow-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const filteredSchedules = schedules.filter(
+  const[filteredSchedules,setFilteredSchedules]=useState([])
+  useEffect(() => {
+    setFilteredSchedules(schedules.filter(
     (schedule) =>
       (activeFilter === 'all' || schedule.type === activeFilter) &&
       (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  ));
+  },[schedules]);
 
+  const param = {yourLocation :'Teacher'}
   const chekSchedule = (name) => {
-    navigate('/schedules/' + name);
+    navigate(`/schedules/schedule/${name}`, { state: param });
   }
+  
 
   return (
     <div className="app">
@@ -191,4 +198,4 @@ const Schedules = () => {
   );
 };
 
-export default Schedules;
+export default TeachersSchedules;

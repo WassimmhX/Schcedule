@@ -6,7 +6,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 import Aurora from './Aurora';
 import './SchedulesTable.css';
 
@@ -48,13 +48,13 @@ const Schedule = () => {
     return <Navigate to="/login" />;
   }
   
+  const location = useLocation();
+  const { yourLocation } = location.state || {};
+  console.log('param = ',yourLocation)
   
-
-  
-
   const callPythonFunction = async () => {
     try {
-      const res = await axios.post('http://127.0.0.1:5000/returnByClass', {
+      const res = await axios.post('http://127.0.0.1:5000/returnBy'+yourLocation, {
         class: mySchedule,
       });
       setResponse(res.data.message);

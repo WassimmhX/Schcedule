@@ -63,8 +63,10 @@ const StudentsSchedules = () => {
       (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
   ));
   },[schedules]);
+  
+  const param = {yourLocation :'Class'}
   const chekSchedule = (name) => {
-    navigate('/schedules/a/'+ name);
+    navigate(`/schedules/schedule/${name}`, { state: param });
   }
 
   return (

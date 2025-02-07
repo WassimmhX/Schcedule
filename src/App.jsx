@@ -14,7 +14,7 @@ import Home from './pages/Home';
 import PermissionDenied from './error/PermissionDenied';
 import { useEffect, useState } from 'react';
 import ProtectedRoute from './context/ProtectedRoute';
-import SchedulesTable from './pages/SchedulesTable';
+import TeachersSchedules from './pages/TeachersSchedules';
 import StudentsSchedules from './pages/StudentsSchedules';
 
 function App() {
@@ -46,7 +46,7 @@ function App() {
         {console.log('User role:', role + '  User:', user)}
 
         <Route
-          path="/schedules/a/:name"
+          path="/schedules/schedule/:name"
           element={
             <ProtectedRoute>
               <Schedule />
@@ -55,6 +55,7 @@ function App() {
         />
         <Route path="/planning" element={<Planning />} />
         <Route path="schedules/students" element={<StudentsSchedules/>} />
+        <Route path="schedules/teachers" element={<TeachersSchedules/>} />
 
         <Route path="/Test" element={<Test />} />
 

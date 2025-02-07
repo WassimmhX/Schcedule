@@ -3,7 +3,7 @@ import { Calendar, Search, GraduationCap, Filter } from 'lucide-react';
 import './SchedulesTable.css';
 import Aurora from './Aurora';
 import SpotlightCard from './../components/SpotlightCard';
-import scheduleLogo from '/src/assets/calendar.png';
+import scheduleLogo from '/src/assets/upcoming.gif';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -36,21 +36,22 @@ const TeachersSchedules = () => {
 
   const filters = [
     { id: 'all', label: 'All Classes' },
-    { id: 'Ing', label: 'Informatique' },
-    { id: 'Master', label: 'Physique' },
-    { id: 'Licence', label: 'Mathémathique' },
+    { id: 'info', label: 'Computer Science' },
+    { id: 'tech', label: 'Physical' },
+    { id: 'math', label: 'Mathematic' },
+    { id: 'anglais', label: 'English' },
   ];
 
   const getTypeColor = (type) => {
     switch (type) {
-      case 'Informatique':
+      case 'Computer Science':
         return 'bg-blue-100 text-blue-800';
-      case 'Physique':
+      case 'Physical':
         return 'bg-green-100 text-green-800';
-      case 'Mathémathique':
+      case 'Mathematic':
         return 'bg-purple-100 text-purple-800';
-    //   case 'Prepa':
-    //     return 'bg-yellow-100 text-yellow-800';
+      case 'English':
+        return 'bg-yellow-100 text-yellow-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -60,7 +61,7 @@ const TeachersSchedules = () => {
   useEffect(() => {
     setFilteredSchedules(schedules.filter(
     (schedule) =>
-      (activeFilter === 'all' || schedule.type === activeFilter) &&
+      (activeFilter === 'all' || schedule.name.includes(activeFilter) ) &&
       (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
   ));
   },[schedules]);
@@ -80,7 +81,7 @@ const TeachersSchedules = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12 leading-tight animate-fade-in">
               <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-green-400 drop-shadow-lg mb-4">
-                University Class Schedules
+                University Teachers Schedules
               </h1>
               <p className="text-2xl text-cyan-300 drop-shadow-md">
                 Browse and find your class schedules
@@ -93,7 +94,7 @@ const TeachersSchedules = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="text"
-                  placeholder="Search by class..."
+                  placeholder="Search by name..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -122,9 +123,9 @@ const TeachersSchedules = () => {
 
             {/* Schedule Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 leading-tight animate-fade-in">
-              {filteredSchedules.map((schedule) => (
+              {filteredSchedules.map((schedule,index) => (
                 <div
-                  key={schedule.id}
+                  key={index}
                   className="rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
                 >
                   <SpotlightCard
@@ -142,18 +143,18 @@ const TeachersSchedules = () => {
                       </div>
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeColor(
-                          schedule.name.startsWith("L")?'Licence':
-                          schedule.name.startsWith("M")?'Master':
-                          schedule.name.startsWith("I")?'Ing':
-                          schedule.name.startsWith("C")?'Prepa':
+                          schedule.name.toLowerCase().includes("math")?'Mathematic':
+                          schedule.name.toLowerCase().includes("tech")?'Physical':
+                          schedule.name.toLowerCase().toLowerCase().includes('info')?'Computer Science':
+                          schedule.name.toLowerCase().includes('English')?'English':
                           ""
                         )}`}
                       >
-                        {schedule.name.startsWith("L")?'Licence':
-                          schedule.name.startsWith("M")?'Master':
-                          schedule.name.startsWith("I")?'Ing':
-                          schedule.name.startsWith("C")?'Prepa':
-                          ""
+                        {schedule.name.toLowerCase().includes("math")?'Mathematic':
+                          schedule.name.toLowerCase().includes("tech")?'Physical':
+                          schedule.name.toLowerCase().includes('info')?'Computer Science':
+                          schedule.name.toLowerCase().includes('English')?'English':
+                          "Generale"
                         }
                       </span>
                     </div>

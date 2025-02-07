@@ -3,7 +3,7 @@ import { Calendar, Search, GraduationCap, Filter } from 'lucide-react';
 import './SchedulesTable.css';
 import Aurora from './Aurora';
 import SpotlightCard from './../components/SpotlightCard';
-import scheduleLogo from '/src/assets/calendar.png';
+import scheduleLogo from '/src/assets/upcoming.gif';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -78,7 +78,7 @@ const StudentsSchedules = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12 leading-tight animate-fade-in">
               <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-green-400 drop-shadow-lg mb-4">
-                University Class Schedules
+                University Students Schedules
               </h1>
               <p className="text-2xl text-cyan-300 drop-shadow-md">
                 Browse and find your class schedules
@@ -120,9 +120,9 @@ const StudentsSchedules = () => {
 
             {/* Schedule Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 leading-tight animate-fade-in">
-              {filteredSchedules.map((schedule) => (
+              {filteredSchedules.map((schedule,index) => (
                 <div
-                  key={schedule.id}
+                  key={index}
                   className="rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
                 >
                   <SpotlightCard

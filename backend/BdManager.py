@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import numpy as np
 import bcrypt
-
+import re
 def get_db():
     client = MongoClient("mongodb://localhost:27017/")
     db = client["SchcedulePrj"]
@@ -26,6 +26,25 @@ def teachers_schedule(db,id=False):
         return list(db["teachers_schedule"].find({},{"_id":0}))
 def add_teacher(db,teacher):
     return addToTable(db["teachers_list"],teacher)
+def updateTeacher(db,teacher):
+    if "name" not in teacher or 'email' not in teacher:
+        return {"error": "Missing 'data' parameter"}, 400
+    if not re.match(r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', teacher["email"]):
+        return {"error": "Invalid email"}, 400
+    if not re.match(r"^[a-zA-Z\s'-]+$", teacher["name"]):
+        return {"error": "Invalid name"}, 400
+    teachers=db["teachers_list"]
+    if not teachers.find_one({"email":teacher["email"]}):
+        return {"error": "Email does not exist"}, 400
+    teachers.update_one({"email":teacher["email"]},{"$set":{"name":teacher["name"],"phoneNumber":teacher["phoneNumber"],"role":teacher["role"]}})
+    return {"succes": "updated successfully"}, 200
+def deleteTeacher(db,email):
+    teachers=db["teachers_list"]
+    try:
+        teachers.delete_one({"email":email})
+        return "deleted successfully"
+    except:
+        return  "Email does not exist"
 
 def classes_list(db,id=False):
     if id :
@@ -52,6 +71,13 @@ def rooms_schedule(db,id=False):
         return list(db["rooms_schedule"].find({},{"_id":0}))
 def add_room(db,room):
     return addToTable(db["rooms_list"],room)
+def deleteRoom(db,name):
+    rooms=db["rooms_list"]
+    try:
+        rooms.delete_one({"name":name})
+        return "deleted successfully"
+    except:
+        return  "Room does not exist"
 
 def users_list(db,id=False):
     if id :
@@ -65,7 +91,7 @@ def add_user(db,user):
     user["password"]=hash_password(user["password"])
     users.insert_one(user)
     return True,"success"
-def verifUser(db,email,password):
+def verifLogin(db,email,password):
     users=db["users"]
     user=users.find_one({"email":email},{'_id':0})
     if not user:
@@ -84,7 +110,26 @@ def getUserAttribute(db,email,attribute):
     users=db["users"]
     user=users.find_one({"email":email},{'_id':0})
     return user[attribute]
-
+def updateUser(db,user):
+    if "name" not in user or 'email' not in user or "phoneNumber" not in user or "role" not in user:
+        return {"error": "Missing 'data' parameter"}, 400
+    if not re.match(r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', user["email"]):
+        return {"error": "Invalid email"}, 400
+    if len(user["phoneNumber"]) != 8:
+        return {"error": "Invalid phoneNumber"}, 400
+    if not re.match(r"^[a-zA-Z\s'-]+$", user["name"]):
+        return {"error": "Invalid name"}, 400
+    users=db["users"]
+    if not users.find_one({"email":user["email"]}):
+        return {"error": "Email does not exist"}, 400
+    users.update_one({"email":user["email"]},{"$set":{"name":user["name"],"phoneNumber":user["phoneNumber"],"role":user["role"]}})
+def deleteUser(db,email):
+    users=db["users"]
+    try:
+        users.delete_one({"email":email})
+        return "deleted successfully"
+    except:
+        return  "Email does not exist"
 
 def addToTable(table,row):
     try:
@@ -98,8 +143,6 @@ def exists(table,attribute,value):
         return True
     else:
         return False
-
-
 def readData():
     execls = "excels/"
     for file in os.listdir(execls):
@@ -126,11 +169,8 @@ def readData():
             data.append(case)
     print("read data completed")
     return data
-
-
 def hash_password(password):
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode(), salt)
-
 def verify_password(stored_password, provided_password):
     return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password)

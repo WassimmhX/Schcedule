@@ -62,7 +62,7 @@ const RoomsSchedules = () => {
     setFilteredSchedules(schedules.filter(
     (schedule) =>
       (activeFilter === 'all' || schedule.name.includes(activeFilter) ) &&
-      (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      (schedule.name.toLowerCase().startsWith(searchTerm.toLowerCase()))
   ));
   },[schedules,activeFilter]);
 
@@ -143,25 +143,27 @@ const RoomsSchedules = () => {
                       </div>
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeColor(
-                          schedule.name.startsWith("A")?'A':
-                          schedule.name.startsWith("B")?'B':
-                          schedule.name.startsWith('C')?'C':
-                          schedule.name.startsWith('Amphi')?'Amphi':
+                          schedule.name.startsWith("A") && /^[A]+(-[A-Z]+)$/.test(schedule.name) ? 'Amphi' :
+                          schedule.name.startsWith("A") ? 'A' :
+                          schedule.name.startsWith("B") ? 'B' :
+                          schedule.name.startsWith("C") ? 'C' :
                           ""
                         )}`}
                       >
-                        {schedule.name.startsWith("A")?'A':
-                          schedule.name.startsWith("B")?'B':
-                          schedule.name.startsWith('C')?'C':
-                          schedule.name.startsWith('Amphi')?'Amphi':
-                          "Generale"
+                        {
+                          schedule.name.startsWith("A") && /^[A]+(-[A-Z]+)$/.test(schedule.name) ? 'Amphi' :
+                          schedule.name.startsWith("A") ? 'A' :
+                          schedule.name.startsWith("B") ? 'B' :
+                          schedule.name.startsWith("C") ? 'C' :
+                          'Generale'
                         }
                       </span>
                     </div>
+                    
                     <div className="flex items-start justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {schedule.name}
-                    </h3>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {schedule.name}
+                      </h3>
                     </div>
 
                     <div className="space-y-3">
@@ -184,10 +186,10 @@ const RoomsSchedules = () => {
             {filteredSchedules.length === 0 && (
               <div className="text-center py-12">
                 <GraduationCap className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-lg font-medium text-gray-400 mb-2">
                   No schedules found
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-500">
                   Try adjusting your search or filter criteria
                 </p>
               </div>

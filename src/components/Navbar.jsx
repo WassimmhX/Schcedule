@@ -62,7 +62,7 @@ const Navbar = () => {
   const navLinks = [
     { path: '/', label: 'Home', icon: Home },
     ...(role
-      ? [{ path: '/schedules/schedule/'+mySchedule, label: 'My Schedule', icon: Calendar }]
+      ? [{ path: mySchedule?'/schedules/schedule/'+mySchedule : role=='admin'?'/schedules/students':'/schedules/'+role+'s', label: 'My Schedule', icon: Calendar }]
       : []),
     ...(role=="admin"
       ? [{ path: '/dashboard', label: 'Admin Dashboard', icon: LayoutDashboard }]
@@ -234,7 +234,7 @@ const Navbar = () => {
                 setIsOpen(false);
                 handleLogOut();
               }}
-              className="flex w-full items-center px-3 py-2 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
+              className="flex w-full items-center px-3 py-2 rounded-md text-base font-medium text-white bg-red-600 hover:bg-red-700"
             >
               <LogOut className="w-5 h-5 mr-3" />
               Logout

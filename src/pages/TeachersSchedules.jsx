@@ -65,7 +65,7 @@ const TeachersSchedules = () => {
       (activeFilter === 'all' || schedule.name.includes(activeFilter) ) &&
       (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
   ));
-  },[schedules]);
+  },[schedules,searchTerm,activeFilter]);
 
   const param = {yourLocation :'Teacher'}
   const chekSchedule = (name) => {

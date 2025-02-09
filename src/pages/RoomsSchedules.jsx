@@ -61,12 +61,14 @@ const RoomsSchedules = () => {
   useEffect(() => {
     setFilteredSchedules(schedules.filter(
     (schedule) =>
-      (activeFilter === 'all' || schedule.name.includes(activeFilter) ) &&
-      (schedule.name.toLowerCase().startsWith(searchTerm.toLowerCase()))
+      ( activeFilter === 'all' || 
+        activeFilter ==='Amphi' && schedule.name.match((/^A-[\D]+$/))  || 
+        activeFilter !=='Amphi' && schedule.name.match((/^[A-Z]-[\d]+$/)) && schedule.name.startsWith(activeFilter) ) &&
+      (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
   ));
-  },[schedules,activeFilter]);
+  },[schedules,activeFilter,searchTerm]);
 
-  const param = {yourLocation :'Room'}
+  const param = {yourLocation :'Rooms'}
   const chekSchedule = (name) => {
     navigate(`/schedules/schedule/${name}`, { state: param });
   }

@@ -1,4 +1,4 @@
-import { UserCircle, Home, Users, BookOpen, School } from "lucide-react";
+import { UserCircle, Home, Users, BookOpen, School, GraduationCap, BookMarked } from "lucide-react";
 import Aurora from "../pages/Aurora";
 
 const Layout = ({ children, setActivePage}) => {
@@ -45,6 +45,14 @@ const Layout = ({ children, setActivePage}) => {
             >
               <School className="w-5 h-5 mr-3" />
               Rooms
+            </a>
+            <a
+              onClick={() => setActivePage("classList")}
+              className="flex items-center py-3 px-4 text-white transition hover:bg-gray-700/50 hover:scale-105 rounded-md"
+            >
+              {/* <BookMarked className="w-5 h-5 mr-3" /> */}
+              <GraduationCap className="w-5 h-5 mr-3" />
+              Classes
             </a>
           </nav>
         </aside>

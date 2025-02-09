@@ -14,4 +14,5 @@ the page reloaded two time :
     schedule
     admin dashboard
 
+check schedule in romms doesn't work
 search bar in admin dashboard doesn't work good

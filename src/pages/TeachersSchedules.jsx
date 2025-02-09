@@ -36,7 +36,7 @@ const TeachersSchedules = () => {
   }, []);
 
   const filters = [
-    { id: 'all', label: 'All Classes' },
+    { id: 'all', label: 'All Teachers' },
     { id: 'info', label: 'Computer Science' },
     { id: 'tech', label: 'Physical' },
     { id: 'math', label: 'Mathematic' },

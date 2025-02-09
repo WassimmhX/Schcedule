@@ -16,7 +16,7 @@ const RoomsSchedules = () => {
   const getList=async()=>{
     try {
         const res = await axios.post('http://127.0.0.1:5000/getData', {
-          name:"teachers"
+          name:"rooms"
         });
         console.log(res.data.message);
         return( res.data.message);
@@ -35,22 +35,22 @@ const RoomsSchedules = () => {
   console.log(schedules);
 
   const filters = [
-    { id: 'all', label: 'All Classes' },
-    { id: 'info', label: 'Computer Science' },
-    { id: 'tech', label: 'Physical' },
-    { id: 'math', label: 'Mathematic' },
-    { id: 'anglais', label: 'English' },
+    { id: 'all', label: 'All Rooms' },
+    { id: 'A', label: 'Bloc A' },
+    { id: 'B', label: 'Bloc B' },
+    { id: 'C', label: 'Bloc C' },
+    { id: 'Amphi', label: 'Amphi' },
   ];
 
   const getTypeColor = (type) => {
     switch (type) {
-      case 'Computer Science':
+      case 'A':
         return 'bg-blue-100 text-blue-800';
-      case 'Physical':
+      case 'B':
         return 'bg-green-100 text-green-800';
-      case 'Mathematic':
+      case 'C':
         return 'bg-purple-100 text-purple-800';
-      case 'English':
+      case 'Amphi':
         return 'bg-yellow-100 text-yellow-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -64,9 +64,9 @@ const RoomsSchedules = () => {
       (activeFilter === 'all' || schedule.name.includes(activeFilter) ) &&
       (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
   ));
-  },[schedules]);
+  },[schedules,activeFilter]);
 
-  const param = {yourLocation :'Teacher'}
+  const param = {yourLocation :'Room'}
   const chekSchedule = (name) => {
     navigate(`/schedules/schedule/${name}`, { state: param });
   }
@@ -81,10 +81,10 @@ const RoomsSchedules = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12 leading-tight animate-fade-in">
               <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-green-400 drop-shadow-lg mb-4">
-                University Teachers Schedules
+                University Rooms Schedules
               </h1>
               <p className="text-2xl text-cyan-300 drop-shadow-md">
-                Browse and find your class schedules
+                Browse and find the rooms schedules
               </p>
             </div>
 
@@ -143,17 +143,17 @@ const RoomsSchedules = () => {
                       </div>
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeColor(
-                          schedule.name.toLowerCase().includes("math")?'Mathematic':
-                          schedule.name.toLowerCase().includes("tech")?'Physical':
-                          schedule.name.toLowerCase().toLowerCase().includes('info')?'Computer Science':
-                          schedule.name.toLowerCase().includes('English')?'English':
+                          schedule.name.startsWith("A")?'A':
+                          schedule.name.startsWith("B")?'B':
+                          schedule.name.startsWith('C')?'C':
+                          schedule.name.startsWith('Amphi')?'Amphi':
                           ""
                         )}`}
                       >
-                        {schedule.name.toLowerCase().includes("math")?'Mathematic':
-                          schedule.name.toLowerCase().includes("tech")?'Physical':
-                          schedule.name.toLowerCase().includes('info')?'Computer Science':
-                          schedule.name.toLowerCase().includes('English')?'English':
+                        {schedule.name.startsWith("A")?'A':
+                          schedule.name.startsWith("B")?'B':
+                          schedule.name.startsWith('C')?'C':
+                          schedule.name.startsWith('Amphi')?'Amphi':
                           "Generale"
                         }
                       </span>

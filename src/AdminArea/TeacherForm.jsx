@@ -25,6 +25,8 @@ const TeacherForm = () => {
     // Reset form
     setName("");
     setEmail("");
+    
+    localStorage.setItem('newTeacher',name)
 
     console.log("Teacher added:", newTeacher);
   };

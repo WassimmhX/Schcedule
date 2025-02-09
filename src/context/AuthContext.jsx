@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
   };
   const verifSingUp=async (user)=>{
     try {
-      const res = await axios.post("http://localhost:5000/testSignUp",{ user});
+      const res = await axios.post("http://localhost:5000/testSignUp",{user});
       return [res.data,"User Added successfully"];
     } catch (err) {
       console.log(err.response.data.error);

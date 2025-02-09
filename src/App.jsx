@@ -57,8 +57,8 @@ function App() {
         <Route path="schedules/teachers" element={<TeachersSchedules/>} />
 
         <Route path="/Test" element={<Test />} />
-
-        <Route path="/login" element={<Login />} />
+        {localStorage.getItem('user') ? <Route path="/login"  element={<Home/>}/>:<Route path="/login"  element={<Login />}/>}
+        
 
         <Route path="/permission-denied" element={<PermissionDenied />} />
         {/* <Route path={localStorage.getItem('user')['role']=='admin' ? "/Schedule":"/planning"} element={<Schedule />} /> */}

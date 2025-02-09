@@ -83,7 +83,7 @@ const AuthForm = () => {
   };
   const signUpLogin = (etat) => {
     setNameError('');
-    setEmailError('aaaaa');
+    setEmailError('');
     setPasswordError('');
     setPhoneError('');
     setRoleError('');
@@ -198,119 +198,147 @@ const AuthForm = () => {
 
           {/* Sign Up Form */}
           <form
-  onSubmit={handleSignUp}
-  className={`transform transition-all duration-500 ${
-    !isLogin
-      ? 'translate-x-0 opacity-100'
-      : '-translate-x-full opacity-0 absolute'
-  }`}
->
-  <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
-  
-  <div className="relative mb-3">
-    <input
-      type="text"
-      placeholder="Username"
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-      className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300"
-    />
-    <User className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
-    {nameError && <p className="text-red-500 text-xs font-mono">{nameError}</p>}
-  </div>
+            onSubmit={handleSignUp}
+            className={`transform transition-all duration-500 ${
+              !isLogin
+                ? 'translate-x-0 opacity-100'
+                : '-translate-x-full opacity-0 absolute'
+            }`}
+          >
+            <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
 
-  <div className="relative mb-3">
-    <input
-      type="email"
-      placeholder="Email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300"
-    />
-    <Mail className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
-    {emailError && <p className="text-red-500 text-xs font-mono">{emailError}</p>}
-  </div>
+            <div className="relative mb-3">
+              <input
+                type="text"
+                placeholder="Username"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300"
+              />
+              <User
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600"
+                size={20}
+              />
+              {nameError && (
+                <p className="text-red-500 text-xs font-mono">{nameError}</p>
+              )}
+            </div>
 
-  <div className="relative mb-3">
-    <input
-      type={showPassword ? "text" : "password"}
-      placeholder="Password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300"
-    />
-    <Lock className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
-    
-    {/* Toggle Button for Password Visibility */}
-    <button
-      type="button"
-      onClick={togglePasswordVisibility}
-      className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600"
-    >
-      {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-    </button>
+            <div className="relative mb-3">
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300"
+              />
+              <Mail
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600"
+                size={20}
+              />
+              {emailError && (
+                <p className="text-red-500 text-xs font-mono">{emailError}</p>
+              )}
+            </div>
 
-    {passwordError && <p className="text-red-500 text-xs font-mono">{passwordError}</p>}
-  </div>
+            <div className="relative mb-3">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300"
+              />
+              <Lock
+                className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-600"
+                size={20}
+              />
 
-  <div className="relative mb-3">
-    <input
-      type="number"
-      placeholder="Phone Number"
-      value={phone}
-      onChange={(e) => setPhone(e.target.value)}
-      className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300"
-    />
-    <Phone className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
-    {phoneError && <p className="text-red-500 text-xs font-mono">{phoneError}</p>}
-  </div>
+              {/* Toggle Button for Password Visibility */}
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600"
+              >
+                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+              </button>
 
-  <div className="mb-3 relative">
-    <div className="flex items-center justify-center space-x-4">
-      <label className="inline-flex items-center">
-        <input
-          type="radio"
-          name="role"
-          value="student"
-          checked={role === 'student'}
-          onChange={() => setRole('student')}
-          className="form-radio"
-        />
-        <span className="ml-2">Student</span>
-      </label>
-      <label className="inline-flex items-center">
-        <input
-          type="radio"
-          name="role"
-          value="teacher"
-          checked={role === 'teacher'}
-          onChange={() => setRole('teacher')}
-          className="form-radio"
-        />
-        <span className="ml-2">Teacher</span>
-      </label>
-    </div>
-    <UserCheck className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
-    {roleError && <p className="text-red-500 text-xs font-mono">{roleError}</p>}
-  </div>
+              {passwordError && (
+                <p className="text-red-500 text-xs font-mono">
+                  {passwordError}
+                </p>
+              )}
+            </div>
 
-  <button
-    className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3.5 transition-colors duration-300"
-    type="submit"
-  >
-    Sign Up
-  </button>
+            <div className="relative mb-3">
+              <input
+                type="number"
+                placeholder="Phone Number"
+                value={phone}
+                pattern="[0-9]{8}"
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300"
+              />
+              <Phone
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600"
+                size={20}
+              />
+              {phoneError && (
+                <p className="text-red-500 text-xs font-mono">{phoneError}</p>
+              )}
+            </div>
 
-  <p className="text-center text-gray-600 mt-4">
-    Already have an account?{' '}
-    <button
-      onClick={() => signUpLogin(true)}
-      className="text-black font-semibold hover:underline"
-    >
-      Login
-    </button>
-  </p>
-</form>
+            <div className="mb-3 relative">
+              <div className="flex items-center justify-center space-x-4">
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="student"
+                    checked={role === 'student'}
+                    onChange={() => setRole('student')}
+                    className="form-radio"
+                  />
+                  <span className="ml-2">Student</span>
+                </label>
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="teacher"
+                    checked={role === 'teacher'}
+                    onChange={() => setRole('teacher')}
+                    className="form-radio"
+                  />
+                  <span className="ml-2">Teacher</span>
+                </label>
+              </div>
+              <UserCheck
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600"
+                size={20}
+              />
+              {roleError && (
+                <p className="text-red-500 text-xs font-mono">{roleError}</p>
+              )}
+            </div>
+
+            <button
+              className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3.5 transition-colors duration-300"
+              type="submit"
+            >
+              Sign Up
+            </button>
+
+            <p className="text-center text-gray-600 mt-4">
+              Already have an account?{' '}
+              <button
+                onClick={() => signUpLogin(true)}
+                className="text-black font-semibold hover:underline"
+              >
+                Login
+              </button>
+            </p>
+          </form>
         </div>
 
         {/* Welcome Section with Visible Border */}

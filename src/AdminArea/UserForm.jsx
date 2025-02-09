@@ -17,26 +17,24 @@ const UserForm = () => {
 
   const addUser = async (user) => {
     try {
-      const res = await axios.post("http://localhost:5000/testSignUp", user);
+      const res = await axios.post("http://localhost:5000/testSignUp", {user});
       alert("User Added Successfully");
       return [res.data, "User Added Successfully"];
     } catch (err) {
+      console.log(err.response.data.error);
       setError(err.response ? err.response.data.error : "Server not reachable");
+      console.log(error)
+
       return [null, err.response.data.error];
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newUser = {
-      name,
-      email,
-      phoneNumber,
-      password,
-      role,
-    };
+    const newUser = { name: name, email: email, password: password, phoneNumber: phoneNumber, role: role, mySchedule: "" } ;
     await addUser(newUser);
 
+    localStorage.setItem('newUser',JSON.stringify({name: name,role: role}))
     // Reset form
     setName("");
     setEmail("");
@@ -88,6 +86,8 @@ const UserForm = () => {
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               required
+              // has only 8 number
+              pattern="[0-9]{8}"
               className="mt-1 w-full bg-gray-700 text-gray-200 border-none rounded-md shadow-sm focus:ring focus:ring-blue-500 p-2 pl-9"
             />
             <Phone className="absolute left-2 top-6 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -102,6 +102,7 @@ const UserForm = () => {
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              minLength={4}
               required
               className="mt-1 w-full bg-gray-700 text-gray-200 border-none rounded-md shadow-sm focus:ring focus:ring-blue-500 p-2 pl-9 pr-9"
             />

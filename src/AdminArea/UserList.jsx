@@ -54,12 +54,6 @@ const UserList = () => {
     };
     fetchSchedules();
   }, []);
-  useEffect(() => {
-    const storedUsers = localStorage.getItem("users");
-    if (storedUsers) {
-      setUsers(JSON.parse(storedUsers));
-    }
-  }, []);
 
   const handleEdit = (user) => setEditingUser(user);
 

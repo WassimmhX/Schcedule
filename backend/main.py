@@ -63,7 +63,7 @@ def getData():
     if name=="rooms":
         print("function completed")
         return jsonify({"message": allRooms()}), 200
-    if name=="classes":
+    if name=="students":
         print("function completed")
         return jsonify({"message": allClasses()}), 200
     if name=="users":
@@ -126,12 +126,15 @@ def getMySchedule():
 
 @app.route("/addData", methods=["POST"])
 def addData():
+    print("hi")
     request_data = request.get_json()
     if not request_data or "data" not in request_data or "name" not in request_data:
         return jsonify({"error": "Missing a parameter"}), 400
     data=request_data["data"]
+    print(data)
     name=request_data["name"]
     if name=="teachers":
+        print(data)
         message,status=add_teacher(db,data)
     elif name=="rooms":
         message,status=add_room(db,data)

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Pencil, Trash2, Search } from "lucide-react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const TeacherList = () => {
   const [teachers, setTeachers] = useState([]);
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate=useNavigate()
   const getList=async()=>{
     try {
         const res = await axios.post('http://127.0.0.1:5000/getData', {
@@ -18,6 +20,33 @@ const TeacherList = () => {
         return [];
       };
   }
+  
+  const deleteTeacher=async(email)=>{
+    try {
+      const res = await axios.post('http://127.0.0.1:5000/deleteData', {
+        name:"teachers",
+        key:email
+      });
+      console.log(res.data.message);
+      alert(res.data.message);
+      navigate(0)
+    } catch (error) {
+      console.error('Error calling Python function', error);
+    };
+  }
+  const updateTeacher=async()=>{
+    try {
+      const res = await axios.post('http://127.0.0.1:5000/updateData', {
+        name:"teachers",
+        data:editingTeacher
+      });
+      console.log(res.data.message);
+      alert(res.data.message);
+      navigate(0)
+    } catch (error) {
+      console.error('Error calling Python function', error);
+    };
+  }
   useEffect(() => {
     const fetchSchedules = async () => {
       const data = await getList();
@@ -25,30 +54,9 @@ const TeacherList = () => {
     };
     fetchSchedules();
   }, []);
-  useEffect(() => {
-    const storedTeachers = localStorage.getItem("users");
-    if (storedTeachers) {
-      setTeachers(JSON.parse(storedTeachers));
-    }
-  }, []);
 
   const handleEdit = (teacher) => setEditingTeacher(teacher);
 
-  const handleDelete = (id) => {
-    const updatedTeachers = teachers.filter((teacher) => teacher.id !== id);
-    setTeachers(updatedTeachers);
-    localStorage.setItem("teachers", JSON.stringify(updatedTeachers));
-  };
-
-  const handleSave = (e) => {
-    e.preventDefault();
-    if (editingTeacher) {
-      const updatedTeachers = teachers.map((teacher) => (teacher.id === editingTeacher.id ? editingTeacher : teacher));
-      setTeachers(updatedTeachers);
-      localStorage.setItem("teachers", JSON.stringify(updatedTeachers));
-      setEditingTeacher(null);
-    }
-  };
 
   const filteredTeachers = teachers.filter(teacher => 
     teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -93,7 +101,7 @@ const TeacherList = () => {
                     <Pencil className="h-5 w-5" />
                   </button>
                   <button
-                    onClick={() => handleDelete(teacher.id)}
+                    onClick={() => deleteTeacher(teacher.email)}
                     className="text-red-400 hover:text-red-600 transition-transform transform hover:scale-110"
                   >
                     <Trash2 className="h-5 w-5" />
@@ -108,7 +116,7 @@ const TeacherList = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black p-6 rounded-xl shadow-2xl w-96 backdrop-blur-md border border-gray-700">
             <h3 className="text-lg font-semibold text-gray-200 mb-4 text-center">Edit Teacher</h3>
-            <form onSubmit={handleSave} className="space-y-4">
+            <form onSubmit={updateTeacher} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-400">Name</label>
                 <input

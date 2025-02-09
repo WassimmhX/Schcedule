@@ -1,40 +1,33 @@
 import { useState } from "react";
 import { User, Mail, UserPlus } from "lucide-react";
+import axios from "axios";
 
 const TeacherForm = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [error, setError]=useState("");
+  const addTeacher = async () => {
+    const teacher={email:email, name:name}
+    try {
+      const res = await axios.post("http://localhost:5000/addData", {
+        "data":teacher,
+        "name":"teachers"
+      });
+      alert("User Added Successfully");
+      return [res.data, "User Added Successfully"];
+    } catch (err) {
+      console.log(err.response.data.error);
+      setError(err.response ? err.response.data.error : "Server not reachable");
+      console.log(error)
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newTeacher = {
-      id: Date.now(),
-      name,
-      email,
-    };
-
-    // Get existing teachers from localStorage
-    const existingTeachers = JSON.parse(localStorage.getItem("teachers") || "[]");
-
-    // Add new teacher
-    const updatedTeachers = [...existingTeachers, newTeacher];
-
-    // Save updated teachers to localStorage
-    localStorage.setItem("teachers", JSON.stringify(updatedTeachers));
-
-    // Reset form
-    setName("");
-    setEmail("");
-    
-    localStorage.setItem('newTeacher',name)
-
-    console.log("Teacher added:", newTeacher);
+      return [null, err.response.data.error];
+    }
   };
 
   return (
     <div className="bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 shadow-lg rounded-2xl p-8">
       <h2 className="text-xl font-semibold text-gray-200 mb-4">Add a New Teacher</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={addTeacher} className="space-y-4">
         {/* Name Input */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-400">Name</label>

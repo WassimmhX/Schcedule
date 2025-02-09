@@ -27,12 +27,13 @@ def teachers_schedule(db,id=False):
 def add_teacher(db,teacher):
     teachers = db["teachers"]
     if exists(teachers,"email",teacher["email"]):
-        return False,"Email already exists"
+        return False,"Email already exists",400
     if not re.match(r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', teacher["email"]):
         return "invalid email",400
     if not re.match(r"^[a-zA-Z\s'-]+$",teacher["name"]):
         return "Invalid name",400
     teachers.add_one(teacher)
+    print(teacher)
     return "success", 200
 def updateTeacher(db,teacher):
     if "name" not in teacher or 'email' not in teacher:

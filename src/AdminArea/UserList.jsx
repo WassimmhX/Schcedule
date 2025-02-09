@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Pencil, Trash2, Search } from "lucide-react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const currentUserMail=JSON.parse(localStorage.getItem("user")).email;
   const [editingUser, setEditingUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate=useNavigate();
   const getList=async()=>{
     try {
         const res = await axios.post('http://127.0.0.1:5000/getData', {
@@ -18,6 +20,32 @@ const UserList = () => {
         console.error('Error calling Python function', error);
         return [];
       };
+  }
+  const deleteUser=async(email)=>{
+    try {
+      const res = await axios.post('http://127.0.0.1:5000/deleteData', {
+        name:"users",
+        key:email
+      });
+      console.log(res.data.message);
+      alert(res.data.message);
+      navigate(0)
+    } catch (error) {
+      console.error('Error calling Python function', error);
+    };
+  }
+  const updateUser=async()=>{
+    try {
+      const res = await axios.post('http://127.0.0.1:5000/updateData', {
+        name:"users",
+        data:editingUser
+      });
+      console.log(res.data.message);
+      alert(res.data.message);
+      navigate(0)
+    } catch (error) {
+      console.error('Error calling Python function', error);
+    };
   }
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -35,21 +63,7 @@ const UserList = () => {
 
   const handleEdit = (user) => setEditingUser(user);
 
-  const handleDelete = (id) => {
-    const updatedUsers = users.filter((user) => user.id !== id);
-    setUsers(updatedUsers);
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-  };
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    if (editingUser) {
-      const updatedUsers = users.map((user) => (user.id === editingUser.id ? editingUser : user));
-      setUsers(updatedUsers);
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-      setEditingUser(null);
-    }
-  };
 
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -99,7 +113,7 @@ const UserList = () => {
                   </button>
                   {currentUserMail!=user.email?
                     <button
-                    onClick={() => handleDelete(user.id)}
+                    onClick={() => deleteUser(user.email)}
                     className="text-red-400 hover:text-red-600 transition-transform transform hover:scale-110"
                   >
                     <Trash2 className="h-5 w-5" />
@@ -118,7 +132,7 @@ const UserList = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black p-6 rounded-xl shadow-2xl w-96 backdrop-blur-md border border-gray-700">
             <h3 className="text-lg font-semibold text-gray-200 mb-4 text-center">Edit User</h3>
-            <form onSubmit={handleSave} className="space-y-4">
+            <form onSubmit={updateUser} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-400">Name</label>
                 <input

@@ -63,7 +63,7 @@ def getData():
     if name=="rooms":
         print("function completed")
         return jsonify({"message": allRooms()}), 200
-    if name=="students":
+    if name=="classes":
         print("function completed")
         return jsonify({"message": allClasses()}), 200
     if name=="users":
@@ -73,7 +73,6 @@ def getData():
 @app.route("/testLogin", methods=['POST'])
 def testLogin():
     request_data = request.get_json()
-    print(request_data)
     if not request_data or "email" not in request_data:
         return jsonify({"error": "Missing 'email' parameter"}), 400 # Return 400 if missing
     if not request_data or "password" not in request_data:
@@ -92,19 +91,8 @@ def testSingUp():
     if not request_data or "user" not in request_data:
         return jsonify({"error": "Missing 'user' parameter"}), 400
     user=request_data["user"]
-    for i in user.keys():
-        if user[i]=="" and i!="mySchedule":
-            return jsonify({"error":i+" is empty!!"}), 400
-    if not re.match(r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', user["email"]):
-        return jsonify({"error": "Invalid email"}), 400
-    if len(user["phoneNumber"])!=8:
-        return jsonify({"error": "Invalid phoneNumber"}), 400
-    if not re.match(r"^[a-zA-Z\s'-]+$",user["name"]):
-        return jsonify({"error": "Invalid name"}), 400
-    if len(user["password"].strip())<4:
-        return jsonify({"error": "Password should be more then 4 characters"}), 400
-    state,message=add_user(db,user)
-    if state:
+    message,state=add_user(db,user)
+    if state==200:
         user.pop("password")
         user.pop("_id")
         return jsonify(user), 200
@@ -135,8 +123,29 @@ def getMySchedule():
     email=request_data["email"]
     schedule=getUserAttribute(db,email,"mySchedule")
     return jsonify({"schedule":schedule}), 200
-@app.route("/editData", methods=["POST"])
-def editData():
+
+@app.route("/addData", methods=["POST"])
+def addData():
+    request_data = request.get_json()
+    if not request_data or "data" not in request_data or "name" not in request_data:
+        return jsonify({"error": "Missing a parameter"}), 400
+    data=request_data["data"]
+    name=request_data["name"]
+    if name=="teachers":
+        message,status=add_teacher(db,data)
+    elif name=="rooms":
+        message,status=add_room(db,data)
+    elif name=="users":
+        message,status=add_user(db,data)
+    else:
+        return jsonify({"error": "adding is not supported"}), 400
+    if status==200:
+        return jsonify({"message": message}), 200
+    else:
+        return jsonify({"error": message}), 400
+
+@app.route("/updateData", methods=["POST"])
+def updateData():
     request_data = request.get_json()
     if not request_data and "name" not in request_data:
         return jsonify({"error": "Missing 'name' parameter"}), 400
@@ -146,9 +155,10 @@ def editData():
     data = request_data["data"]
     message={"error":"error occured"}
     responseType=400
-    if name=="user":
+    if name=="users":
+        print(data)
         message,responseType=updateUser(db,data)
-    if name=="teacher":
+    if name=="teachers":
         message,responseType=updateTeacher(db,data)
     return jsonify(message),responseType
 @app.route("/deleteData", methods=["POST"])
@@ -158,15 +168,20 @@ def deleteData():
         return jsonify({"error": "Missing 'data' parameter"}), 400
     key = request_data["key"]
     name = request_data["name"]
-    if name=="user":
-        message=deleteUser(db,key)
-    elif name=="teacher":
-        message=deleteTeacher(db,key)
-    elif name=="room":
-        message=deleteRoom(db,key)
-    elif name=="class":
-        message=deleteClass(db,key)
-    return jsonify({"message":message}), 200
+    if name=="users":
+        message, status=deleteUser(db,key)
+    elif name=="teachers":
+        message, status=deleteTeacher(db,key)
+    elif name=="rooms":
+        message, status=deleteRoom(db,key)
+    elif name=="classes":
+        message, status=deleteClass(db,key)
+    else:
+        return  jsonify({"error":"delete is not supported"}), 400
+    if status==400:
+        return jsonify({"error":message}),400
+    else:
+        return jsonify({"message":message}), 200
 
 if __name__ == '__main__':
     db=get_db()

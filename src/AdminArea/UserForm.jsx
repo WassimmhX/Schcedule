@@ -10,14 +10,17 @@ const UserForm = () => {
   const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
-
+  
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const addUser = async (user) => {
     try {
-      const res = await axios.post("http://localhost:5000/testSignUp", {user});
+      const res = await axios.post("http://localhost:5000/addData", {
+        "data":user,
+        "name":"users"
+      });
       alert("User Added Successfully");
       return [res.data, "User Added Successfully"];
     } catch (err) {

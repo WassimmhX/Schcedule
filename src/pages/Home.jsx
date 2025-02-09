@@ -1,13 +1,12 @@
-import React from "react";
 import { Calendar, BookOpen, Users, ArrowRight, Facebook, Twitter, Linkedin, Mail, Phone, MapPin, LogIn } from 'lucide-react';
-
+import bgImage from "../assets/CSWMDNJbDZvpQPAQozGF.png"
 const Home = () => {
   const user = localStorage.getItem('user');
 
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}
-      <section className="relative h-[90vh] bg-cover bg-center bg-[url('http://www.isimm.rnu.tn//storage/app/public/thematiques/May2017/CSWMDNJbDZvpQPAQozGF.png')] flex items-center justify-center text-center text-white">
+      <section className="relative h-[90vh] bg-cover bg-center flex items-center justify-center text-center text-white" style={{ backgroundImage: `url(${bgImage})` }}      >
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
         <div className="relative z-10 max-w-4xl mx-auto p-8 leading-tight animate-fade-in">
           <h1 className="text-5xl md:text-7xl font-bold  text-blue-300">
@@ -35,7 +34,7 @@ const Home = () => {
       <section className="container mx-auto px-6 py-24">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-gray-800 mb-8">
-            Shaping Tomorrow's Leaders
+            Shaping Tomorrow&apos;s Leaders
           </h2>
           <p className="text-xl text-gray-600 leading-relaxed">
             Our university stands as a beacon of academic excellence, fostering innovation and critical thinking. We provide a diverse and inclusive learning environment that prepares students for the challenges of an ever-evolving world.

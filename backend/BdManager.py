@@ -25,7 +25,15 @@ def teachers_schedule(db,id=False):
     else:
         return list(db["teachers_schedule"].find({},{"_id":0}))
 def add_teacher(db,teacher):
-    return addToTable(db["teachers_list"],teacher)
+    teachers = db["teachers"]
+    if exists(teachers,"email",teacher["email"]):
+        return False,"Email already exists"
+    if not re.match(r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', teacher["email"]):
+        return "invalid email",400
+    if not re.match(r"^[a-zA-Z\s'-]+$",teacher["name"]):
+        return "Invalid name",400
+    teachers.add_one(teacher)
+    return "success", 200
 def updateTeacher(db,teacher):
     if "name" not in teacher or 'email' not in teacher:
         return {"error": "Missing 'data' parameter"}, 400
@@ -42,9 +50,9 @@ def deleteTeacher(db,email):
     teachers=db["teachers_list"]
     try:
         teachers.delete_one({"email":email})
-        return "deleted successfully"
+        return "deleted successfully",200
     except:
-        return  "Email does not exist"
+        return  "Email does not exist",400
 
 def classes_list(db,id=False):
     if id :
@@ -56,15 +64,13 @@ def classes_schedule(db,id=False):
         return list(db["classes_schedule"].find())
     else:
         return list(db["classes_schedule"].find({},{"_id":0}))
-def add_class(db,cl):
-    return addToTable(db["classes_list"],cl)
 def deleteClass(db,name):
     classes=db["classes_list"]
     try:
         classes.delete_one({"name":name})
-        return "deleted successfully"
+        return "deleted successfully",200
     except:
-        return  "Email does not exist"
+        return  "Email does not exist",400
 
 def rooms_list(db,id=False):
     if id :
@@ -77,14 +83,17 @@ def rooms_schedule(db,id=False):
     else:
         return list(db["rooms_schedule"].find({},{"_id":0}))
 def add_room(db,room):
-    return addToTable(db["rooms_list"],room)
+    rooms = db["rooms"]
+    if exists(rooms, "name", room["name"]):
+        return False, "Room already exists"
+    rooms.add_one(rooms)
 def deleteRoom(db,name):
     rooms=db["rooms_list"]
     try:
         rooms.delete_one({"name":name})
-        return "deleted successfully"
+        return "deleted successfully",200
     except:
-        return  "Room does not exist"
+        return  "Room does not exist",400
 
 def users_list(db,id=False):
     if id :
@@ -95,14 +104,27 @@ def add_user(db,user):
     users=db["users"]
     if exists(users,"email",user["email"]):
         return False,"Email already exists"
+
+    for i in user.keys():
+        if user[i]=="" and i!="mySchedule":
+            return i+"is empty",400
+    if not re.match(r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', user["email"]):
+        return "invalid email",400
+    if len(user["phoneNumber"])!=8:
+        return "Invalid phone number",400
+    if not re.match(r"^[a-zA-Z\s'-]+$",user["name"]):
+        return "Invalid name",400
+    if len(user["password"].strip())<4:
+        return "Password must be more then 4 characters",400
     user["password"]=hash_password(user["password"])
     users.insert_one(user)
-    return True,"success"
+    return "success",200
 def verifLogin(db,email,password):
     users=db["users"]
     user=users.find_one({"email":email},{'_id':0})
     if not user:
         return "email does not exist",None
+    print(password)
     if verify_password(user["password"],password):
         user.pop("password")
         return "user is correct",user
@@ -128,25 +150,22 @@ def updateUser(db,user):
         return {"error": "Invalid name"}, 400
     users=db["users"]
     oldUser=users.find_one({"email":user["email"]})
+    print(oldUser)
     if not oldUser:
         return {"error": "Email does not exist"}, 400
-    if oldUser.role=="admin"!=user.role:
+    if oldUser["role"]=="admin"!=user["role"]:
         return {"error": "You can't change the role of an admin"}, 400
     users.update_one({"email":user["email"]},{"$set":{"name":user["name"],"phoneNumber":user["phoneNumber"],"role":user["role"]}})
+    print(user)
+    return {"success":"successfully updated"}
 def deleteUser(db,email):
     users=db["users"]
     try:
         users.delete_one({"email":email})
-        return "deleted successfully"
+        return "deleted successfully",200
     except:
-        return  "Email does not exist"
+        return  "Email does not exist",400
 
-def addToTable(table,row):
-    try:
-        table.insert_one(row)
-        return True
-    except:
-        return False
 def exists(table,attribute,value):
     row=table.find_one({attribute: value})
     if row:
@@ -183,4 +202,5 @@ def hash_password(password):
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode(), salt)
 def verify_password(stored_password, provided_password):
+    print(stored_password,provided_password)
     return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password)

@@ -1,7 +1,7 @@
-import { UserCircle, Home, Users, BookOpen } from "lucide-react";
+import { UserCircle, Home, Users, BookOpen, School } from "lucide-react";
 import Aurora from "../pages/Aurora";
 
-const Layout = ({ children }) => {
+const Layout = ({ children, setActivePage}) => {
   return (
     <div className="relative min-h-screen mt-10 m-4">
       {/* Aurora Background */}
@@ -18,25 +18,33 @@ const Layout = ({ children }) => {
           </div>
           <nav className="mt-8 space-y-4">
             <a
-              href="#"
+              onClick={() => setActivePage("dashboard")}
               className="flex items-center py-3 px-4 text-white transition hover:bg-gray-700/50 hover:scale-105 rounded-md"
             >
               <Home className="w-5 h-5 mr-3" />
               Dashboard
             </a>
             <a
-              href="#"
+              onClick={() => setActivePage("userList")}
+
+              className="flex items-center py-3 px-4 text-white transition hover:bg-gray-700/50 hover:scale-105 rounded-md"
+            >
+              <Users className="w-5 h-5 mr-3" />
+              Users
+            </a>
+            <a
+              onClick={() => setActivePage("teacherList")}
               className="flex items-center py-3 px-4 text-white transition hover:bg-gray-700/50 hover:scale-105 rounded-md"
             >
               <BookOpen className="w-5 h-5 mr-3" />
               Teachers
             </a>
             <a
-              href="#"
+              onClick={() => setActivePage("roomList")}
               className="flex items-center py-3 px-4 text-white transition hover:bg-gray-700/50 hover:scale-105 rounded-md"
             >
-              <Users className="w-5 h-5 mr-3" />
-              Users
+              <School className="w-5 h-5 mr-3" />
+              Rooms
             </a>
           </nav>
         </aside>

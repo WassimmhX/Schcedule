@@ -47,6 +47,9 @@ const RoomList = () => {
     const updatedRooms = [...rooms, newRoom];
     setRooms(updatedRooms);
     localStorage.setItem("rooms", JSON.stringify(updatedRooms));
+    
+    localStorage.setItem('newRoom', newRoomName)
+
     setNewRoomName("");
   };
 

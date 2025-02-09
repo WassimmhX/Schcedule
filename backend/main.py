@@ -110,6 +110,7 @@ def testSingUp():
         return jsonify(user), 200
     else:
         return jsonify({"error": message}), 400
+    
 def json_serializable(obj):
     if isinstance(obj, ObjectId):
         return str(obj)  # Convert ObjectId to string

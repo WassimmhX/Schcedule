@@ -15,6 +15,7 @@ import ProtectedRoute from './context/ProtectedRoute';
 import TeachersSchedules from './pages/TeachersSchedules';
 import StudentsSchedules from './pages/StudentsSchedules';
 import Dashboard from './AdminArea/Dashboard';
+import RoomsSchedules from './pages/RoomsSchedules';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -55,10 +56,11 @@ function App() {
         <Route path="/planning" element={<Planning />} />
         <Route path="schedules/students" element={<StudentsSchedules/>} />
         <Route path="schedules/teachers" element={<TeachersSchedules/>} />
+        <Route path="schedules/rooms" element={<RoomsSchedules/>} />
 
         <Route path="/Test" element={<Test />} />
-
-        <Route path="/login" element={<Login />} />
+        {localStorage.getItem('user') ? <Route path="/login"  element={<Home/>}/>:<Route path="/login"  element={<Login />}/>}
+        
 
         <Route path="/permission-denied" element={<PermissionDenied />} />
         {/* <Route path={localStorage.getItem('user')['role']=='admin' ? "/Schedule":"/planning"} element={<Schedule />} /> */}

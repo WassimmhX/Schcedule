@@ -29,12 +29,14 @@ const TeachersSchedules = () => {
     const fetchSchedules = async () => {
       const data = await getList();
       setSchedules(data);
+      localStorage.setItem('currentSchedule','Teacher');
+
     };
     fetchSchedules();
   }, []);
 
   const filters = [
-    { id: 'all', label: 'All Classes' },
+    { id: 'all', label: 'All Teachers' },
     { id: 'info', label: 'Computer Science' },
     { id: 'tech', label: 'Physical' },
     { id: 'math', label: 'Mathematic' },

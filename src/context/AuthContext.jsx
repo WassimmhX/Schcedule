@@ -29,12 +29,16 @@ export const AuthProvider = ({ children }) => {
       setUser(foundUser);
       localStorage.setItem("user", JSON.stringify(foundUser));
       localStorage.setItem("loggedIn", true);
+      //  zid fonction python traja3li mySchedule 
+      localStorage.setItem('mySchedule', 'class mta3i fel basse de donnée');
+
       console.log('foundUser = '+foundUser.name+'\nlocalStorage = '+ localStorage.getItem('user'))
       return [true,responseMessage]
     } else {
       return [false,responseMessage]
     }
   };
+
   const verifSingUp=async (user)=>{
     try {
       const res = await axios.post("http://localhost:5000/testSignUp",{user});
@@ -70,6 +74,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("loggedIn");
+    localStorage.clear();
     setUser(null);
     console.log("onLogOut:"+localStorage.getItem('user')+"\tstatus = "+localStorage.getItem('loggedIn'))
   };

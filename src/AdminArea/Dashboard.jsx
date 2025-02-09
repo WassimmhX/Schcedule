@@ -6,6 +6,7 @@ import TeacherList from './TeacherList';
 import UserList from './UserList';
 import RoomList from './RoomList';
 import DashboardHome from './DashboardHome';
+import ClassesList from './ClassesList';
 
 const Dashboard = () => {
   const [activePage, setActivePage] = useState('dashboard');
@@ -24,6 +25,8 @@ const Dashboard = () => {
         return <UserList />;
       case 'roomList':
         return <RoomList />;
+      case 'classList':
+        return <ClassesList />;
       default:
         return <DashboardHome />;
     }
@@ -44,6 +47,7 @@ const Dashboard = () => {
               { label: 'User List', page: 'userList' },
               { label: 'Teacher List', page: 'teacherList' },
               { label: 'Rooms', page: 'roomList' },
+              { label: 'Classes', page: 'classList' },
             ].map(({ label, page }) => (
               <button
                 key={page}

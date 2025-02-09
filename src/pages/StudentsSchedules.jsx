@@ -37,10 +37,10 @@ const StudentsSchedules = () => {
   console.log(schedules);
   const filters = [
     { id: 'all', label: 'All Classes' },
-    { id: 'Ing', label: 'Ings' },
-    { id: 'Master', label: 'Masters' },
-    { id: 'Licence', label: 'Licences' },
-    { id: 'Prepa', label: 'Prepas' },
+    { id: 'I', label: 'Ings' },
+    { id: 'M', label: 'Masters' },
+    { id: 'L', label: 'Licences' },
+    { id: 'C', label: 'Prepas' },
   ];
 
   const getTypeColor = (type) => {
@@ -61,10 +61,10 @@ const StudentsSchedules = () => {
   useEffect(() => {
     setFilteredSchedules(schedules.filter(
     (schedule) =>
-      (activeFilter === 'all' || schedule.type === activeFilter) &&
+      (activeFilter === 'all' || schedule.name.startsWith(activeFilter)) &&
       (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
   ));
-  },[schedules]);
+  },[schedules,activeFilter,searchTerm]);
   
   const param = {yourLocation :'Class'}
   const chekSchedule = (name) => {

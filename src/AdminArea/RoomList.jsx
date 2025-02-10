@@ -2,12 +2,31 @@ import { useState, useEffect } from "react";
 
 import { Trash2, Search, PlusCircle } from "lucide-react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 const RoomList = () => {
   const [rooms, setRooms] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [newRoomName, setNewRoomName] = useState("");
+  const [error, setError] = useState([])
+  const navigate=useNavigate()
+  const addRoom = async (room) => {
+    try {
+      const res = await axios.post("http://localhost:5000/addData", {
+        "data":room,
+        "name":"rooms"
+      });
+      alert("User Added Successfully");
+      return [res.data, "User Added Successfully"];
+    } catch (err) {
+      console.log(err.response.data.error);
+      setError(err.response ? err.response.data.error : "Server not reachable");
+      console.log(error)
+
+      return [null, err.response.data.error];
+    }
+  };
   const getList=async()=>{
     try {
         const res = await axios.post('http://127.0.0.1:5000/getData', {
@@ -19,6 +38,19 @@ const RoomList = () => {
         console.error('Error calling Python function', error);
         return [];
       };
+  }
+  const deleteRoom=async(name)=>{
+    try {
+      const res = await axios.post('http://127.0.0.1:5000/deleteData', {
+        name:"rooms",
+        key:name
+      });
+      console.log(res.data.message);
+      alert(res.data.message);
+      navigate(0)
+    } catch (error) {
+      console.error('Error calling Python function', error);
+    };
   }
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -34,22 +66,12 @@ const RoomList = () => {
     }
   }, []);
 
-  const handleDelete = (id) => {
-    const updatedRooms = rooms.filter((room) => room.id !== id);
-    setRooms(updatedRooms);
-    localStorage.setItem("rooms", JSON.stringify(updatedRooms));
-  };
-
   const handleAddRoom = (e) => {
     e.preventDefault();
     if (!newRoomName.trim()) return;
-    const newRoom = { id: Date.now(), name: newRoomName };
-    const updatedRooms = [...rooms, newRoom];
+    const newRoom = { name: newRoomName };
+    const updatedRooms = addRoom(newRoom);
     setRooms(updatedRooms);
-    localStorage.setItem("rooms", JSON.stringify(updatedRooms));
-    
-    localStorage.setItem('newRoom', newRoomName)
-
     setNewRoomName("");
   };
 
@@ -110,7 +132,7 @@ const RoomList = () => {
                 <td className="px-6 py-4">{room.name}</td>
                 <td className="px-6 py-4">
                   <button
-                    onClick={() => handleDelete(room.id)}
+                    onClick={() => deleteRoom(room.name)}
                     className="text-red-400 hover:text-red-600 transition-transform transform hover:scale-110"
                   >
                     <Trash2 className="h-5 w-5" />

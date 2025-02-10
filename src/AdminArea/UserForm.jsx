@@ -36,8 +36,6 @@ const UserForm = () => {
     e.preventDefault();
     const newUser = { name: name, email: email, password: password, phoneNumber: phoneNumber, role: role, mySchedule: "" } ;
     await addUser(newUser);
-
-    localStorage.setItem('newUser',JSON.stringify({name: name,role: role}))
     // Reset form
     setName("");
     setEmail("");

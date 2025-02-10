@@ -6,28 +6,32 @@ const TeacherForm = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError]=useState("");
-  const addTeacher = async () => {
-    const teacher={email:email, name:name}
+  const addTeacher = async (teacher) => {
     try {
       const res = await axios.post("http://localhost:5000/addData", {
         "data":teacher,
         "name":"teachers"
       });
-      alert("User Added Successfully");
-      return [res.data, "User Added Successfully"];
+      console.log(res)
+      alert("Teacher Added Successfully");
     } catch (err) {
       console.log(err.response.data.error);
       setError(err.response ? err.response.data.error : "Server not reachable");
       console.log(error)
-
-      return [null, err.response.data.error];
     }
   };
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const newTeacher={email:email, name:name}
+    await addTeacher(newTeacher);
+    // Reset form
+    setName("");
+    setEmail("");
+  };
   return (
     <div className="bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 shadow-lg rounded-2xl p-8">
       <h2 className="text-xl font-semibold text-gray-200 mb-4">Add a New Teacher</h2>
-      <form onSubmit={addTeacher} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name Input */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-400">Name</label>

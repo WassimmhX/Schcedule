@@ -29,13 +29,14 @@ def returnByClass():
             s.append(i)
     print("function completed")
     return jsonify({"message": s}), 200
-@app.route('/returnByRooms', methods=['POST'])
-def returnByClassroom(classroom):
+@app.route('/returnByRoom', methods=['POST'])
+def returnByRoom():
     s = []
     request_data = request.get_json()
-    if not request_data or "name" not in request_data:
-        return jsonify({"error": "Missing 'name' parameter"}), 400  # Return 400 if missing
-    room = request_data["name"]
+    if not request_data or "class" not in request_data:
+        return jsonify({"error": "Missing 'class' parameter"}), 400  # Return 400 if missing
+    room = request_data["class"]
+    print(room)
     for i in data:
         if i["room"] == room:
             s.append(i)
@@ -159,9 +160,9 @@ def updateData():
     message={"error":"error occured"}
     responseType=400
     if name=="users":
-        print(data)
         message,responseType=updateUser(db,data)
     if name=="teachers":
+        print(data)
         message,responseType=updateTeacher(db,data)
     return jsonify(message),responseType
 @app.route("/deleteData", methods=["POST"])

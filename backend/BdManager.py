@@ -25,15 +25,14 @@ def teachers_schedule(db,id=False):
     else:
         return list(db["teachers_schedule"].find({},{"_id":0}))
 def add_teacher(db,teacher):
-    teachers = db["teachers"]
+    teachers = db["teachers_list"]
     if exists(teachers,"email",teacher["email"]):
         return False,"Email already exists",400
     if not re.match(r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', teacher["email"]):
         return "invalid email",400
     if not re.match(r"^[a-zA-Z\s'-]+$",teacher["name"]):
         return "Invalid name",400
-    teachers.add_one(teacher)
-    print(teacher)
+    teachers.insert_one(teacher)
     return "success", 200
 def updateTeacher(db,teacher):
     if "name" not in teacher or 'email' not in teacher:
@@ -45,7 +44,7 @@ def updateTeacher(db,teacher):
     teachers=db["teachers_list"]
     if not teachers.find_one({"email":teacher["email"]}):
         return {"error": "Email does not exist"}, 400
-    teachers.update_one({"email":teacher["email"]},{"$set":{"name":teacher["name"],"phoneNumber":teacher["phoneNumber"],"role":teacher["role"]}})
+    teachers.update_one({"email":teacher["email"]},{"$set":{"name":teacher["name"]}})
     return {"succes": "updated successfully"}, 200
 def deleteTeacher(db,email):
     teachers=db["teachers_list"]
@@ -125,7 +124,6 @@ def verifLogin(db,email,password):
     user=users.find_one({"email":email},{'_id':0})
     if not user:
         return "email does not exist",None
-    print(password)
     if verify_password(user["password"],password):
         user.pop("password")
         return "user is correct",user
@@ -151,13 +149,12 @@ def updateUser(db,user):
         return {"error": "Invalid name"}, 400
     users=db["users"]
     oldUser=users.find_one({"email":user["email"]})
-    print(oldUser)
     if not oldUser:
         return {"error": "Email does not exist"}, 400
     if oldUser["role"]=="admin"!=user["role"]:
         return {"error": "You can't change the role of an admin"}, 400
     users.update_one({"email":user["email"]},{"$set":{"name":user["name"],"phoneNumber":user["phoneNumber"],"role":user["role"]}})
-    print(user)
+
     return {"success":"successfully updated"}
 def deleteUser(db,email):
     users=db["users"]
@@ -203,5 +200,4 @@ def hash_password(password):
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode(), salt)
 def verify_password(stored_password, provided_password):
-    print(stored_password,provided_password)
     return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password)

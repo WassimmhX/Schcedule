@@ -39,7 +39,6 @@ def returnByRoom():
     if not request_data or "class" not in request_data:
         return jsonify({"error": "Missing 'class' parameter"}), 400  # Return 400 if missing
     room = request_data["class"]
-    print(room)
     for i in data:
         if i["room"] == room:
             s.append(i)
@@ -103,11 +102,7 @@ def testSingUp():
         return jsonify(user), 200
     else:
         return jsonify({"error": message}), 400
-    
-def json_serializable(obj):
-    if isinstance(obj, ObjectId):
-        return str(obj)  # Convert ObjectId to string
-    return obj
+
 
 @app.route('/updateUserSchedule', methods=['POST'])
 def updateUserSchedule():
@@ -206,6 +201,15 @@ def nbData():
         return jsonify({"nb":nb_room(db)}),200
     else:
         return jsonify({"error":"not supported"}), 400
+
+@app.route("/uploadFile", methods=["POST"])
+def uploadFile():
+    request_data = request.get_json()
+    if not request_data or "file" not in request_data or "day" not in request_data or "time" not in request_data or "teacher" not in request_data\
+            or "room" not in request_data :
+        return jsonify({"error": "Missing 'file' parameter"}), 400
+    file = request_data["file"]
+    print(file)
 if __name__ == '__main__':
     db=get_db()
     data=schedules(db)

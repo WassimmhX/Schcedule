@@ -33,7 +33,7 @@ const RoomList = () => {
           name:"rooms"
         });
         console.log(res.data.message);
-        return( res.data.message);
+        return(res.data.message);
       } catch (error) {
         console.error('Error calling Python function', error);
         return [];
@@ -45,7 +45,6 @@ const RoomList = () => {
         name:"rooms",
         key:name
       });
-      console.log(res.data.message);
       alert(res.data.message);
       navigate(0)
     } catch (error) {
@@ -59,20 +58,13 @@ const RoomList = () => {
     };
     fetchSchedules();
   }, []);
-  useEffect(() => {
-    const storedRooms = localStorage.getItem("rooms");
-    if (storedRooms) {
-      setRooms(JSON.parse(storedRooms));
-    }
-  }, []);
 
-  const handleAddRoom = (e) => {
+  const handleAddRoom = async(e) => {
     e.preventDefault();
     if (!newRoomName.trim()) return;
     const newRoom = { name: newRoomName };
-    const updatedRooms = addRoom(newRoom);
-    setRooms(updatedRooms);
-    setNewRoomName("");
+    await addRoom(newRoom);
+    navigate(0)
   };
 
   const filteredRooms = rooms.filter(room => 

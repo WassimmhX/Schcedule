@@ -1,4 +1,4 @@
-import { UserCircle, Home, Users, BookOpen, School, GraduationCap, BookMarked } from "lucide-react";
+import { UserCircle, Home, Users, BookOpen, School, GraduationCap, CalendarSync } from "lucide-react";
 import Aurora from "../pages/Aurora";
 
 const Layout = ({ children, setActivePage}) => {
@@ -53,6 +53,14 @@ const Layout = ({ children, setActivePage}) => {
               {/* <BookMarked className="w-5 h-5 mr-3" /> */}
               <GraduationCap className="w-5 h-5 mr-3" />
               Classes
+            </a>
+            <a
+              onClick={() => setActivePage("EditSchedule")}
+              className="flex items-center py-3 px-4 text-white transition hover:bg-gray-700/50 hover:scale-105 rounded-md"
+            >
+              {/* <BookMarked className="w-5 h-5 mr-3" /> */}
+              <CalendarSync className="w-5 h-5 mr-3" />
+              Edit Schedule
             </a>
           </nav>
         </aside>

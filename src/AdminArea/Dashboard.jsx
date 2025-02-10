@@ -7,6 +7,7 @@ import UserList from './UserList';
 import RoomList from './RoomList';
 import DashboardHome from './DashboardHome';
 import ClassesList from './ClassesList';
+import EditSchedule from './EditSchedule';
 
 const Dashboard = () => {
   const [activePage, setActivePage] = useState('dashboard');
@@ -27,6 +28,8 @@ const Dashboard = () => {
         return <RoomList />;
       case 'classList':
         return <ClassesList />;
+      case 'EditSchedule':
+        return <EditSchedule />;
       default:
         return <DashboardHome />;
     }

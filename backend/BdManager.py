@@ -83,10 +83,11 @@ def rooms_schedule(db,id=False):
     else:
         return list(db["rooms_schedule"].find({},{"_id":0}))
 def add_room(db,room):
-    rooms = db["rooms"]
+    rooms = db["rooms_list"]
     if exists(rooms, "name", room["name"]):
-        return False, "Room already exists"
-    rooms.add_one(rooms)
+        return "Room already exists",400
+    rooms.insert_one(room)
+    return "success", 200
 def deleteRoom(db,name):
     rooms=db["rooms_list"]
     try:

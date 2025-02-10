@@ -53,6 +53,8 @@ def deleteTeacher(db,email):
         return "deleted successfully",200
     except:
         return  "Email does not exist",400
+def nb_teacher(db):
+    return db["teachers_list"].count_documents({})
 
 def classes_list(db,id=False):
     if id :
@@ -70,7 +72,15 @@ def deleteClass(db,name):
         classes.delete_one({"name":name})
         return "deleted successfully",200
     except:
-        return  "Email does not exist",400
+        return  "name does not exist",400
+def add_class(db,classe):
+    classes=db["classes_list"]
+    if exists(classes,"name",classe["name"]):
+        return "Class already exists", 400
+    classes.insert_one({"name":classe["name"]})
+    return "success",200
+def nb_class(db):
+    return db["classes_list"].count_documents({})
 
 def rooms_list(db,id=False):
     if id :
@@ -95,6 +105,8 @@ def deleteRoom(db,name):
         return "deleted successfully",200
     except:
         return  "Room does not exist",400
+def nb_room(db):
+    return db["rooms_list"].count_documents({})
 
 def users_list(db,id=False):
     if id :
@@ -164,6 +176,9 @@ def deleteUser(db,email):
         return "deleted successfully",200
     except:
         return  "Email does not exist",400
+def nb_user(db):
+    users=db["users"]
+    return users.count_documents({})
 
 def exists(table,attribute,value):
     row=table.find_one({attribute: value})

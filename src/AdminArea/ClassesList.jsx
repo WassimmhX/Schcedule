@@ -2,12 +2,43 @@ import { useState, useEffect } from "react";
 
 import { Trash2, Search, PlusCircle } from "lucide-react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 const ClassesList = () => {
   const [classes, setClasses] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [newClassName, setNewClassName] = useState("");
+  const navigate=useNavigate()
+  const [error, setError] = useState(null);
+  const addClass = async (classe) => {
+    try {
+      const res = await axios.post("http://localhost:5000/addData", {
+        "data":classe,
+        "name":"classes"
+      });
+      alert("Class Added Successfully");
+      return [res.data, "Class Added Successfully"];
+    } catch (err) {
+      console.log(err.response.data.error);
+      setError(err.response ? err.response.data.error : "Server not reachable");
+      console.log(error)
+
+      return [null, err.response.data.error];
+    }
+  };
+  const deleteClass=async(name)=>{
+    try {
+      const res = await axios.post('http://127.0.0.1:5000/deleteData', {
+        name:"classes",
+        key:name
+      });
+      alert(res.data.message);
+      navigate(0)
+    } catch (error) {
+      console.error('Error calling Python function', error);
+    };
+  }
   const getList=async()=>{
     try {
         const res = await axios.post('http://127.0.0.1:5000/getData', {
@@ -27,30 +58,15 @@ const ClassesList = () => {
     };
     fetchSchedules();
   }, []);
-  useEffect(() => {
-    const storedClasses = localStorage.getItem("classes");
-    if (storedClasses) {
-      setClasses(JSON.parse(storedClasses));
-    }
-  }, []);
 
-  const handleDelete = (id) => {
-    const updatedClasses = classes.filter((classe) => classe.id !== id);
-    setClasses(updatedClasses);
-    localStorage.setItem("classes", JSON.stringify(updatedClasses));
-  };
 
   const handleAddClass = (e) => {
     e.preventDefault();
     if (!newClassName.trim()) return;
-    const newClass = { id: Date.now(), name: newClassName };
-    const updatedClasses = [...classes, newClass];
-    setClasses(updatedClasses);
-    localStorage.setItem("classes", JSON.stringify(updatedClasses));
-    
-    localStorage.setItem('newClass', newClassName)
-
+    const newClass = {  name: newClassName };
+    addClass(newClass)
     setNewClassName("");
+    navigate(0)
   };
 
   const filteredClasses = classes.filter( (classe) => 
@@ -110,7 +126,7 @@ const ClassesList = () => {
                 <td className="px-6 py-4">{classe.name}</td>
                 <td className="px-6 py-4">
                   <button
-                    onClick={() => handleDelete(classe.id)}
+                    onClick={() => deleteClass(classe.name)}
                     className="text-red-400 hover:text-red-600 transition-transform transform hover:scale-110"
                   >
                     <Trash2 className="h-5 w-5" />

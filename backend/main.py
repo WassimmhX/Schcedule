@@ -2,6 +2,9 @@ from bson import ObjectId
 from flask import Flask, render_template, request,jsonify
 from flask_cors import (CORS)
 import re
+
+from streamlit import status
+
 from BdManager import *
 app = Flask(__name__)
 CORS(app)
@@ -64,13 +67,14 @@ def getData():
     if name=="rooms":
         print("function completed")
         return jsonify({"message": allRooms()}), 200
-    if name=="students":
+    if name=="classes":
         print("function completed")
         return jsonify({"message": allClasses()}), 200
     if name=="users":
         print("function completed")
         return jsonify({"message": allUsers()}), 200
-
+    else:
+        return jsonify({"error":"not supported"}), 400
 @app.route("/testLogin", methods=['POST'])
 def testLogin():
     request_data = request.get_json()
@@ -138,6 +142,8 @@ def addData():
         message,status=add_room(db,data)
     elif name=="users":
         message,status=add_user(db,data)
+    elif name=="classes":
+        message,status=add_class(db,data)
     else:
         return jsonify({"error": "adding is not supported"}), 400
     if status==200:
@@ -184,6 +190,22 @@ def deleteData():
     else:
         return jsonify({"message":message}), 200
 
+@app.route("/nbData", methods=["POST"])
+def nbData():
+    request_data = request.get_json()
+    if not request_data or "name" not in request_data:
+        return jsonify({"error": "Missing 'name' parameter"}), 400
+    name = request_data["name"]
+    if name=="teachers":
+        return jsonify({"nb":nb_teacher(db)}),200
+    if name=="users":
+        return jsonify({"nb":nb_user(db)}),200
+    if name=="classes":
+        return jsonify({"nb":nb_class(db)}),200
+    if name=="rooms":
+        return jsonify({"nb":nb_room(db)}),200
+    else:
+        return jsonify({"error":"not supported"}), 400
 if __name__ == '__main__':
     db=get_db()
     data=schedules(db)

@@ -1,13 +1,38 @@
+import axios from "axios";
 import { BarChart, Users, BookOpen, School } from "lucide-react"
+import { useEffect, useState } from "react"
 
 const DashboardHome = () => {
+  const [nbUsers,setNbUsers]=useState(0);
+  const [nbTeachers,setNbTeachers]=useState(0);
+  const [nbRooms,setNbRooms]=useState(0);
+  const [nbCourses,setNbCourses]=useState(0);
+  const [error, setError] = useState(null);
   const stats = [
-    { title: "Total Users", value: "1,234", icon: Users, color: "bg-blue-500" },
-    { title: "Teachers", value: "56", icon: BookOpen, color: "bg-green-500" },
-    { title: "Rooms", value: "23", icon: School, color: "bg-purple-500" },
-    { title: "Courses", value: "78", icon: BarChart, color: "bg-yellow-500" },
+    { title: "Total Users", value: nbUsers, icon: Users, color: "bg-blue-500" },
+    { title: "Teachers", value: nbTeachers, icon: BookOpen, color: "bg-green-500" },
+    { title: "Rooms", value: nbRooms, icon: School, color: "bg-purple-500" },
+    { title: "Courses", value: nbCourses, icon: BarChart, color: "bg-yellow-500" },
   ]
-
+  const getNb=async(name)=>{
+    try {
+      const res = await axios.post("http://localhost:5000/nbData", {
+        "name":name,
+      });
+      console.log(res)
+      return res.data.nb;
+    } catch (err) {
+      console.log(err.response.data.error);
+      setError(err.response ? err.response.data.error : "Server not reachable");
+      console.log(error)
+    }
+  }
+  useEffect(() => {
+    getNb('users').then(res=>setNbUsers(res));
+    getNb('teachers').then(res=>setNbTeachers(res));
+    getNb('rooms').then(res=>setNbRooms(res));
+    getNb('classes').then(res=>setNbCourses(res));
+  },[]);
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold text-white">Welcome to the Dashboard</h2>

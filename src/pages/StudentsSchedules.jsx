@@ -66,7 +66,7 @@ const StudentsSchedules = () => {
   ));
   },[schedules,activeFilter,searchTerm]);
   
-  const param = {yourLocation :'Class'}
+  const param = {yourLocation : 'Class'}
   const chekSchedule = (name) => {
     navigate(`/schedules/schedule/${name}`, { state: param });
   }

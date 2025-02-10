@@ -73,7 +73,8 @@ def getData():
     if name=="users":
         print("function completed")
         return jsonify({"message": allUsers()}), 200
-
+    else:
+        return jsonify({"error":"not supported"}), 400
 @app.route("/testLogin", methods=['POST'])
 def testLogin():
     request_data = request.get_json()

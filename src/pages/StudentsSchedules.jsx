@@ -16,7 +16,7 @@ const StudentsSchedules = () => {
   const getList=async()=>{
     try {
         const res = await axios.post('http://127.0.0.1:5000/getData', {
-          name:"students"
+          name:"classes"
         });
         console.log(res.data.message);
         return( res.data.message);

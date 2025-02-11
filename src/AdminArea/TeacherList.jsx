@@ -1,27 +1,30 @@
 import { useState } from "react";
 import { Pencil, Trash2, Search } from "lucide-react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const TeacherList = () => {
   const [teachers, setTeachers] = useState(JSON.parse(localStorage.getItem('teachers')) || []);
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate=useNavigate()
   
-  const deleteTeacher=async(email)=>{
+  const deleteTeacher = async (email) => {
     try {
       const res = await axios.post('http://127.0.0.1:5000/deleteData', {
-        name:"teachers",
-        key:email
+        name: "teachers",
+        key: email
       });
+  
       console.log(res.data.message);
       alert(res.data.message);
-      navigate(0)
+  
+      const updatedTeachers = teachers.filter(teacher => teacher.email !== email);
+  
+      localStorage.setItem('teachers', JSON.stringify(updatedTeachers));
+      setTeachers(updatedTeachers); 
     } catch (error) {
       console.error('Error calling Python function', error);
-    };
-  }
+    }
+  };
   const updateTeacher = async (e) => {
     e.preventDefault(); 
   

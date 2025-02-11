@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { Pencil, Trash2, Search } from "lucide-react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const UserList = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState(JSON.parse(localStorage.getItem('users')) || []);
   const currentUserMail=JSON.parse(localStorage.getItem("user")).email;
   const [editingUser, setEditingUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate=useNavigate();
+
+  console.log('list of users = '+localStorage.getItem('users'))
+
   const getList=async()=>{
     try {
         const res = await axios.post('http://127.0.0.1:5000/getData', {
@@ -29,7 +30,10 @@ const UserList = () => {
       });
       console.log(res.data.message);
       alert(res.data.message);
-      navigate(0)
+      const updatedUsers = users.filter(user => user.email !== email);
+  
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      setUsers(updatedUsers); 
     } catch (error) {
       console.error('Error calling Python function', error);
     };
@@ -42,7 +46,16 @@ const UserList = () => {
       });
       console.log(res.data.message);
       alert(res.data.message);
-      navigate(0)
+
+      const updatedUsers = users.map(user =>
+        user.email === editingUser.email ? { ...user, name: editingUser.name } : user
+      );
+  
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      setUsers(updatedUsers);
+  
+      setEditingUser(null);
+
     } catch (error) {
       console.error('Error calling Python function', error);
     };
@@ -56,8 +69,6 @@ const UserList = () => {
   }, []);
 
   const handleEdit = (user) => setEditingUser(user);
-
-
 
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

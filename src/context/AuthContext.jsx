@@ -9,6 +9,18 @@ export const AuthProvider = ({ children }) => {
 
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
+
+  const getList=async(value)=>{
+    try {
+        const res = await axios.post('http://127.0.0.1:5000/getData', {
+          name:value
+        });
+        return(res.data.message);
+      } catch (error) {
+        console.error('Error calling Python function', error);
+        return [];
+      };
+  }
   
   const testUser= async (email, password)=>{
     try {
@@ -30,8 +42,12 @@ export const AuthProvider = ({ children }) => {
       setUser(foundUser);
       localStorage.setItem("user", JSON.stringify(foundUser));
       localStorage.setItem("loggedIn", true);
+
       //  zid fonction python traja3li mySchedule 
       localStorage.setItem('mySchedule', 'class mta3i fel basse de donnée');
+      if (foundUser.role == 'admin') {
+        localStorage.setItem('users', JSON.stringify(await getList("users")));
+      }
 
       console.log('foundUser = '+foundUser.name+'\nlocalStorage = '+ localStorage.getItem('user'))
       return [true,responseMessage]

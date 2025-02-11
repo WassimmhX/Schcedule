@@ -32,15 +32,15 @@ const UserForm = () => {
         text: "User Added Successfully",
         icon: "success"
       });
-      return [res.data, "User Added Successfully"];
+      return [JSON.stringify(res.data), "User Added Successfully"];
     } catch (err) {
       setError(err.response ? err.response.data.error : "Server not reachable");
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Something went wrong!",
+        text: err.response.data.error+'!',
       });
-      console.log('result1 = '+ JSON.stringify(err.response));  // false
+      console.log('result1 = '+ err.response.data.error);  // false
       console.log('result2 = '+ error) // null
       // toastError('Error : Verify your inputs'); 
 

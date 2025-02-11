@@ -25,9 +25,9 @@ const TeacherList = () => {
       console.error('Error calling Python function', error);
     }
   };
+
   const updateTeacher = async (e) => {
     e.preventDefault(); 
-  
     try {
       const res = await axios.post('http://127.0.0.1:5000/updateData', {
         name: "teachers",

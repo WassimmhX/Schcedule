@@ -1,22 +1,11 @@
 import { useState } from "react";
 import { User, Mail, UserPlus } from "lucide-react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
 
 const TeacherForm = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError]=useState("");
-  const toastSucc = (x) => {
-      toast.success(x , {
-        position: 'bottom-center',
-      });
-    };
-    const toastError = (x) => {
-      toast.error(x , {
-        position: 'bottom-center',
-      });
-    };
 
   const addTeacher = async (teacher) => {
     try {
@@ -26,14 +15,14 @@ const TeacherForm = () => {
       });
       console.log(res)
       alert("Teacher Added Successfully"+res.statusText);
-      toastSucc("Teacher Added Successfully");
+      // toastSucc("Teacher Added Successfully");
       return [res.data, "User Added Successfully"];
 
     } catch (err) {
       console.log(err.response.data.error);
       setError(err.response ? err.response.data.error : "Server not reachable");
       console.log(error)
-      toastError('Error : Verify your inputs');
+      // toastError('Error : Verify your inputs');
       alert(error)
     }
   };
@@ -51,7 +40,6 @@ const TeacherForm = () => {
   };
   return (
     <div className="bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 shadow-lg rounded-2xl p-8">
-      <ToastContainer/>
       <h2 className="text-xl font-semibold text-gray-200 mb-4">Add a New Teacher</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name Input */}

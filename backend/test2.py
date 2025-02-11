@@ -4,7 +4,7 @@ from pymongo import MongoClient
 from test import readData
 client = MongoClient("mongodb://localhost:27017/")
 db = client["SchcedulePrj"]
-collection=db["users"]
+collection=db["teachers_list"]
 # def hash_password(password):
 #     salt = bcrypt.gensalt()
 #     return bcrypt.hashpw(password.encode(), salt)
@@ -13,10 +13,10 @@ collection=db["users"]
 # collection.insert_one({"name":"Admin","email":"Admin@gmail.com","password":hash_password("admin"),"phoneNumber":"12345678","role":"admin"})
 # user=collection.find_one({"email":"Admin@gmail.com"})
 # print(verify_password(user["password"],"admin"))
-# teachers=collection.find()
-# for i,user in enumerate(teachers):
-#     collection.update_one({"_id":user["_id"]},{"$set":{"email":"teacher"+str(i+1)+"@gmail.com"}})
-user=collection.find_one({"email":"Admin@gmail.com"},{"password":0,'_id':0})
-print(user)
-collection.update_many({},{"$set":{"MySchedule": ""}})
-print(collection.find_one({"email":"Admin@gmail.com"},{"password":0,'_id':0}))
+teachers=collection.find()
+for i,user in enumerate(teachers):
+    collection.update_one({"_id":user["_id"]},{"$set":{"email":"teacher"+str(i+1)+"@gmail.com"}})
+# user=collection.find_one({"email":"Admin@gmail.com"},{"password":0,'_id':0})
+# print(user)
+# collection.update_many({},{"$set":{"MySchedule": ""}})
+# print(collection.find_one({"email":"Admin@gmail.com"},{"password":0,'_id':0}))

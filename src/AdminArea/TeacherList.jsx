@@ -50,6 +50,7 @@ const TeacherList = () => {
 
   const handleEdit = (teacher) => setEditingTeacher(teacher);
 
+  console.log(teachers);
 
   const filteredTeachers = teachers.filter(teacher => 
     teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

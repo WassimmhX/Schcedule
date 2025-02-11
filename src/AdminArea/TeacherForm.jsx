@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { User, Mail, UserPlus } from "lucide-react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const TeacherForm = () => {
   const [name, setName] = useState("");
@@ -19,7 +20,6 @@ const TeacherForm = () => {
 
       // toastSucc("Teacher Added Successfully");
 
-      toastSucc("Teacher Added Successfully");
       const teachers = JSON.parse(localStorage.getItem("teachers"));
       const updatedTeachers = [...teachers, teacher];
 

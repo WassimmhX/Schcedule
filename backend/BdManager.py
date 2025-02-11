@@ -186,8 +186,12 @@ def exists(table,attribute,value):
         return True
     else:
         return False
-def readData(path):
+def readData(db,path):
     execls = path
+    db["schedules"].drop()
+    teachers=db["teachers_list"]
+    classes=db["classes_list"]
+    rooms=db["rooms_list"]
     for file in os.listdir(execls):
         df = pd.read_excel(execls + file, header=None)
     df = df.values
@@ -209,9 +213,17 @@ def readData(path):
                 case["time"] = df[1][j]
             case["teacher"] = df[i + 1][j]
             case["subject"] = df[i + 2][j]
+            if not teachers.find_one({"name":case["teacher"]}):
+                return "teacher '"+case["teacher"]+"' does not exist",400
+            if not classes.find_one({"name":case["class"]}):
+                return "class '"+case["class"]+"' does not exist",400
+            if not rooms.find_one({"name":case["room"]}):
+                return "room '"+case["room"]+"' does not exist",400
             data.append(case)
+    db["schedules"].insert_many(data)
+    print(db["schedules"])
     print("read data completed")
-    return data
+    return "completed",200
 def hash_password(password):
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode(), salt)

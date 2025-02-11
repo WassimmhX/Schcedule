@@ -1,3 +1,5 @@
+import shutil
+
 from bson import ObjectId
 from flask import Flask, render_template, request,jsonify
 from flask_cors import (CORS)
@@ -213,10 +215,14 @@ def changeSchedules():
     if file.filename == '':
         return jsonify({"errot":'No selected file'}), 400
     if file:
-        file_path = "data/"
+        data_path = "data/"
+        shutil.rmtree(data_path)
+        os.makedirs(data_path)
+        file_path=os.path.join(data_path, file.filename)
         file.save(file_path)
+        message,status=readData(db,data_path)
+        print(message)
         print(f"File saved to {file_path}")
-
         return jsonify({"message":'File uploaded and saved successfully'}), 200
     else:
         return jsonify({"errot":'No selected file'}), 400

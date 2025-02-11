@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 import os
+
+from pymongo import MongoClient
+
 times=["08:30 - 10:00","10:15 - 11:45","12:00 - 13:30","13:00 - 14:30","14:45 - 16:15","16:30 - 18:00"]
 days=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"]
 def readData():
@@ -51,3 +54,6 @@ test={"id":"1","name":5}
 print(test)
 print(test.pop("id"))
 print(test)
+client = MongoClient("mongodb://localhost:27017/")
+db = client["SchcedulePrj"]
+db["schedules"].insert_many(readData())

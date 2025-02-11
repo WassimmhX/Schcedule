@@ -86,13 +86,13 @@ const Schedule = () => {
       const currentWeekStart = new Date(
         today.setDate(today.getDate() - today.getDay())
       );
-
+      console.log(currentWeekStart+"hhhhhhhhhhhhh");
       const eventDate = new Date(currentWeekStart);
       eventDate.setDate(eventDate.getDate() + daysOfWeek[item.day]);
 
       const [startHour, startMinute] = item.time.split(' - ')[0].split(':');
       const [endHour, endMinute] = item.time.split(' - ')[1].split(':');
-
+      console.log(eventDate);
       const startDateTime = new Date(eventDate);
       startDateTime.setHours(
         Number.parseInt(startHour),
@@ -106,7 +106,7 @@ const Schedule = () => {
         Number.parseInt(endMinute),
         0
       );
-
+      console.log(startDateTime, endDateTime);
       return {
         id: `${item.class}-${item.room}-${item.time}`,
         title: item.subject,

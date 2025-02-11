@@ -133,16 +133,18 @@ def addData():
     request_data = request.get_json()
     if not request_data or "data" not in request_data or "name" not in request_data:
         return jsonify({"error": "Missing a parameter"}), 400
-    data=request_data["data"]
+    data_=request_data["data"]
     name=request_data["name"]
     if name=="teachers":
-        message,status=add_teacher(db,data)
+        message,status=add_teacher(db,data_)
     elif name=="rooms":
-        message,status=add_room(db,data)
+        message,status=add_room(db,data_)
     elif name=="users":
-        message,status=add_user(db,data)
+        message,status=add_user(db,data_)
     elif name=="classes":
-        message,status=add_class(db,data)
+        message,status=add_class(db,data_)
+    elif name=="schedule":
+        message,status=add_schedule(db,data,data_)
     else:
         return jsonify({"error": "adding is not supported"}), 400
     if status==200:

@@ -40,7 +40,7 @@ const UserForm = () => {
         title: "Oops...",
         text: "Something went wrong!",
       });
-      console.log('result1 = '+ err.response.data.error);  // false
+      console.log('result1 = '+ JSON.stringify(err.response));  // false
       console.log('result2 = '+ error) // null
       // toastError('Error : Verify your inputs'); 
 

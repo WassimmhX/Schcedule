@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
 
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
+  
   const testUser= async (email, password)=>{
     try {
       const res = await axios.post("http://localhost:5000/testLogin", { 'email':email, 'password':password});

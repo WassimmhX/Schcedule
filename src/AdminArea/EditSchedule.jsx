@@ -15,9 +15,9 @@ const ClassSessionForm = () => {
   const [error, setError] = useState("")
   const fileInputRef = useRef(null)
 
-  const rooms = ["Room 101", "Room 102", "Room 103"]
-  const teachers = ["Mr. Smith", "Ms. Johnson", "Dr. Brown"]
-  const classes = ["Math", "Science", "History"]
+  const rooms = localStorage.getItem("rooms")
+  const teachers = localStorage.getItem("teachers")
+  const classes = localStorage.getItem("classes")
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
   const hours=["1.30H","2H","3H"]
   const handleFileUpload = async (e) => {
@@ -147,7 +147,7 @@ const ClassSessionForm = () => {
 
             {/* Subject Input */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-400">Room</label>
+              <label className="block text-sm font-medium text-gray-400">Subject</label>
               <div className="relative">
                 <input
                   type="text"

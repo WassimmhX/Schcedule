@@ -5,34 +5,15 @@ import Aurora from './Aurora';
 import SpotlightCard from './../components/SpotlightCard';
 import scheduleLogo from '/src/assets/upcoming.gif';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const TeachersSchedules = () => {
 
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
-  const [schedules,setSchedules]=useState([]);
-  const getList=async()=>{
-    try {
-        const res = await axios.post('http://127.0.0.1:5000/getData', {
-          name:"teachers"
-        });
-        console.log(res.data.message);
-        return( res.data.message);
-      } catch (error) {
-        console.error('Error calling Python function', error);
-        return [];
-      };
-  }
+  const schedules=JSON.parse(localStorage.getItem('teachers'));
   useEffect(() => {
-    const fetchSchedules = async () => {
-      const data = await getList();
-      setSchedules(data);
-      localStorage.setItem('currentSchedule','Teacher');
-
-    };
-    fetchSchedules();
+    localStorage.setItem('currentSchedule','Teacher');
   }, []);
 
   const filters = [
@@ -65,7 +46,7 @@ const TeachersSchedules = () => {
       (activeFilter === 'all' || schedule.name.includes(activeFilter) ) &&
       (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
   ));
-  },[schedules,searchTerm,activeFilter]);
+  },[searchTerm,activeFilter]);
 
   const param = {yourLocation :'Teacher'}
   const chekSchedule = (name) => {

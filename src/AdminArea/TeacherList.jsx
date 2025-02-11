@@ -1,25 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Pencil, Trash2, Search } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const TeacherList = () => {
-  const [teachers, setTeachers] = useState([]);
+  const [teachers, setTeachers] = useState(JSON.parse(localStorage.getItem('teachers')) || []);
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate=useNavigate()
-  const getList=async()=>{
-    try {
-        const res = await axios.post('http://127.0.0.1:5000/getData', {
-          name:"teachers"
-        });
-        console.log(res.data.message);
-        return( res.data.message);
-      } catch (error) {
-        console.error('Error calling Python function', error);
-        return [];
-      };
-  }
   
   const deleteTeacher=async(email)=>{
     try {
@@ -34,26 +22,28 @@ const TeacherList = () => {
       console.error('Error calling Python function', error);
     };
   }
-  const updateTeacher=async()=>{
+  const updateTeacher = async (e) => {
+    e.preventDefault(); 
+  
     try {
       const res = await axios.post('http://127.0.0.1:5000/updateData', {
-        name:"teachers",
-        data:editingTeacher
+        name: "teachers",
+        data: editingTeacher
       });
-      console.log(res.data.message);
       alert(res.data.message);
-      navigate(0)
+  
+      const updatedTeachers = teachers.map(teacher =>
+        teacher.email === editingTeacher.email ? { ...teacher, name: editingTeacher.name } : teacher
+      );
+  
+      localStorage.setItem('teachers', JSON.stringify(updatedTeachers));
+      setTeachers(updatedTeachers);
+  
+      setEditingTeacher(null);
     } catch (error) {
       console.error('Error calling Python function', error);
-    };
-  }
-  useEffect(() => {
-    const fetchSchedules = async () => {
-      const data = await getList();
-      setTeachers(data);
-    };
-    fetchSchedules();
-  }, []);
+    }
+  };
 
   const handleEdit = (teacher) => setEditingTeacher(teacher);
 

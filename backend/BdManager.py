@@ -116,7 +116,7 @@ def users_list(db,id=False):
 def add_user(db,user):
     users=db["users"]
     if exists(users,"email",user["email"]):
-        return False,"Email already exists"
+        return "Email already exists",400
 
     for i in user.keys():
         if user[i]=="" and i!="mySchedule":

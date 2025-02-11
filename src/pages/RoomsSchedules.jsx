@@ -5,35 +5,15 @@ import Aurora from './Aurora';
 import SpotlightCard from './../components/SpotlightCard';
 import scheduleLogo from '/src/assets/upcoming.gif';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
 const RoomsSchedules = () => {
 
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
-  const [schedules,setSchedules]=useState([]);
-  const getList=async()=>{
-    try {
-        const res = await axios.post('http://127.0.0.1:5000/getData', {
-          name:"rooms"
-        });
-        console.log(res.data.message);
-        return( res.data.message);
-      } catch (error) {
-        console.error('Error calling Python function', error);
-        return [];
-      };
-  }
+  const schedules=JSON.parse(localStorage.getItem('rooms'));
   useEffect(() => {
-    const fetchSchedules = async () => {
-      const data = await getList();
-      setSchedules(data);
-      localStorage.setItem('currentSchedule','Room');
-    };
-    fetchSchedules();
+    localStorage.setItem('currentSchedule','Room');
   }, []);
-  console.log(schedules);
 
   const filters = [
     { id: 'all', label: 'All Rooms' },
@@ -67,7 +47,7 @@ const RoomsSchedules = () => {
         activeFilter !=='Amphi' && schedule.name.match((/^[A-Z]-[\d]+$/)) && schedule.name.startsWith(activeFilter) ) &&
       (schedule.name.toLowerCase().includes(searchTerm.toLowerCase()))
   ));
-  },[schedules,activeFilter,searchTerm]);
+  },[activeFilter,searchTerm]);
 
   const param = {yourLocation :'Rooms'}
   const chekSchedule = (name) => {

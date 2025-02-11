@@ -20,6 +20,7 @@ const UserList = () => {
         return [];
       };
   }
+  
   const deleteUser=async(email)=>{
     try {
       const res = await axios.post('http://127.0.0.1:5000/deleteData', {
@@ -184,3 +185,6 @@ const UserList = () => {
 };
 
 export default UserList;
+
+
+

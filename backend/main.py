@@ -3,7 +3,7 @@ from flask import Flask, render_template, request,jsonify
 from flask_cors import (CORS)
 import re
 
-from streamlit import status
+# from streamlit import status
 
 from BdManager import *
 app = Flask(__name__)

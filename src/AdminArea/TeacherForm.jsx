@@ -19,7 +19,7 @@ const TeacherForm = () => {
       alert("Teacher Added Successfully"+res.statusText);
 
       // toastSucc("Teacher Added Successfully");
-
+ 
       const teachers = JSON.parse(localStorage.getItem("teachers"));
       const updatedTeachers = [...teachers, teacher];
 

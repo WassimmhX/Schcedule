@@ -12,7 +12,7 @@ const TeacherList = () => {
       const res = await axios.post('http://127.0.0.1:5000/deleteData', {
         name: "teachers",
         key: email
-      });
+      });   
   
       console.log(res.data.message);
       alert(res.data.message);

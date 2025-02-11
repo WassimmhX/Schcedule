@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useCallback, useRef } from "react"
-import { Clock, MapPin, User, BookOpen, Upload, Calendar, PlusCircle } from "lucide-react"
+import { useState, useRef, useCallback } from "react"
+import { Clock, MapPin, User, BookOpen, Upload, Calendar, PlusCircle, Trash, BookOpenText } from "lucide-react"
 import axios from "axios"
 
 const ClassSessionForm = () => {
@@ -11,25 +11,42 @@ const ClassSessionForm = () => {
   const [room, setRoom] = useState("")
   const [teacher, setTeacher] = useState("")
   const [className, setClassName] = useState("")
+  const [subject, setSubject] = useState("")
   const [error, setError] = useState("")
-
   const fileInputRef = useRef(null)
 
-  // Simulated data for dropdowns
   const rooms = ["Room 101", "Room 102", "Room 103"]
   const teachers = ["Mr. Smith", "Ms. Johnson", "Dr. Brown"]
   const classes = ["Math", "Science", "History"]
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-
-  const onDrop = useCallback((acceptedFiles) => {
-    setFiles((prev) => [...prev, ...acceptedFiles])
-  }, [])
-
-  const handleFileUpload = (e) => {
-    if (e.target.files) {
-      onDrop(Array.from(e.target.files))
+  const hours=["1.30H","2H","3H"]
+  const handleFileUpload = async (e) => {
+    if (e.target.files.length > 0) {
+      setFiles([e.target.files[0]]) // Replace any existing file
+      try {
+        const formData = new FormData()
+        formData.append("file", e.target.files[0]) // Send only one file
+  
+        const res = await axios.post("http://localhost:5000/uploadFile", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+  
+        console.log(res)
+        alert("File uploaded successfully")
+      } catch (err) {
+        console.log(err.response?.data?.error || "Server not reachable")
+        setError(err.response?.data?.error || "Server not reachable")
+      }
     }
   }
+  const removeFile = (index) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index))
+  }
+  const onDrop = useCallback((acceptedFiles) => {
+    if (acceptedFiles.length > 0) {
+      setFiles([acceptedFiles[0]]) // Only store the first file
+    }
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -47,7 +64,6 @@ const ClassSessionForm = () => {
       })
       console.log(res)
       alert("Class Session Added Successfully")
-      // Reset form
       setDay("")
       setTime("")
       setRoom("")
@@ -64,34 +80,30 @@ const ClassSessionForm = () => {
     <div className="min-h-screen bg-[#1B2131] p-6">
       <h2 className="text-3xl font-bold text-white mb-6">Class Scheduler</h2>
 
-      {/* File Upload Section */}
       <div className="mb-6 p-4 bg-[#1E2737] rounded-lg">
         <h3 className="text-xl font-semibold text-white mb-4">Upload Schedule File</h3>
         <div
-          onDrop={(e) => {
-            e.preventDefault()
-            onDrop(Array.from(e.dataTransfer.files))
-          }}
-          onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 transition-colors duration-300 bg-[#1B2131]"
+          onClick={() => fileInputRef.current?.click()}
         >
           <Upload className="mx-auto text-gray-400 mb-2" size={24} />
-          <p className="text-sm text-gray-400">Drag & drop files here, or click to select files</p>
-          <input ref={fileInputRef} type="file" multiple onChange={handleFileUpload} className="hidden" />
+          <p className="text-sm text-gray-400">Click to select files</p>
+          <input ref={fileInputRef} type="file" accept=".xlsx"  onChange={handleFileUpload} className="hidden" />
         </div>
-        <div className="mt-2 flex justify-between items-center">
-          <p className="text-sm text-gray-400">Files selected: {files.length}</p>
-            <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 flex items-center gap-2"
-          >
-            <Upload className="w-4 h-4" />
-            Upload
-          </button>
-        </div>
+        
+        {files.length > 0 && (
+          <ul className="mt-4 space-y-2">
+            {files.map((file, index) => (
+              <li key={index} className="flex justify-between items-center text-gray-300 text-sm bg-[#2A3347] p-2 rounded-lg">
+                {file.name}
+                <button onClick={() => removeFile(index)} className="text-red-500 hover:text-red-700">
+                  <Trash size={16} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
-
       {/* Class Session Form */}
       <div className="bg-[#1E2737] rounded-lg p-4">
         <h3 className="text-xl font-semibold text-white mb-4">Add Class Session</h3>
@@ -130,6 +142,42 @@ const ClassSessionForm = () => {
                   className="mt-1 w-full bg-[#1B2131] text-white border-none rounded-md shadow-sm focus:ring focus:ring-blue-500 p-2 pl-9"
                 />
                 <Clock className="absolute left-2 top-6 transform -translate-y-1/2 text-gray-400" size={20} />
+              </div>
+            </div>
+
+            {/* Subject Input */}
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-400">Room</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  required
+                  className="mt-1 w-full bg-[#1B2131] text-white border-none rounded-md shadow-sm focus:ring focus:ring-blue-500 p-2 pl-9"
+                />
+                <BookOpenText className="absolute left-2 top-6 transform -translate-y-1/2 text-gray-400" size={20} />
+              </div>
+            </div>
+
+            {/* hours Input */}
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-400">Hour</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={teacher}
+                  onChange={(e) => setTeacher(e.target.value)}
+                  list="teacherList"
+                  required
+                  className="mt-1 w-full bg-[#1B2131] text-white border-none rounded-md shadow-sm focus:ring focus:ring-blue-500 p-2 pl-9"
+                />
+                <Clock className="absolute left-2 top-6 transform -translate-y-1/2 text-gray-400" size={20} />
+                <datalist id="teacherList">
+                  {hours.map((t, index) => (
+                    <option key={index} value={t} />
+                  ))}
+                </datalist>
               </div>
             </div>
 

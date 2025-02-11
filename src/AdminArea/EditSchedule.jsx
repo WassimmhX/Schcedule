@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useCallback } from "react"
-import { Clock, MapPin, User, BookOpen, Upload, Calendar, PlusCircle, Trash, BookOpenText } from "lucide-react"
+import { Clock, MapPin, User, BookOpen, Upload, Calendar, PlusCircle, Trash, BookOpenText, ReplaceAll } from "lucide-react"
 import axios from "axios"
 
 const ClassSessionForm = () => {
@@ -15,28 +15,27 @@ const ClassSessionForm = () => {
   const [error, setError] = useState("")
   const fileInputRef = useRef(null)
 
-  const rooms = localStorage.getItem("rooms")
-  const teachers = localStorage.getItem("teachers")
-  const classes = localStorage.getItem("classes")
+  const rooms = JSON.parse(localStorage.getItem("rooms"))
+  const teachers = JSON.parse(localStorage.getItem("teachers"))
+  const classes = JSON.parse(localStorage.getItem("classes"))
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
   const hours=["1.30H","2H","3H"]
+  const changeSchedules=async()=>{
+    const formData = new FormData();
+    formData.append("file", files[0]);
+    try {
+      console.log(files)
+      const res = await axios.post("http://localhost:5000/changeSchedules", formData);
+      console.log(res)
+      alert("Schedule changed successfully")
+    } catch (err) {
+      console.log(err.response?.data?.error || "Server not reachable")
+      setError(err.response?.data?.error || "Server not reachable")
+    }
+  }
   const handleFileUpload = async (e) => {
     if (e.target.files.length > 0) {
       setFiles([e.target.files[0]]) // Replace any existing file
-      try {
-        const formData = new FormData()
-        formData.append("file", e.target.files[0]) // Send only one file
-  
-        const res = await axios.post("http://localhost:5000/uploadFile", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
-  
-        console.log(res)
-        alert("File uploaded successfully")
-      } catch (err) {
-        console.log(err.response?.data?.error || "Server not reachable")
-        setError(err.response?.data?.error || "Server not reachable")
-      }
     }
   }
   const removeFile = (index) => {
@@ -103,7 +102,19 @@ const ClassSessionForm = () => {
             ))}
           </ul>
         )}
+        <div className="flex justify-center items-center mt-4" >
+          <button
+            type="submit"
+            className="w-200 py-2 px-4 text-sm font-semibold text-white bg-gradient-to-r from-blue-700 to-purple-900 hover:from-blue-500 hover:to-purple-600 rounded-lg shadow-md transform transition-transform duration-200 hover:scale-105 flex items-center justify-center space-x-2"
+            onClick={()=>{changeSchedules()}}
+          >
+            <ReplaceAll  className="w-5 h-5" />
+            <span>Change Schedules</span>
+          </button>
+        </div>
+        
       </div>
+      
       {/* Class Session Form */}
       <div className="bg-[#1E2737] rounded-lg p-4">
         <h3 className="text-xl font-semibold text-white mb-4">Add Class Session</h3>
@@ -166,14 +177,14 @@ const ClassSessionForm = () => {
               <div className="relative">
                 <input
                   type="text"
-                  value={teacher}
+                  value={hours}
                   onChange={(e) => setTeacher(e.target.value)}
-                  list="teacherList"
+                  list="hoursList"
                   required
                   className="mt-1 w-full bg-[#1B2131] text-white border-none rounded-md shadow-sm focus:ring focus:ring-blue-500 p-2 pl-9"
                 />
                 <Clock className="absolute left-2 top-6 transform -translate-y-1/2 text-gray-400" size={20} />
-                <datalist id="teacherList">
+                <datalist id="hoursList">
                   {hours.map((t, index) => (
                     <option key={index} value={t} />
                   ))}
@@ -195,8 +206,8 @@ const ClassSessionForm = () => {
                 />
                 <MapPin className="absolute left-2 top-6 transform -translate-y-1/2 text-gray-400" size={20} />
                 <datalist id="roomList">
-                  {rooms.map((r, index) => (
-                    <option key={index} value={r} />
+                  {rooms.map((room,index) => (
+                    <option key={index} value={room.name} />
                   ))}
                 </datalist>
               </div>
@@ -216,8 +227,8 @@ const ClassSessionForm = () => {
                 />
                 <User className="absolute left-2 top-6 transform -translate-y-1/2 text-gray-400" size={20} />
                 <datalist id="teacherList">
-                  {teachers.map((t, index) => (
-                    <option key={index} value={t} />
+                  {teachers.map((teacher) => (
+                    <option key={teacher.email} value={teacher.name} />
                   ))}
                 </datalist>
               </div>
@@ -238,7 +249,7 @@ const ClassSessionForm = () => {
                 <BookOpen className="absolute left-2 top-6 transform -translate-y-1/2 text-gray-400" size={20} />
                 <datalist id="classList">
                   {classes.map((c, index) => (
-                    <option key={index} value={c} />
+                    <option key={index} value={c.name} />
                   ))}
                 </datalist>
               </div>

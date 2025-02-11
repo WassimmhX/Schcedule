@@ -23,7 +23,7 @@ const TeacherForm = () => {
       const teachers = JSON.parse(localStorage.getItem("teachers"));
       const updatedTeachers = [...teachers, teacher];
 
-    localStorage.setItem("teachers", JSON.stringify(updatedTeachers));
+      localStorage.setItem("teachers", JSON.stringify(updatedTeachers));
 
       return [res.data, "User Added Successfully"];
 

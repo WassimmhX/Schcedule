@@ -6,6 +6,8 @@ import re
 # from streamlit import status
 
 from BdManager import *
+from test3 import UPLOAD_FOLDER
+
 app = Flask(__name__)
 CORS(app)
 @app.route('/returnByTeacher', methods=['POST'])
@@ -202,14 +204,21 @@ def nbData():
     else:
         return jsonify({"error":"not supported"}), 400
 
-@app.route("/uploadFile", methods=["POST"])
-def uploadFile():
-    request_data = request.get_json()
-    if not request_data or "file" not in request_data or "day" not in request_data or "time" not in request_data or "teacher" not in request_data\
-            or "room" not in request_data :
-        return jsonify({"error": "Missing 'file' parameter"}), 400
-    file = request_data["file"]
-    print(file)
+@app.route("/changeSchedules", methods=["POST"])
+def changeSchedules():
+    if 'file' not in request.files:
+        return jsonify({"error", 'No file part'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"errot":'No selected file'}), 400
+    if file:
+        file_path = ""
+        file.save(file_path)
+        print(f"File saved to {file_path}")  # Debugging: Print the file path
+        return jsonify({"message":'File uploaded and saved successfully'}), 200
+    else:
+        return jsonify({"errot":'No selected file'}), 400
 if __name__ == '__main__':
     db=get_db()
     data=schedules(db)

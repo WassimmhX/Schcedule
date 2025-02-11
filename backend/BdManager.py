@@ -186,8 +186,8 @@ def exists(table,attribute,value):
         return True
     else:
         return False
-def readData():
-    execls = "excels/"
+def readData(path):
+    execls = path
     for file in os.listdir(execls):
         df = pd.read_excel(execls + file, header=None)
     df = df.values

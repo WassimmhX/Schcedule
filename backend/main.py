@@ -213,9 +213,10 @@ def changeSchedules():
     if file.filename == '':
         return jsonify({"errot":'No selected file'}), 400
     if file:
-        file_path = ""
+        file_path = "data/"
         file.save(file_path)
-        print(f"File saved to {file_path}")  # Debugging: Print the file path
+        print(f"File saved to {file_path}")
+
         return jsonify({"message":'File uploaded and saved successfully'}), 200
     else:
         return jsonify({"errot":'No selected file'}), 400

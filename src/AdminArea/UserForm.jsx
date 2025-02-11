@@ -1,20 +1,11 @@
 import axios from "axios";
 import { useState } from "react";
 import { User, Mail, Phone, Lock, Eye, EyeOff, UserPlus, UserCog } from "lucide-react";
-import { ToastContainer, toast } from 'react-toastify';
+import Swal from "sweetalert2";
 
 const UserForm = () => {
 
-  const toastSucc = (x) => {
-    toast.success(x , {
-      position: 'top-center',
-    });
-  };
-  const toastError = (x) => {
-    toast.error(x , {
-      position: 'top-center',
-    });
-  };
+
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -34,13 +25,24 @@ const UserForm = () => {
         "data":user,
         "name":"users"
       });
-      toastSucc("User Added Successfully")
+      // toastSucc("User Added Successfully")
+      console.log('user = ' +JSON.stringify(user))
+      Swal.fire({
+        title: "Good job!",
+        text: "User Added Successfully",
+        icon: "success"
+      });
       return [res.data, "User Added Successfully"];
     } catch (err) {
       setError(err.response ? err.response.data.error : "Server not reachable");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
       console.log('result1 = '+ err.response.data.error);  // false
       console.log('result2 = '+ error) // null
-      toastError('Error : Verify your inputs'); 
+      // toastError('Error : Verify your inputs'); 
 
       return [null, err.response.data.error];
     }
@@ -64,7 +66,6 @@ const UserForm = () => {
   return (
     
     <div className="bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 shadow-lg rounded-2xl p-8">
-      <ToastContainer />
       <h2 className="text-xl font-semibold text-gray-200 mb-4">Add a New User</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name Input */}

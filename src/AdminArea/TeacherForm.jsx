@@ -14,11 +14,14 @@ const TeacherForm = () => {
         "data":teacher,
         "name":"teachers"
       });
-      console.log(res)
+      console.log(JSON.stringify(res))
 
-      alert("Teacher Added Successfully"+res.statusText);
-
-      // toastSucc("Teacher Added Successfully");
+      // alert("Teacher Added Successfully"+res.statusText); // ok
+      Swal.fire({
+        title: "Good job!",
+        text: "Teacher Added Successfully!",
+        icon: "success"
+      });
  
       const teachers = JSON.parse(localStorage.getItem("teachers"));
       const updatedTeachers = [...teachers, teacher];
@@ -28,11 +31,16 @@ const TeacherForm = () => {
       return [res.data, "User Added Successfully"];
 
     } catch (err) {
-      console.log(err.response.data.error);
+      console.log('error = '+ err);  // AxiosError: Network Error
       setError(err.response ? err.response.data.error : "Server not reachable");
       console.log(error)
-      // toastError('Error : Verify your inputs');
-      alert(error)
+      Swal.fire({
+        title: "Oops...",
+        text: 'Email already exists',  // a changer par err.response.data.error ou error
+        icon: "error"
+      });
+      // alert(error)
+      return [null, err];
     }
   };
   const handleSubmit = async (e) => {

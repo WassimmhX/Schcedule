@@ -45,7 +45,7 @@ def updateTeacher(db,teacher):
     if not teachers.find_one({"email":teacher["email"]}):
         return {"error": "Email does not exist"}, 400
     teachers.update_one({"email":teacher["email"]},{"$set":{"name":teacher["name"]}})
-    return {"succes": "updated successfully"}, 200
+    return {'succes': 'updated successfully'}, 200
 def deleteTeacher(db,email):
     teachers=db["teachers_list"]
     try:

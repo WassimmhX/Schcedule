@@ -13,6 +13,23 @@ def schedules(db,id=False):
         return list(db["schedules"].find())
     else:
         return list(db["schedules"].find({},{"_id":0}))
+def add_schedule(db,data,schedule):
+    schedules=db["schedules"]
+    classSchedule=schedules.find({"class":schedule["class"],"day":schedule["day"]})
+    teacherSchedule=schedules.find({"teacher":schedule["teacher"],"day":schedule["day"]})
+    roomSchedule=schedules.find({"room":schedule["room"],"day":schedule["day"]})
+    for i in classSchedule:
+        if times_overlap(schedule["time"],i["time"]):
+            return "Classe already study in that time",400
+    for i in teacherSchedule:
+        if times_overlap(schedule["time"],i["time"]):
+            return "Teacher already works in that time",400
+    for i in roomSchedule:
+        if times_overlap(schedule["time"],i["time"]):
+            return "Room already busy in that time",400
+    schedules.insert_one(schedule)
+    data.append(schedule)
+    return "Added Schedule successfully",200
 
 def teachers_list(db,id=False):
     if id :
@@ -186,8 +203,12 @@ def exists(table,attribute,value):
         return True
     else:
         return False
-def readData():
-    execls = "excels/"
+def readData(db,path):
+    execls = path
+    db["schedules"].drop()
+    teachers=db["teachers_list"]
+    classes=db["classes_list"]
+    rooms=db["rooms_list"]
     for file in os.listdir(execls):
         df = pd.read_excel(execls + file, header=None)
     df = df.values
@@ -209,11 +230,28 @@ def readData():
                 case["time"] = df[1][j]
             case["teacher"] = df[i + 1][j]
             case["subject"] = df[i + 2][j]
+            if not teachers.find_one({"name":case["teacher"]}):
+                return "teacher '"+case["teacher"]+"' does not exist",400
+            if not classes.find_one({"name":case["class"]}):
+                return "class '"+case["class"]+"' does not exist",400
+            if not rooms.find_one({"name":case["room"]}):
+                return "room '"+case["room"]+"' does not exist",400
             data.append(case)
+    db["schedules"].insert_many(data)
+    print(db["schedules"])
     print("read data completed")
-    return data
+    return "completed",200
 def hash_password(password):
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode(), salt)
 def verify_password(stored_password, provided_password):
     return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password)
+def times_overlap(time1, time2):
+    def parse_time_range(time_range):
+        start, end = time_range.split(" - ")
+        return tuple(map(lambda t: int(t.split(":")[0]) * 60 + int(t.split(":")[1]), (start, end)))
+
+    start1, end1 = parse_time_range(time1)
+    start2, end2 = parse_time_range(time2)
+
+    return max(start1, start2) < min(end1, end2)

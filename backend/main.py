@@ -1,3 +1,5 @@
+import shutil
+
 from bson import ObjectId
 from flask import Flask, render_template, request,jsonify
 from flask_cors import (CORS)
@@ -129,16 +131,18 @@ def addData():
     request_data = request.get_json()
     if not request_data or "data" not in request_data or "name" not in request_data:
         return jsonify({"error": "Missing a parameter"}), 400
-    data=request_data["data"]
+    data_=request_data["data"]
     name=request_data["name"]
     if name=="teachers":
-        message,status=add_teacher(db,data)
+        message,status=add_teacher(db,data_)
     elif name=="rooms":
-        message,status=add_room(db,data)
+        message,status=add_room(db,data_)
     elif name=="users":
-        message,status=add_user(db,data)
+        message,status=add_user(db,data_)
     elif name=="classes":
-        message,status=add_class(db,data)
+        message,status=add_class(db,data_)
+    elif name=="schedule":
+        message,status=add_schedule(db,data,data_)
     else:
         return jsonify({"error": "adding is not supported"}), 400
     if status==200:
@@ -202,6 +206,7 @@ def nbData():
     else:
         return jsonify({"error":"not supported"}), 400
 
+<<<<<<< HEAD
 @app.route("/uploadFile", methods=["POST"])
 def uploadFile():
     request_data = request.get_json()
@@ -210,6 +215,28 @@ def uploadFile():
         return jsonify({"error": "Missing 'file' parameter"}), 400
     file = request_data["file"]
     print(file)
+=======
+@app.route("/changeSchedules", methods=["POST"])
+def changeSchedules():
+    if 'file' not in request.files:
+        return jsonify({"error", 'No file part'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"errot":'No selected file'}), 400
+    if file:
+        data_path = "data/"
+        shutil.rmtree(data_path)
+        os.makedirs(data_path)
+        file_path=os.path.join(data_path, file.filename)
+        file.save(file_path)
+        message,status=readData(db,data_path)
+        print(message)
+        print(f"File saved to {file_path}")
+        return jsonify({"message":'File uploaded and saved successfully'}), 200
+    else:
+        return jsonify({"errot":'No selected file'}), 400
+>>>>>>> 1a399097a83ee82d3806ad2a8c2fd58a3f9b6736
 if __name__ == '__main__':
     db=get_db()
     data=schedules(db)

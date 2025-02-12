@@ -13,12 +13,13 @@ const ClassSessionForm = () => {
   const [className, setClassName] = useState("")
   const [subject, setSubject] = useState("")
   const [error, setError] = useState("")
+  const [hour, setHour] = useState("")
   const fileInputRef = useRef(null)
 
   const rooms = JSON.parse(localStorage.getItem("rooms"))
   const teachers = JSON.parse(localStorage.getItem("teachers"))
   const classes = JSON.parse(localStorage.getItem("classes"))
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  const days = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"]
   const hours=["1.30H","2H","3H"]
   const changeSchedules=async()=>{
     const formData = new FormData();
@@ -28,6 +29,7 @@ const ClassSessionForm = () => {
       const res = await axios.post("http://localhost:5000/changeSchedules", formData);
       console.log(res)
       alert("Schedule changed successfully")
+      setFiles([])
     } catch (err) {
       console.log(err.response?.data?.error || "Server not reachable")
       setError(err.response?.data?.error || "Server not reachable")
@@ -48,19 +50,31 @@ const ClassSessionForm = () => {
   }, [])
 
   const handleSubmit = async (e) => {
+    let time2;
     e.preventDefault()
+    if (hour==="1.30H"){
+      let h=Number(time.split(':')[0])+1
+      let m=Number(time.split(':')[1])+30
+      if (m>=60){
+        m=m-60
+        h+=1
+      }
+      time2=h+":"+m
+    }
+    else if (hour==="2H"){
+      const h=Number(time.split(':')[0])+2
+      const m=time.split(':')[1]
+      time2=h+":"+m
+    }
+    else{
+      const h=Number(time.split(':')[0])+3
+      const m=time.split(':')[1]
+      time2=h+":"+m
+    }
+    const completTime=time+" - "+time2;
+    const schedule={time:completTime,day:day,hour:hour,teacher:teacher,subject:subject,"class":className,room:room}
     try {
-      const formData = new FormData()
-      formData.append("day", day)
-      formData.append("time", time)
-      formData.append("room", room)
-      formData.append("teacher", teacher)
-      formData.append("class", className)
-      files.forEach((file) => formData.append("files", file))
-
-      const res = await axios.post("http://localhost:5000/addClassSession", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
+      const res = await axios.post("http://localhost:5000/addData",{"name":"schedule","data":schedule})
       console.log(res)
       alert("Class Session Added Successfully")
       setDay("")
@@ -177,16 +191,19 @@ const ClassSessionForm = () => {
               <div className="relative">
                 <input
                   type="text"
-                  value={hours}
-                  onChange={(e) => setTeacher(e.target.value)}
+                  value={hour}
+                  onChange={(e) => setHour(e.target.value)}
                   list="hoursList"
                   required
                   className="mt-1 w-full bg-[#1B2131] text-white border-none rounded-md shadow-sm focus:ring focus:ring-blue-500 p-2 pl-9"
                 />
                 <Clock className="absolute left-2 top-6 transform -translate-y-1/2 text-gray-400" size={20} />
                 <datalist id="hoursList">
-                  {hours.map((t, index) => (
-                    <option key={index} value={t} />
+                <option value="">Select a day</option>
+                  {hours.map((d, index) => (
+                    <option key={index} value={d}>
+                      {d}
+                    </option>
                   ))}
                 </datalist>
               </div>
@@ -260,7 +277,7 @@ const ClassSessionForm = () => {
           <button
           type="submit"
           className="w-full py-2 px-4 text-sm font-semibold text-white bg-gradient-to-r from-blue-700 to-purple-900 hover:from-blue-500 hover:to-purple-600 rounded-lg shadow-md transform transition-transform duration-200 hover:scale-105 flex items-center justify-center space-x-2"
-        >
+          >
             <PlusCircle className="w-5 h-5" />
             <span>Add Session</span>
           </button>

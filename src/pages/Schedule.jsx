@@ -20,30 +20,43 @@ const Schedule = () => {
   const [response, setResponse] = useState([]);
   const filters = useState({ professor: '', class: '', room: '' });
   const { yourLocation } = location.state || {};
-  console.log('param = 1', yourLocation);
-
+  
   useEffect(() => {
     callPythonFunction();
   }, []);
   useEffect(() => {
     setEvents(convertToFullCalendarEvents(response));
   }, [response]);
-
+  const getCurrent=(name)=>{
+    for(let i=0;i< JSON.parse(localStorage.getItem("classes")).length;i++) {
+      if(JSON.parse(localStorage.getItem("classes"))[i].name==name) {
+        return "Class";
+      }
+    }
+    
+    for(let i=0;i< JSON.parse(localStorage.getItem("teachers")).length;i++) {
+      if(JSON.parse(localStorage.getItem("teachers"))[i].name==name) {
+        return "Teacher";
+      }
+    }
+    for(let i=0;i< JSON.parse(localStorage.getItem("rooms")).length;i++) {
+      if(JSON.parse(localStorage.getItem("rooms"))[i].name==name) {
+        return "Room";
+      }
+    }
+  }
   const myScheduleChecked = async (e) => {
     setMySchedule(e.target.checked);
     const user = JSON.parse(localStorage.getItem('user'));
-    console.log(mySchedule);
-    console.log(user.email);
     const schedule = e.target.checked ? mySchedule : '';
     try {
       const res = await axios.post('http://127.0.0.1:5000/updateUserSchedule', {
         schedule: schedule,
         email: user.email,
       });
-      console.log(res.data.message);
       localStorage.removeItem('mySchedule');
       localStorage.setItem('mySchedule', schedule);
-      localStorage.setItem('ScheduleType', yourLocation);
+      localStorage.setItem('currentSchedule', yourLocation);
     } catch (error) {
       console.error('Error calling Python function', error);
     }
@@ -61,6 +74,10 @@ const Schedule = () => {
       } else {
         x = localStorage.getItem('currentSchedule');
       }
+      if(x==null){
+        x=getCurrent(mySchedule);
+      }
+      console.log("x:"+x);
       const res = await axios.post('http://127.0.0.1:5000/returnBy' + x, {
         class: mySchedule,
       });
@@ -92,7 +109,6 @@ const Schedule = () => {
 
       const [startHour, startMinute] = item.time.split(' - ')[0].split(':');
       const [endHour, endMinute] = item.time.split(' - ')[1].split(':');
-      console.log(eventDate);
       const startDateTime = new Date(eventDate);
       startDateTime.setHours(
         Number.parseInt(startHour),
@@ -106,7 +122,6 @@ const Schedule = () => {
         Number.parseInt(endMinute),
         0
       );
-      console.log(startDateTime, endDateTime);
       return {
         id: `${item.class}-${item.room}-${item.time}`,
         title: item.subject,

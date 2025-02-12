@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("loggedIn", true);
 
       //  zid fonction python traja3li mySchedule 
-      localStorage.setItem('mySchedule', 'class mta3i fel basse de donnée');
+      localStorage.setItem('mySchedule', foundUser.mySchedule);
       if (foundUser.role == 'admin') {
         localStorage.setItem('users', JSON.stringify(await getList("users")));
       }

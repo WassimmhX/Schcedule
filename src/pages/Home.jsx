@@ -1,8 +1,28 @@
 import { Calendar, BookOpen, Users, ArrowRight, Facebook, Twitter, Linkedin, Mail, Phone, MapPin, LogIn } from 'lucide-react';
 import bgImage from "../assets/CSWMDNJbDZvpQPAQozGF.png"
+import axios from 'axios';
+import { useEffect } from 'react';
 const Home = () => {
   const user = localStorage.getItem('user');
-
+  const getList=async(value)=>{
+    try {
+        const res = await axios.post('http://127.0.0.1:5000/getData', {
+          name:value
+        });
+        return(res.data.message);
+      } catch (error) {
+        console.error('Error calling Python function', error);
+        return [];
+      };
+  }
+  useEffect(() => {
+    const fetchData=async()=>{
+      localStorage.setItem('rooms',JSON.stringify(await getList("rooms")));
+      localStorage.setItem('teachers',JSON.stringify(await getList("teachers")));
+      localStorage.setItem('classes',JSON.stringify(await getList("classes")));
+    }
+    fetchData();
+  }, []);
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}

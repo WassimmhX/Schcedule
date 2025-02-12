@@ -1,44 +1,87 @@
-import { useState, useEffect } from "react";
-import { Trash2, Search, PlusCircle } from "lucide-react";
-import axios from "axios";
+import { useState, useEffect } from 'react';
+import { Trash2, Search, PlusCircle } from 'lucide-react';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const ClassesList = () => {
   const [classes, setClasses] = useState(() => {
-    return JSON.parse(localStorage.getItem("classes")) || [];
+    return JSON.parse(localStorage.getItem('classes')) || [];
   });
-  const [searchQuery, setSearchQuery] = useState("");
-  const [newClassName, setNewClassName] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [newClassName, setNewClassName] = useState('');
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    localStorage.setItem("classes", JSON.stringify(classes));
+    localStorage.setItem('classes', JSON.stringify(classes));
   }, [classes]);
 
   const addClass = async (classe) => {
     try {
-      await axios.post("http://localhost:5000/addData", {
+      const res = await axios.post('http://localhost:5000/addData', {
         data: classe,
-        name: "classes",
+        name: 'classes',
+      });
+      Swal.fire({
+        title: 'Class Added Successfully',
+        icon: 'success',
+        confirmButtonColor: '#2563eb',
       });
       const updatedClasses = [...classes, classe];
       setClasses(updatedClasses);
-      setNewClassName("");
+      setNewClassName('');
     } catch (err) {
-      setError(err.response?.data?.error || "Server not reachable");
+      setError(err.response?.data?.error || 'Server not reachable');
+      Swal.fire(
+        'Error',
+        err.response?.data?.error || 'Server not reachable',
+        'error'
+      );
     }
   };
 
   const deleteClass = async (name) => {
-    try {
-      await axios.post("http://127.0.0.1:5000/deleteData", {
-        name: "classes",
-        key: name,
-      });
-      const updatedClasses = classes.filter((classe) => classe.name !== name);
-      setClasses(updatedClasses);
-    } catch (err) {
-      console.error("Error deleting class", err);
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#2563eb',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await axios.post('http://127.0.0.1:5000/deleteData', {
+            name: 'classes',
+            key: name,
+          });
+
+          Swal.fire('Deleted!', res.data.message, 'success');
+
+          const updatedClasses = classes.filter(
+            (classe) => classe.name !== name
+          );
+          setClasses(updatedClasses);
+        } catch (err) {
+          console.error('Error deleting class', err);
+          Swal.fire(
+            'Error',
+            err.response?.data?.error || 'Server not reachable',
+            'error'
+          );
+        }
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Your imaginary class is safe :)',
+          confirmButtonColor: '#2563eb',
+          icon: 'error',
+        });
+      }
+    });
   };
 
   const handleAddClass = (e) => {
@@ -90,8 +133,12 @@ const ClassesList = () => {
         <table className="w-full border-collapse border border-gray-700 shadow-lg rounded-lg">
           <thead className="bg-gray-800 text-gray-300">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase">
+                Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="bg-gray-900 text-gray-200 divide-y divide-gray-700">

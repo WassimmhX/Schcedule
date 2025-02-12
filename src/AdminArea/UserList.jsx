@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Pencil, Trash2, Search } from 'lucide-react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -12,18 +12,6 @@ const UserList = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   console.log('list of users = ' + localStorage.getItem('users'));
-
-  const getList = async () => {
-    try {
-      const res = await axios.post('http://127.0.0.1:5000/getData', {
-        name: 'users',
-      });
-      return res.data.message;
-    } catch (error) {
-      console.error('Error calling Python function', error);
-      return [];
-    }
-  };
 
   const deleteUser = async (email) => {
     Swal.fire({
@@ -55,7 +43,7 @@ const UserList = () => {
           });
         } catch (error) {
           console.error('Error calling Python function', error);
-          Swal.fire('Error', 'Failed to delete user.', 'error');
+          Swal.fire('Error', error.response.data.error+'!', 'error');
         }
       } else if (
         /* Read more about handling dismissals below */

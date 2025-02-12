@@ -1,64 +1,100 @@
-import { useState, useEffect } from "react";
-import { Trash2, Search, PlusCircle } from "lucide-react";
-import axios from "axios";
+import { useState, useEffect } from 'react';
+import { Trash2, Search, PlusCircle } from 'lucide-react';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const RoomList = () => {
-  const [rooms, setRooms] = useState(JSON.parse(localStorage.getItem("rooms")) || []);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [newRoomName, setNewRoomName] = useState("");
+  const [rooms, setRooms] = useState(
+    JSON.parse(localStorage.getItem('rooms')) || []
+  );
+  const [searchQuery, setSearchQuery] = useState('');
+  const [newRoomName, setNewRoomName] = useState('');
   const [error, setError] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem("rooms", JSON.stringify(rooms));
+    localStorage.setItem('rooms', JSON.stringify(rooms));
   }, [rooms]);
 
   const addRoom = async (room) => {
     try {
-      const res = await axios.post("http://localhost:5000/addData", {
+      const res = await axios.post('http://localhost:5000/addData', {
         data: room,
-        name: "rooms",
+        name: 'rooms',
+      });
+      console.log(res);
+      Swal.fire({
+        title: 'Room Added Successfully',
+        icon: 'success',
+        draggable: true,
+        confirmButtonColor: '#2563eb',
       });
 
-      alert("Room Added Successfully");
-      
       const updatedRooms = [...rooms, room];
       setRooms(updatedRooms); // Update state
-      localStorage.setItem("rooms", JSON.stringify(updatedRooms)); // Update localStorage
+      localStorage.setItem('rooms', JSON.stringify(updatedRooms)); // Update localStorage
 
-      return [res.data, "Room Added Successfully"];
+      return [res.data, 'Room Added Successfully'];
     } catch (err) {
       console.log(err.response?.data?.error);
-      setError(err.response ? err.response.data.error : "Server not reachable");
+      setError(err.response ? err.response.data.error : 'Server not reachable');
       return [null, err.response?.data?.error];
     }
   };
 
   const deleteRoom = async (name) => {
-    try {
-      const res = await axios.post("http://127.0.0.1:5000/deleteData", {
-        name: "rooms",
-        key: name,
-      });
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#2563eb',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await axios.post('http://127.0.0.1:5000/deleteData', {
+            name: 'rooms',
+            key: name,
+          });
 
-      alert(res.data.message);
+          alert(res.data.message);
 
-      const updatedRooms = rooms.filter((room) => room.name !== name);
-      setRooms(updatedRooms); // Update state
-      localStorage.setItem("rooms", JSON.stringify(updatedRooms)); // Update localStorage
+          const updatedRooms = rooms.filter((room) => room.name !== name);
+          setRooms(updatedRooms); // Update state
+          localStorage.setItem('rooms', JSON.stringify(updatedRooms)); // Update localStorage
 
-    } catch (error) {
-      console.error("Error calling Python function", error);
-    }
+          Swal.fire({
+            title: 'Deleted!',
+            text: res.data.message,
+            icon: 'success',
+          });
+        } catch (error) {
+          console.error('Error calling Python function', error);
+          Swal.fire('Error', error.response.data.error + '!', 'error');
+        }
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Your imaginary room is safe :)',
+          confirmButtonColor: '#2563eb',
+          icon: 'error',
+        });
+      }
+    });
   };
 
   const handleAddRoom = async (e) => {
     e.preventDefault();
     if (!newRoomName.trim()) return;
-    
+
     const newRoom = { name: newRoomName };
     await addRoom(newRoom);
-    
-    setNewRoomName(""); // Clear input field
+
+    setNewRoomName(''); // Clear input field
   };
 
   const filteredRooms = rooms.filter((room) =>
@@ -102,8 +138,12 @@ const RoomList = () => {
         <table className="w-full border-collapse border border-gray-700 shadow-lg rounded-lg">
           <thead className="bg-gray-800 text-gray-300">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase">
+                Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="bg-gray-900 text-gray-200 divide-y divide-gray-700">

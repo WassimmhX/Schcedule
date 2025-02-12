@@ -101,7 +101,7 @@ const TeacherList = () => {
 
         } catch (error) {
           console.error('Error calling Python function', error);
-          Swal.fire('Saving failed', 'Please try again', 'error');
+          Swal.fire('Saving failed', error.response.data.error, 'error');
         }
 
       } else if (result.isDenied) {

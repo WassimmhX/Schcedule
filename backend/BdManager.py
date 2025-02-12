@@ -185,7 +185,7 @@ def updateUser(db,user):
         return {"error": "You can't change the role of an admin"}, 400
     users.update_one({"email":user["email"]},{"$set":{"name":user["name"],"phoneNumber":user["phoneNumber"],"role":user["role"]}})
 
-    return {"success":"successfully updated"}
+    return {"success":"successfully updated"},200
 def deleteUser(db,email):
     users=db["users"]
     try:

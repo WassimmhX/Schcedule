@@ -206,16 +206,7 @@ def nbData():
     else:
         return jsonify({"error":"not supported"}), 400
 
-<<<<<<< HEAD
-@app.route("/uploadFile", methods=["POST"])
-def uploadFile():
-    request_data = request.get_json()
-    if not request_data or "file" not in request_data or "day" not in request_data or "time" not in request_data or "teacher" not in request_data\
-            or "room" not in request_data :
-        return jsonify({"error": "Missing 'file' parameter"}), 400
-    file = request_data["file"]
-    print(file)
-=======
+
 @app.route("/changeSchedules", methods=["POST"])
 def changeSchedules():
     if 'file' not in request.files:
@@ -236,7 +227,6 @@ def changeSchedules():
         return jsonify({"message":'File uploaded and saved successfully'}), 200
     else:
         return jsonify({"errot":'No selected file'}), 400
->>>>>>> 1a399097a83ee82d3806ad2a8c2fd58a3f9b6736
 if __name__ == '__main__':
     db=get_db()
     data=schedules(db)

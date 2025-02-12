@@ -88,8 +88,6 @@ const UserList = () => {
             name: 'users',
             data: editingUser,
           });
-          console.log(res.data.message);
-          alert(res.data.message);
 
           const updatedUsers = users.map((user) =>
             user.email === editingUser.email  
@@ -107,7 +105,7 @@ const UserList = () => {
           setEditingUser(null);
 
           Swal.fire({
-            title: res.data.succes,
+            title: res.data.success,
             icon: 'success',
             confirmButtonText: 'OK',
             confirmButtonColor: '#2563eb',

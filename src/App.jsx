@@ -3,11 +3,9 @@ import {
   Route,
   Routes,
 } from 'react-router-dom';
-import Planning from './pages/Planning';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Schedule from './pages/Schedule';
-import Test from './pages/Test';
 import Home from './pages/Home';
 import PermissionDenied from './error/PermissionDenied';
 import ProtectedRoute from './context/ProtectedRoute';
@@ -35,12 +33,9 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/planning" element={<Planning />} />
         <Route path="schedules/students" element={<StudentsSchedules/>} />
         <Route path="schedules/teachers" element={<TeachersSchedules/>} />
         <Route path="schedules/rooms" element={<RoomsSchedules/>} />
-
-        <Route path="/Test" element={<Test />} />
         <Route path="/login"  element={<Login />}/>
 
         <Route path="/permission-denied" element={<PermissionDenied />} />

@@ -230,7 +230,7 @@ def changeSchedules():
         return jsonify({"errot":'No selected file'}), 400
 @app.route("/saveEvent",methods=["POST"])
 def saveEvent():
-    days=["","Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
+    days=["Dimanche","Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
     request_data = request.get_json()
     if not request_data or "event" not in request_data or "change" not in request_data or "role" not in request_data or "resize" not in request_data:
         return jsonify({"error": "Missing parameter"}), 400

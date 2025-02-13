@@ -195,7 +195,7 @@ const Schedule = () => {
               slotDuration={"00:30:00"}
               snapDuration={"00:15:00"}
               allDaySlot={false}
-              hiddenDays={[0]}
+              hiddenDays={user.role=="admin"?[]:[0]}
               eventClick={handleEventClick}
               headerToolbar={{
                 left: 'prev,next today',

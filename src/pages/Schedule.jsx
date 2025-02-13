@@ -192,6 +192,8 @@ const Schedule = () => {
               events={filteredEvents}
               slotMinTime="08:00:00"
               slotMaxTime="19:00:00"
+              slotDuration={"00:30:00"}
+              snapDuration={"00:15:00"}
               allDaySlot={false}
               hiddenDays={[0]}
               eventClick={handleEventClick}
@@ -200,7 +202,7 @@ const Schedule = () => {
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay',
               }}
-              editable={true}
+              editable={user.role=="admin"?true:false}
               selectable={true}
               eventContent={(eventInfo) => {
                 const startTime = eventInfo.event.start.toLocaleTimeString([], {

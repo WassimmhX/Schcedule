@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
       }
       //  add toast success
       toastr.success(`Welcome, ${foundUser.name}!`, "Logged In Successfully", {
-        positionClass: "toast-top-right",
+        positionClass: "toast-top-center",
         timeOut: 3000,
         progressBar: true,
       });
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
       //  add toast error
       
       toastr.error(responseMessage, "Login Failed", {
-        positionClass: "toast-top-right",
+        positionClass: "toast-top-center",
         timeOut: 3000,
         progressBar: true,
     });
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
       const res = await axios.post("http://localhost:5000/testSignUp",{user});
       //  add toast success
       toastr.success(`Welcome, ${user.name}!`, "Signed Up Successfully", {
-        positionClass: "toast-top-right",
+        positionClass: "toast-top-center",
         timeOut: 3000,
         progressBar: true,
       });
@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
       setError(err.response ? err.response.data.error : "Server not reachable");
       console.log(error)
       toastr.error(err.response ? err.response.data.error : "Server not reachable", "SignUp Failed", {
-        positionClass: "toast-top-right",
+        positionClass: "toast-top-center",
         timeOut: 3000,
         progressBar: true,
     });
@@ -122,7 +122,7 @@ export const AuthProvider = ({ children }) => {
     console.log("onLogOut:"+localStorage.getItem('user')+"\tstatus = "+localStorage.getItem('loggedIn'))
     //  add toast success
     toastr.success(`GoodBye, ${user.name}!`, "Logged Out Successfully", {
-      positionClass: "toast-top-right",
+      positionClass: "toast-top-center",
       timeOut: 3000,
       progressBar: true,
     });

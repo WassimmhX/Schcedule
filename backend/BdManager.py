@@ -54,8 +54,8 @@ def edit_session_time(db,data,newSchedule,resize=False):
     for i in roomSchedule:
         if times_overlap(newSchedule["time"], i["time"]):
             return "Room already busy in that time", 400
-    prevSchedule.pop("_id")
-    index=data.index(prevSchedule)
+    filtered_data = {key: value for key, value in prevSchedule.items() if key != "_id"}
+    index=data.index(filtered_data)
     prevSchedule["time"] = newSchedule["time"]
     prevSchedule["day"] = newSchedule["day"]
     schedules.update_one({"_id": prevSchedule["_id"]},{"$set":prevSchedule},upsert=True)
@@ -68,9 +68,8 @@ def edit_session_infos(db,data,newSession):
     if len(prevSession)!=1:
         return "Reload the page if the error persist",400
     prevSession=prevSession[0]
+
     schedules.update_one({"_id":prevSession["_id"]},{"$set":newSession})
-    prevSession.pop("_id")
-    data[data.index(prevSession)] = prevSession
     return "Updated successfully",200
 def delete_session(db,data,schedule):
     schedules=db["schedules"]

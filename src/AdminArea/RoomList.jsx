@@ -37,6 +37,12 @@ const RoomList = () => {
     } catch (err) {
       console.log(err.response?.data?.error);
       setError(err.response ? err.response.data.error : 'Server not reachable');
+      Swal.fire({
+        title: err.response?.data?.error,
+        icon: 'error',
+        draggable: true,
+        confirmButtonColor: '#2563eb',
+      });
       return [null, err.response?.data?.error];
     }
   };
@@ -58,7 +64,7 @@ const RoomList = () => {
             key: name,
           });
 
-          alert(res.data.message);
+          // alert(res.data.message);
 
           const updatedRooms = rooms.filter((room) => room.name !== name);
           setRooms(updatedRooms); // Update state

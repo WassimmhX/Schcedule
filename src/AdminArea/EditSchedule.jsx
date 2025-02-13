@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from "react"
 import { Clock, MapPin, User, BookOpen, Upload, Calendar, PlusCircle, Trash, BookOpenText, ReplaceAll } from "lucide-react"
 import axios from "axios"
+import Swal from "sweetalert2"
 
 const ClassSessionForm = () => {
   const [files, setFiles] = useState([])
@@ -21,18 +22,32 @@ const ClassSessionForm = () => {
   const classes = JSON.parse(localStorage.getItem("classes"))
   const days = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"]
   const hours=["1.30H","2H","3H"]
+  console.log(teachers)
+  console.log(rooms)
+  console.log(classes)
+
   const changeSchedules=async()=>{
     const formData = new FormData();
     formData.append("file", files[0]);
     try {
       console.log(files)
       const res = await axios.post("http://localhost:5000/changeSchedules", formData);
-      console.log(res)
+      console.log('here' +res)
       alert("Schedule changed successfully")
+      Swal.fire({
+        title: "Schedule changed successfully",
+        icon: "success",
+        draggable: true
+      });
       setFiles([])
     } catch (err) {
       console.log(err.response?.data?.error || "Server not reachable")
       setError(err.response?.data?.error || "Server not reachable")
+      Swal.fire({
+        title: err.response?.data?.error || "Server not reachable",
+        icon: "error",
+        draggable: true
+      });
     }
   }
   const handleFileUpload = async (e) => {
@@ -72,20 +87,55 @@ const ClassSessionForm = () => {
       time2=h+":"+m
     }
     const completTime=time+" - "+time2;
-    const schedule={time:completTime,day:day,hour:hour,teacher:teacher,subject:subject,"class":className,room:room}
+    const schedule={time:completTime,day:day,teacher:teacher,subject:subject,"class":className,room:room}
     try {
-      const res = await axios.post("http://localhost:5000/addData",{"name":"schedule","data":schedule})
-      console.log(res)
-      alert("Class Session Added Successfully")
-      setDay("")
-      setTime("")
-      setRoom("")
-      setTeacher("")
-      setClassName("")
-      setFiles([])
+      // aaaaaaaaaaaaaaaaaaaaa
+      if (rooms.some(room => room.name === schedule.room) != true ) {
+        Swal.fire({
+          title: "Room Does not exist",
+          icon: "error",
+          draggable: true
+        });
+      }else if (teachers.some(teacher => teacher.name === schedule.teacher) != true) {
+        Swal.fire({
+          title: "Teacher Does not exist",
+          icon: "error",
+          draggable: true
+        });
+      } else if (classes.some(classs => classs.name === schedule.class) != true) {
+        Swal.fire({
+          title: "Class Does not exist",
+          icon: "error",
+          draggable: true
+        });
+      }else{
+        const res = await axios.post("http://localhost:5000/addData",{"name":"schedule","data":schedule})
+        console.log(res)
+        // alert("Class Session Added Successfully")
+        Swal.fire({
+          title: "Class Session Added Successfully",
+          icon: "success",
+          draggable: true
+        });
+        setDay("")
+        setRoom("")
+        setHour("")
+        setTime("")
+        setTeacher("")
+        setSubject("")
+        setClassName("")
+        setFiles([])
+        setError('')
+      }
+      
     } catch (err) {
       console.error(err)
       setError(err.response ? err.response.data.error : "Server not reachable")
+      Swal.fire({
+        title: err.response?.data?.error || "Server not reachable",
+        icon: "error",
+        draggable: true
+      });
     }
   }
 

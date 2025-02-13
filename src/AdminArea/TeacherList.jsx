@@ -30,7 +30,7 @@ const TeacherList = () => {
           });
 
           console.log(res.data.message);
-          alert(res.data.message);
+          // alert(res.data.message);
 
           const updatedTeachers = teachers.filter(
             (teacher) => teacher.email !== email

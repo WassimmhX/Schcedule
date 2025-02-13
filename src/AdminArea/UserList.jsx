@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pencil, Trash2, Search } from 'lucide-react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -112,16 +112,26 @@ const UserList = () => {
       }
     });
   };
-
-  // useEffect(() => {
-  //   const fetchSchedules = async () => {
-  //     const data = await getList();
-  //     // if (Array.isArray(data))
-  //     setUsers(data);
-  //     // localStorage.setItem("users", JSON.stringify(data));
-  //   };
-  //   fetchSchedules();
-  // }, []);
+  const getList=async(value)=>{
+    try {
+        const res = await axios.post('http://127.0.0.1:5000/getData', {
+          name:value
+        });
+        return(res.data.message);
+      } catch (error) {
+        console.error('Error calling Python function', error);
+        return [];
+      };
+  }
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      const data = await getList('users');
+      // if (Array.isArray(data))
+      setUsers(data);
+      // localStorage.setItem("users", JSON.stringify(data));
+    };
+    fetchSchedules();
+  }, []);
 
   const handleEdit = (user) => setEditingUser(user);
 

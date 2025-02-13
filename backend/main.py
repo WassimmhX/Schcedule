@@ -33,6 +33,7 @@ def returnByClass():
         if type(i["class"])!=float and   (i["class"] in students or students in i["class"]):
             s.append(i)
     print("function completed")
+    print(s)
     return jsonify({"message": s}), 200
 @app.route('/returnByRoom', methods=['POST'])
 def returnByRoom():
@@ -231,19 +232,27 @@ def changeSchedules():
 def saveEvent():
     days=["","Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
     request_data = request.get_json()
-    if not request_data or "event" not in request_data:
-        return jsonify({"error": "Missing 'event' parameter"}), 400
-    event=request_data["event"]
-    event["day"]=days[event["day"]]
-    event["id"]=(event["id"].split("-"))[-2]+"-"+(event["id"].split("-"))[-1]
-    if len(event["id"])!=13:
-        event["id"]=time_config(event["id"])
-    if len(event["time"])!=13:
-        event["time"]=time_config(event["time"])
-    message,state=edit_schedule_time(db,data,event)
-    if state==400:
-        return jsonify({"error":message}),state
-    return jsonify({"message":message}),200
+    if not request_data or "event" not in request_data or "change" not in request_data or "role" not in request_data or "resize" not in request_data:
+        return jsonify({"error": "Missing parameter"}), 400
+    role=request_data["role"]
+    if role!="admin":
+        return jsonify({"error":"Permission denied"}), 400
+    change=request_data["change"]
+    if change=="time":
+        resize=request_data["resize"]
+        event=request_data["event"]
+        event["day"]=days[event["day"]]
+        event["id"]=(event["id"].split("-"))[-2]+"-"+(event["id"].split("-"))[-1]
+        if len(event["id"])!=13:
+            event["id"]=time_config(event["id"])
+        if len(event["time"])!=13:
+            event["time"]=time_config(event["time"])
+        message,state=edit_schedule_time(db,data,event,resize=="true")
+        if state==400:
+            return jsonify({"error":message}),state
+        return jsonify({"message":message}),200
+    else:
+        return jsonify({"error":"not supported"}), 400
 if __name__ == '__main__':
     db=get_db()
     data=schedules(db)

@@ -18,6 +18,7 @@ const Schedule = () => {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const mySchedule = name ? name : '';
   const navigate=useNavigate(true);
+  const user=JSON.parse(localStorage.getItem('user'));
   const [showMySchedule, setMySchedule] = useState(
     localStorage.getItem('mySchedule') == name
   );
@@ -262,7 +263,12 @@ const Schedule = () => {
 
                 // Save the updated event to the backend
                 try {
-                  const res = await axios.post('http://127.0.0.1:5000/saveEvent', {"event": updatedEvent});
+                  const res = await axios.post('http://127.0.0.1:5000/saveEvent', {
+                  "event": updatedEvent,
+                  "resize":"false",
+                  "role":user.role,
+                  "change":"time"
+                });
                   console.log(res.data.message)
                   navigate(0)
                 } catch (error) {
@@ -270,25 +276,42 @@ const Schedule = () => {
                     info.revert();
                 }
               }}
-              eventResize={(info) => {
-                const f=async(info)=>{
-                  const updatedEvent = {
-                  id: info.event.id,
-                  title: info.event.title,
-                  start: info.event.start.toISOString(),
-                  end: info.event.end.toISOString(),
-                  extendedProps: info.event.extendedProps,
+              eventResize={async(info) => {
+                console.log(info.event.start.getHours())
+                console.log(info.event.start.getMinutes())
+                console.log(info.event.end.getHours())
+                console.log(info.event.end.getMinutes())
+                const start=((info.event.start.getHours()+"").length==2?(info.event.start.getHours()+""):("0"+info.event.start.getHours()))
+                            +":"+((info.event.start.getMinutes()+"").length==2?(info.event.start.getMinutes()+""):(info.event.start.getMinutes()+"0"))
+                const end=((info.event.end.getHours()+"").length==2?(info.event.end.getHours()+""):("0"+info.event.end.getHours()))
+                            +":"+((info.event.end.getMinutes()+"").length==2?(info.event.end.getMinutes()+""):(info.event.end.getMinutes()+"0"))
+                console.log(start+" - "+end)
+                const time=start+" - "+end
+                const updatedEvent = {
+                  id:info.event.id,
+                  day: info.event.start.getDay(),
+                  subject: info.event.title,
+                  time:time,
+                  teacher: info.event.extendedProps.professor,
+                  "class": info.event.extendedProps.class,
+                  room: info.event.extendedProps.room,
                 };
 
                 // Save the updated event to the backend
                 try {
-                  const res = await axios.post('http://127.0.0.1:5000/saveEvent', {"event": updatedEvent});
-                  console.log(res)
+                  const res = await axios.post('http://127.0.0.1:5000/saveEvent', 
+                  {
+                    "event": updatedEvent,
+                    "resize": "true",
+                    "role":user.role,
+                    "change":"time"
+                  });
+                  console.log(res.data.message)
+                  navigate(0)
                 } catch (error) {
                   console.error('Error saving resized event:', error);
                     info.revert();
-                }}
-                f(info)
+                }
               }}
             />
           </div>

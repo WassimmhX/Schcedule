@@ -30,18 +30,20 @@ def add_schedule(db,data,schedule):
     schedules.insert_one(schedule)
     data.append(schedule)
     return "Added Schedule successfully",200
-def edit_schedule_time(db,data,newSchedule):
+def edit_schedule_time(db,data,newSchedule,resize=False):
     schedules = db["schedules"]
     prevSchedule=schedules.find({"subject":newSchedule["subject"],"class":newSchedule["class"],"room":newSchedule["room"],"time":newSchedule["id"],"teacher":newSchedule["teacher"]})
     prevSchedule = list(prevSchedule)
     if len(prevSchedule)>1 or len(prevSchedule)==0:
         return "Error occurred",400
     prevSchedule=prevSchedule[0]
+    if resize:
+        schedules.delete_one({"_id":prevSchedule["_id"]})
     classSchedule = schedules.find({"class": newSchedule["class"], "day": newSchedule["day"]})
     teacherSchedule = schedules.find({"teacher": newSchedule["teacher"], "day": newSchedule["day"]})
     roomSchedule = schedules.find({"room": newSchedule["room"], "day": newSchedule["day"]})
     for i in classSchedule:
-        if times_overlap(newSchedule["time"], i["time"]):
+        if times_overlap(newSchedule["time"], i["time"]) and not resize:
             print(newSchedule["time"],i)
             return "Class already have a session in that time", 400
     for i in teacherSchedule:
@@ -54,9 +56,8 @@ def edit_schedule_time(db,data,newSchedule):
     index=data.index(filtered_data)
     prevSchedule["time"] = newSchedule["time"]
     prevSchedule["day"] = newSchedule["day"]
-    schedules.update_one({"_id": prevSchedule["_id"]},{"$set":prevSchedule})
+    schedules.update_one({"_id": prevSchedule["_id"]},{"$set":prevSchedule},upsert=True)
     prevSchedule.pop("_id")
-    print(data)
     data[index]=prevSchedule
     return "Edited successfully",200
 def teachers_list(db,id=False):

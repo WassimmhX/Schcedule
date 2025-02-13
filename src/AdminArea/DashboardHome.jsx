@@ -19,12 +19,10 @@ const DashboardHome = () => {
       const res = await axios.post("http://localhost:5000/nbData", {
         "name":name,
       });
-      console.log(res)
       return res.data.nb;
     } catch (err) {
       console.log(err.response.data.error);
       setError(err.response ? err.response.data.error : "Server not reachable");
-      console.log(error)
     }
   }
   useEffect(() => {

@@ -6,7 +6,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
-import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 import Aurora from './Aurora';
 import './SchedulesTable.css';
 import toastr from "toastr";
@@ -19,7 +19,6 @@ const Schedule = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const mySchedule = name ? name : '';
-  const navigate=useNavigate(true);
   const user=JSON.parse(localStorage.getItem('user'));
   const [showMySchedule, setMySchedule] = useState(
     localStorage.getItem('mySchedule') == name
@@ -144,7 +143,6 @@ const Schedule = () => {
       "class": event.extendedProps.class,
       room:formData.get('room'),
     };
-    console.log(updatedEvent);
     try {
       const res = await axios.post('http://127.0.0.1:5000/updateSession', {
         event: updatedEvent,
@@ -398,8 +396,6 @@ const Schedule = () => {
                     timeOut: 3000,
                     progressBar: true,
                   });
-                  console.log(events)
-                  console.log(updatedEvent)
                   setEvents((prevEvents) => {
                     const updatedEvents = prevEvents.map((event) => 
                       event.id === updatedEvent.id

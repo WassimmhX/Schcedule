@@ -33,7 +33,6 @@ def add_schedule(db,data,schedule):
 def edit_schedule_time(db,data,newSchedule):
     schedules = db["schedules"]
     prevSchedule=schedules.find({"subject":newSchedule["subject"],"class":newSchedule["class"],"room":newSchedule["room"],"time":newSchedule["id"],"teacher":newSchedule["teacher"]})
-    print(newSchedule)
     prevSchedule = list(prevSchedule)
     if len(prevSchedule)>1 or len(prevSchedule)==0:
         return "Error occurred",400
@@ -51,12 +50,15 @@ def edit_schedule_time(db,data,newSchedule):
     for i in roomSchedule:
         if times_overlap(newSchedule["time"], i["time"]):
             return "Room already busy in that time", 400
+    filtered_data = {key: value for key, value in prevSchedule.items() if key != "_id"}
+    index=data.index(filtered_data)
     prevSchedule["time"] = newSchedule["time"]
     prevSchedule["day"] = newSchedule["day"]
     schedules.update_one({"_id": prevSchedule["_id"]},{"$set":prevSchedule})
     prevSchedule.pop("_id")
-    data[data.index(prevSchedule)]=prevSchedule
-    return "Edited successfully"
+    print(data)
+    data[index]=prevSchedule
+    return "Edited successfully",200
 def teachers_list(db,id=False):
     if id :
         return list(db["teachers_list"].find())

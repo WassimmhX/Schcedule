@@ -234,19 +234,16 @@ def saveEvent():
     if not request_data or "event" not in request_data:
         return jsonify({"error": "Missing 'event' parameter"}), 400
     event=request_data["event"]
-    print(event)
     event["day"]=days[event["day"]]
     event["id"]=(event["id"].split("-"))[-2]+"-"+(event["id"].split("-"))[-1]
     if len(event["id"])!=13:
         event["id"]=time_config(event["id"])
     if len(event["time"])!=13:
-        print(event["time"])
         event["time"]=time_config(event["time"])
-    print(event)
     message,state=edit_schedule_time(db,data,event)
     if state==400:
         return jsonify({"error":message}),state
-    return jsonify({"error":message}),200
+    return jsonify({"message":message}),200
 if __name__ == '__main__':
     db=get_db()
     data=schedules(db)

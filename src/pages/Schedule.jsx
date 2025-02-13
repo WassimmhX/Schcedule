@@ -6,7 +6,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
-import { Navigate, useLocation, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Aurora from './Aurora';
 import './SchedulesTable.css';
 
@@ -17,6 +17,7 @@ const Schedule = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const mySchedule = name ? name : '';
+  const navigate=useNavigate(true);
   const [showMySchedule, setMySchedule] = useState(
     localStorage.getItem('mySchedule') == name
   );
@@ -84,6 +85,7 @@ const Schedule = () => {
       const res = await axios.post('http://127.0.0.1:5000/returnBy' + x, {
         class: mySchedule,
       });
+      console.log(res.data.message)
       setResponse(res.data.message);
     } catch (error) {
       console.error('Error calling Python function', error);
@@ -261,7 +263,8 @@ const Schedule = () => {
                 // Save the updated event to the backend
                 try {
                   const res = await axios.post('http://127.0.0.1:5000/saveEvent', {"event": updatedEvent});
-                  console.log(res)
+                  console.log(res.data.message)
+                  navigate(0)
                 } catch (error) {
                   console.error('Error saving resized event:', error);
                     info.revert();

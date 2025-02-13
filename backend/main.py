@@ -142,7 +142,7 @@ def addData():
     elif name=="classes":
         message,status=add_class(db,data_)
     elif name=="schedule":
-        message,status=add_schedule(db,data,data_)
+        message,status= add_session(db, data, data_)
     else:
         return jsonify({"error": "adding is not supported"}), 400
     if status==200:
@@ -235,22 +235,26 @@ def updateSession():
     if role!="admin":
         return jsonify({"error":"Permission denied"}), 400
     change=request_data["change"]
+    event = request_data["event"]
+    event["id"] = (event["id"].split("-"))[-3] + "-" + (event["id"].split("-"))[-2]
     if change=="time":
         resize=request_data["resize"]
-        event=request_data["event"]
-        #event["day"]=days[event["day"]]
-        print(event)
-        event["id"]=(event["id"].split("-"))[-3]+"-"+(event["id"].split("-"))[-2]
         if len(event["id"])!=13:
             event["id"]=time_config(event["id"])
         if len(event["time"])!=13:
             event["time"]=time_config(event["time"])
-        message,state=edit_schedule_time(db,data,event,resize=="true")
+        message,state= edit_session_time(db, data, event, resize == "true")
         if state==400:
             return jsonify({"error":message}),state
         return jsonify({"message":message}),200
     elif change=="infos":
-        return jsonify({"error":"Permission denied"}), 400
+        event.pop("id")
+        print(event)
+        message,state=edit_session_infos(db,data,event)
+        if state==400:
+            return jsonify({"error":message}),state
+        else:
+            return jsonify({"message":message}),200
     else:
         return jsonify({"error":"not supported"}), 400
 @app.route("/deleteSession",methods=["POST"])
@@ -262,7 +266,7 @@ def deleteSession():
     if role!="admin":
         return jsonify({"error":"Permission denied"}), 400
     session=request_data["session"]
-    message,state=delete_schedule(db,data,session)
+    message,state= delete_session(db, data, session)
     if state==400:
         return jsonify({"error":message}),state
     else:

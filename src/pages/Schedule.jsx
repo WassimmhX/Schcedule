@@ -114,8 +114,9 @@ const Schedule = () => {
   };
   const openEditModal = () => setEditModalOpen(true);
   const closeEditModal = () => setEditModalOpen(false);
-  const handleEditSubmit = (e) => {
+  const handleEditSubmit = async(e) => {
     e.preventDefault();
+    const formData = new FormData(e.target);
     const event=selectedEvent;
     const start =
       (event.start.getHours() + "").length == 2
@@ -136,15 +137,48 @@ const Schedule = () => {
     const time = `${start}:${startMinutes} - ${end}:${endMinutes}`;
     const updatedEvent = {
       id:event.id,
-      day: event.start.getDay(),
-      subject: event.title,
+      day: days[event.start.getDay()],
+      subject: formData.get('subject'),
       time:time,
-      teacher: event.extendedProps.professor,
+      teacher: formData.get('professor'),
       "class": event.extendedProps.class,
-      room: event.extendedProps.room,
+      room:formData.get('room'),
     };
     console.log(updatedEvent);
-    closeEditModal();
+    try {
+      const res = await axios.post('http://127.0.0.1:5000/updateSession', {
+        event: updatedEvent,
+        role: user.role,
+        change:"infos",
+        resize:"false"
+      });
+  
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event.id === selectedEvent.id ? { ...event,
+             teacher: formData.get('professor'),
+             room:formData.get('room'),
+             title:formData.get('subject'),
+          } : event
+        )
+      );
+  
+      toastr.success("Event deleted successfully", "Success", {
+        positionClass: "toast-top-right",
+        timeOut: 3000,
+        progressBar: true,
+      });
+      closeEditModal();
+    } catch (error) {
+      console.error("Error calling Python function", error);
+  
+      toastr.error("Failed to delete the event", "Error", {
+        positionClass: "toast-top-right",
+        timeOut: 3000,
+        progressBar: true,
+      });
+    }
+    
   };
 
   const handleDeleteEvent=async()=>{
@@ -176,7 +210,6 @@ const Schedule = () => {
       room: event.extendedProps.room,
     };
     try {
-      // Send the event to the backend to delete/update the schedule
       const res = await axios.post('http://127.0.0.1:5000/deleteSession', {
         session: updatedEvent,
         role: user.role,
@@ -189,6 +222,7 @@ const Schedule = () => {
         timeOut: 3000,
         progressBar: true,
       });
+      closePopup();
     } catch (error) {
       console.error("Error calling Python function", error);
   
@@ -529,6 +563,7 @@ const Schedule = () => {
                   <label className="block text-gray-700 font-semibold mb-2">
                     Subject:
                     <input
+                      name="subject"
                       type="text"
                       defaultValue={selectedEvent.title}
                       className="w-full px-3 py-2 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500"
@@ -537,6 +572,7 @@ const Schedule = () => {
                   <label className="block text-gray-700 font-semibold mb-2">
                     Professor:
                     <input
+                      name="professor"
                       type="text"
                       defaultValue={selectedEvent.extendedProps.professor}
                       className="w-full px-3 py-2 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500"
@@ -546,6 +582,7 @@ const Schedule = () => {
                     Room:
                     <input
                       type="text"
+                      name="room"
                       defaultValue={selectedEvent.extendedProps.room}
                       className="w-full px-3 py-2 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500"
                     />

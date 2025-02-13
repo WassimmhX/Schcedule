@@ -13,26 +13,26 @@ def schedules(db,id=False):
         return list(db["schedules"].find())
     else:
         return list(db["schedules"].find({},{"_id":0}))
-def add_schedule(db,data,schedule):
+def add_session(db,data,session):
     schedules=db["schedules"]
-    classSchedule=schedules.find({"class":schedule["class"],"day":schedule["day"]})
-    teacherSchedule=schedules.find({"teacher":schedule["teacher"],"day":schedule["day"]})
-    roomSchedule=schedules.find({"room":schedule["room"],"day":schedule["day"]})
+    classSchedule=schedules.find({"class":session["class"],"day":session["day"]})
+    teacherSchedule=schedules.find({"teacher":session["teacher"],"day":session["day"]})
+    roomSchedule=schedules.find({"room":session["room"],"day":session["day"]})
     for i in classSchedule:
-        if times_overlap(schedule["time"],i["time"]):
+        if times_overlap(session["time"],i["time"]):
             return "Classe already study in that time",400
     for i in teacherSchedule:
-        if times_overlap(schedule["time"],i["time"]):
+        if times_overlap(session["time"],i["time"]):
             return "Teacher already works in that time",400
     for i in roomSchedule:
-        if times_overlap(schedule["time"],i["time"]):
+        if times_overlap(session["time"],i["time"]):
             return "Room already busy in that time",400
-    schedules.insert_one(schedule)
-    if "_id" in schedule:
-        schedule.pop("_id")
-    data.append(schedule)
+    schedules.insert_one(session)
+    if "_id" in session:
+        session.pop("_id")
+    data.append(session)
     return "Added Schedule successfully",200
-def edit_schedule_time(db,data,newSchedule,resize=False):
+def edit_session_time(db,data,newSchedule,resize=False):
     schedules = db["schedules"]
     prevSchedule=schedules.find({"subject":newSchedule["subject"],"class":newSchedule["class"],"room":newSchedule["room"],"time":newSchedule["id"],"teacher":newSchedule["teacher"]})
     prevSchedule = list(prevSchedule)
@@ -54,15 +54,25 @@ def edit_schedule_time(db,data,newSchedule,resize=False):
     for i in roomSchedule:
         if times_overlap(newSchedule["time"], i["time"]):
             return "Room already busy in that time", 400
-    filtered_data = {key: value for key, value in prevSchedule.items() if key != "_id"}
-    index=data.index(filtered_data)
+    prevSchedule.pop("_id")
+    index=data.index(prevSchedule)
     prevSchedule["time"] = newSchedule["time"]
     prevSchedule["day"] = newSchedule["day"]
     schedules.update_one({"_id": prevSchedule["_id"]},{"$set":prevSchedule},upsert=True)
     prevSchedule.pop("_id")
     data[index]=prevSchedule
     return "Edited successfully",200
-def delete_schedule(db,data,schedule):
+def edit_session_infos(db,data,newSession):
+    schedules = db["schedules"]
+    prevSession=list(schedules.find({"time":newSession["time"],"day":newSession["day"],"class":newSession["class"]}))
+    if len(prevSession)!=1:
+        return "Reload the page if the error persist",400
+    prevSession=prevSession[0]
+    schedules.update_one({"_id":prevSession["_id"]},{"$set":newSession})
+    prevSession.pop("_id")
+    data[data.index(prevSession)] = prevSession
+    return "Updated successfully",200
+def delete_session(db,data,schedule):
     schedules=db["schedules"]
     schedule.pop("id")
     try :

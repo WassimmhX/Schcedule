@@ -166,10 +166,10 @@ def add_user(db,user):
 
     for i in user.keys():
         if user[i]=="" and i!="mySchedule":
-            return i+"is empty",400
+            return i+" is empty",400
     if not re.match(r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', user["email"]):
         return "invalid email",400
-    if len(user["phoneNumber"])!=8:
+    if len(user["phone Number"])!=8:
         return "Invalid phone number",400
     if not re.match(r"^[a-zA-Z\s'-]+$",user["name"]):
         return "Invalid name",400

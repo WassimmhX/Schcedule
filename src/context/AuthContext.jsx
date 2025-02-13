@@ -1,5 +1,7 @@
 import axios from "axios";
 import { createContext, useState, useContext } from "react";
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 
 const AuthContext = createContext();
 
@@ -48,10 +50,22 @@ export const AuthProvider = ({ children }) => {
       if (foundUser.role == 'admin') {
         localStorage.setItem('users', JSON.stringify(await getList("users")));
       }
-
+      //  add toast success
+      toastr.success(`Welcome, ${foundUser.name}!`, "Login Successful", {
+        positionClass: "toast-top-right",
+        timeOut: 3000,
+        progressBar: true,
+      });
       console.log('foundUser = '+foundUser.name+'\nlocalStorage = '+ localStorage.getItem('user'))
       return [true,responseMessage]
     } else {
+      //  add toast error
+      
+      toastr.error(responseMessage, "Login Failed", {
+        positionClass: "toast-top-right",
+        timeOut: 3000,
+        progressBar: true,
+    });
       return [false,responseMessage]
     }
   };
@@ -59,11 +73,22 @@ export const AuthProvider = ({ children }) => {
   const verifSingUp=async (user)=>{
     try {
       const res = await axios.post("http://localhost:5000/testSignUp",{user});
+      //  add toast success
+      toastr.success(`Welcome, ${user.name}!`, "SignUp Successful", {
+        positionClass: "toast-top-right",
+        timeOut: 3000,
+        progressBar: true,
+      });
       return [res.data,"User Added successfully"];
     } catch (err) {
       console.log(err.response.data.error);
       setError(err.response ? err.response.data.error : "Server not reachable");
       console.log(error)
+      toastr.error(err.response ? err.response.data.error : "Server not reachable", "SignUp Failed", {
+        positionClass: "toast-top-right",
+        timeOut: 3000,
+        progressBar: true,
+    });
       return [null,err.response.data.error];
     }
   }
@@ -95,6 +120,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.clear();
     setUser(null);
     console.log("onLogOut:"+localStorage.getItem('user')+"\tstatus = "+localStorage.getItem('loggedIn'))
+    //  add toast success
+    toastr.success(`GoodBye, ${user.name}!`, "LogOut Successful", {
+      positionClass: "toast-top-right",
+      timeOut: 3000,
+      progressBar: true,
+    });
   };
 
   

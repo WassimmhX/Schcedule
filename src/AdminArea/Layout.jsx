@@ -1,7 +1,7 @@
 import { UserCircle, Home, Users, BookOpen, School, GraduationCap, CalendarSync } from "lucide-react";
 import Aurora from "../pages/Aurora";
 
-const Layout = ({ children, setActivePage}) => {
+const Layout = ({ children, setActivePage, activePage}) => {
   return (
     <div className="relative min-h-screen mt-10 m-4">
       {/* Aurora Background */}
@@ -17,51 +17,24 @@ const Layout = ({ children, setActivePage}) => {
             </h1>
           </div>
           <nav className="mt-8 space-y-4">
-            <a
-              onClick={() => setActivePage("dashboard")}
-              className="flex items-center py-3 px-4 text-white transition hover:bg-gray-700/50 hover:scale-105 rounded-md"
-            >
-              <Home className="w-5 h-5 mr-3" />
-              Dashboard
-            </a>
-            <a
-              onClick={() => setActivePage("userList")}
-
-              className="flex items-center py-3 px-4 text-white transition hover:bg-gray-700/50 hover:scale-105 rounded-md"
-            >
-              <Users className="w-5 h-5 mr-3" />
-              Users
-            </a>
-            <a
-              onClick={() => setActivePage("teacherList")}
-              className="flex items-center py-3 px-4 text-white transition hover:bg-gray-700/50 hover:scale-105 rounded-md"
-            >
-              <BookOpen className="w-5 h-5 mr-3" />
-              Teachers
-            </a>
-            <a
-              onClick={() => setActivePage("roomList")}
-              className="flex items-center py-3 px-4 text-white transition hover:bg-gray-700/50 hover:scale-105 rounded-md"
-            >
-              <School className="w-5 h-5 mr-3" />
-              Rooms
-            </a>
-            <a
-              onClick={() => setActivePage("classList")}
-              className="flex items-center py-3 px-4 text-white transition hover:bg-gray-700/50 hover:scale-105 rounded-md"
-            >
-              {/* <BookMarked className="w-5 h-5 mr-3" /> */}
-              <GraduationCap className="w-5 h-5 mr-3" />
-              Classes
-            </a>
-            <a
-              onClick={() => setActivePage("EditSchedule")}
-              className="flex items-center py-3 px-4 text-white transition hover:bg-gray-700/50 hover:scale-105 rounded-md"
-            >
-              {/* <BookMarked className="w-5 h-5 mr-3" /> */}
-              <CalendarSync className="w-5 h-5 mr-3" />
-              Edit Schedule
-            </a>
+          {[
+              { name: "dashboard", label: "Dashboard", icon: Home },
+              { name: "userList", label: "Users", icon: Users, group: ["userList", "addUser"] },
+              { name: "teacherList", label: "Teachers", icon: BookOpen, group: ["teacherList", "addTeacher"] },
+              { name: "roomList", label: "Rooms", icon: School },
+              { name: "classList", label: "Classes", icon: GraduationCap },
+              { name: "EditSchedule", label: "Edit Schedule", icon: CalendarSync },
+            ].map(({ name, label, icon: Icon, group }) => (
+              <a
+                key={name}
+                onClick={() => setActivePage(name)}
+                className={`flex items-center py-3 px-4 text-white transition rounded-md cursor-pointer 
+                  ${(group ? group.includes(activePage) : activePage === name) ? "bg-gray-700/50 scale-105 font-semibold shadow-md" : "hover:bg-gray-700/50 hover:scale-105"}`}
+              >
+                <Icon className="w-5 h-5 mr-3" />
+                {label}
+              </a>
+            ))}
           </nav>
         </aside>
 

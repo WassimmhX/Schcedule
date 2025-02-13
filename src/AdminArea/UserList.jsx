@@ -11,8 +11,6 @@ const UserList = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  console.log('list of users = ' + localStorage.getItem('users'));
-
   const deleteUser = async (email) => {
     Swal.fire({
       title: 'Are you sure?',

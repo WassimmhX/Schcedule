@@ -25,8 +25,6 @@ const UserForm = () => {
         "data":user,
         "name":"users"
       });
-      // toastSucc("User Added Successfully")
-      console.log('user = ' +JSON.stringify(user))
       Swal.fire({
         title: "Good job!",
         text: "User Added Successfully",
@@ -51,8 +49,7 @@ const UserForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newUser = { name: name, email: email, password: password, phoneNumber: phoneNumber, role: role, mySchedule: "" } ;
-    let [result, message] = await addUser(newUser);  // false ou bien null
-    console.log('aa' + result + message) 
+    let [result, message] = await addUser(newUser);
     if (result) {
       // User added successfully, reset form
       setName("");

@@ -22,17 +22,12 @@ const ClassSessionForm = () => {
   const classes = JSON.parse(localStorage.getItem("classes"))
   const days = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"]
   const hours=["1.30H","2H","3H"]
-  console.log(teachers)
-  console.log(rooms)
-  console.log(classes)
 
   const changeSchedules=async()=>{
     const formData = new FormData();
     formData.append("file", files[0]);
     try {
-      console.log(files)
       const res = await axios.post("http://localhost:5000/changeSchedules", formData);
-      console.log('here' +res)
       alert("Schedule changed successfully")
       Swal.fire({
         title: "Schedule changed successfully",
@@ -116,7 +111,6 @@ const ClassSessionForm = () => {
         });
       }else{
         const res = await axios.post("http://localhost:5000/addData",{"name":"schedule","data":schedule})
-        console.log(res)
         // alert("Class Session Added Successfully")
         Swal.fire({
           title: "Class Session Added Successfully",

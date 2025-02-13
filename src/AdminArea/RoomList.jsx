@@ -21,7 +21,6 @@ const RoomList = () => {
         data: room,
         name: 'rooms',
       });
-      console.log(res);
       Swal.fire({
         title: 'Room Added Successfully',
         icon: 'success',

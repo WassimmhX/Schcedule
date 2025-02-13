@@ -14,7 +14,6 @@ const TeacherForm = () => {
         "data":teacher,
         "name":"teachers"
       });
-      console.log(JSON.stringify(res))
 
       // alert("Teacher Added Successfully"+res.statusText); // ok
       Swal.fire({
@@ -47,7 +46,6 @@ const TeacherForm = () => {
     e.preventDefault();
     const newTeacher={email:email, name:name}
     let [result, message] = await addTeacher(newTeacher);
-    console.log('aa' + result + message) 
 
     // Reset form
     if (result) {

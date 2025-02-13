@@ -29,7 +29,6 @@ const TeacherList = () => {
             key: email,
           });
 
-          console.log(res.data.message);
           // alert(res.data.message);
 
           const updatedTeachers = teachers.filter(
@@ -79,7 +78,6 @@ const TeacherList = () => {
             name: 'teachers',
             data: editingTeacher,
           });
-          console.log(JSON.stringify(res.data.succes));
 
           const updatedTeachers = teachers.map((teacher) =>
             teacher.email === editingTeacher.email
@@ -119,7 +117,6 @@ const TeacherList = () => {
 
   const handleEdit = (teacher) => setEditingTeacher(teacher);
 
-  console.log(teachers);
 
   const filteredTeachers = teachers.filter(
     (teacher) =>

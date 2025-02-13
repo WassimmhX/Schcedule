@@ -52,7 +52,6 @@ const Navbar = () => {
   };
 
   const mySchedule = localStorage.getItem("mySchedule");
-  console.log('from navbar :', localStorage.getItem("mySchedule"))
   const scheduleOptions = [
     { path: '/schedules/students', label: 'Students' },
     { path: '/schedules/teachers', label: 'Teachers' },

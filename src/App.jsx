@@ -17,7 +17,6 @@ import Dashboard from './AdminArea/Dashboard';
 import RoomsSchedules from './pages/RoomsSchedules';
 
 function App() {
-
   return (
     <Router>
       <div className="pb-10">

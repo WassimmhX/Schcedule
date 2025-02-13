@@ -13,6 +13,9 @@ import './SchedulesTable.css';
 const Schedule = () => {
   const { name } = useParams();
   const location = useLocation();
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
   const mySchedule = name ? name : '';
   const [showMySchedule, setMySchedule] = useState(
     localStorage.getItem('mySchedule') == name
@@ -96,6 +99,22 @@ const Schedule = () => {
     Samedi: 6,
     Dimanche: 0,
   };
+  const handleEventClick = (eventInfo) => {
+    setSelectedEvent(eventInfo.event);
+    setShowPopup(true);
+  };
+
+  const closePopup = () => {
+    setShowPopup(false);
+    setSelectedEvent(null);
+  };
+  const openEditModal = () => setEditModalOpen(true);
+  const closeEditModal = () => setEditModalOpen(false);
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    // Handle editing logic here
+    closeEditModal();
+  };
 
   const convertToFullCalendarEvents = (backendData) => {
     return backendData.map((item) => {
@@ -103,7 +122,6 @@ const Schedule = () => {
       const currentWeekStart = new Date(
         today.setDate(today.getDate() - today.getDay())
       );
-      console.log(currentWeekStart+"hhhhhhhhhhhhh");
       const eventDate = new Date(currentWeekStart);
       eventDate.setDate(eventDate.getDate() + daysOfWeek[item.day]);
 
@@ -173,6 +191,7 @@ const Schedule = () => {
               slotMaxTime="19:00:00"
               allDaySlot={false}
               hiddenDays={[0]}
+              eventClick={handleEventClick}
               headerToolbar={{
                 left: 'prev,next today',
                 center: 'title',
@@ -218,9 +237,166 @@ const Schedule = () => {
                   </div>
                 );
               }}
+              eventDrop={async(info) => {
+                console.log(info.event.start.getHours())
+                console.log(info.event.start.getMinutes())
+                console.log(info.event.end.getHours())
+                console.log(info.event.end.getMinutes())
+                const start=((info.event.start.getHours()+"").length==2?(info.event.start.getHours()+""):("0"+info.event.start.getHours()))
+                            +":"+((info.event.start.getMinutes()+"").length==2?(info.event.start.getMinutes()+""):(info.event.start.getMinutes()+"0"))
+                const end=((info.event.end.getHours()+"").length==2?(info.event.end.getHours()+""):("0"+info.event.end.getHours()))
+                            +":"+((info.event.end.getMinutes()+"").length==2?(info.event.end.getMinutes()+""):(info.event.end.getMinutes()+"0"))
+                console.log(start+" - "+end)
+                const time=start+" - "+end
+                const updatedEvent = {
+                  id:info.event.id,
+                  day: info.event.start.getDay(),
+                  subject: info.event.title,
+                  time:time,
+                  teacher: info.event.extendedProps.professor,
+                  "class": info.event.extendedProps.class,
+                  room: info.event.extendedProps.room,
+                };
+
+                // Save the updated event to the backend
+                try {
+                  const res = await axios.post('http://127.0.0.1:5000/saveEvent', {"event": updatedEvent});
+                  console.log(res)
+                } catch (error) {
+                  console.error('Error saving resized event:', error);
+                    info.revert();
+                }
+              }}
+              eventResize={(info) => {
+                const f=async(info)=>{
+                  const updatedEvent = {
+                  id: info.event.id,
+                  title: info.event.title,
+                  start: info.event.start.toISOString(),
+                  end: info.event.end.toISOString(),
+                  extendedProps: info.event.extendedProps,
+                };
+
+                // Save the updated event to the backend
+                try {
+                  const res = await axios.post('http://127.0.0.1:5000/saveEvent', {"event": updatedEvent});
+                  console.log(res)
+                } catch (error) {
+                  console.error('Error saving resized event:', error);
+                    info.revert();
+                }}
+                f(info)
+              }}
             />
           </div>
         </div>
+        {/* Popup */}
+        {showPopup && selectedEvent && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
+          <div className="bg-white/90 rounded-2xl shadow-2xl p-6 max-w-md w-full transition-transform transform scale-105 hover:scale-100">
+            {/* Event Title */}
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">{selectedEvent.title}</h2>
+            
+            {/* Event Details */}
+            <p className="text-gray-700">
+              <strong className="font-semibold text-gray-900">Professor:</strong> {selectedEvent.extendedProps.professor}
+            </p>
+            <p className="text-gray-700">
+              <strong className="font-semibold text-gray-900">Room:</strong> {selectedEvent.extendedProps.room}
+            </p>
+            <p className="text-gray-700">
+              <strong className="font-semibold text-gray-900">Class:</strong> {selectedEvent.extendedProps.class}
+            </p>
+            <p className="text-gray-700">
+              <strong className="font-semibold text-gray-900">Time:</strong>{' '}
+              {selectedEvent.start.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}{' '}
+              -{' '}
+              {selectedEvent.end.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </p>
+        
+            <div className="flex w-full justify-between items-center mt-6">
+              {/* Edit and Delete Buttons */}
+              <div className="flex space-x-2">
+                <button
+                  onClick={openEditModal}
+                  className="px-4 py-2 bg-sky-600 text-white font-semibold rounded-lg shadow-lg hover:bg-sky-900 transition"
+                >
+                  Edit
+                </button>
+                <button
+                  className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-lg hover:bg-red-600 transition"
+                >
+                  Delete
+                </button>
+              </div>
+        
+              {/* Close Button */}
+              <button
+                onClick={closePopup}
+                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-semibold rounded-lg shadow-lg hover:from-purple-600 hover:to-indigo-600 transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        
+          {/* Edit Modal (Hidden by Default) */}
+          {isEditModalOpen && ( /* Conditional rendering for the edit modal */
+            <div className="fixed inset-0 z-60 flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm">
+              <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
+                <h3 className="text-xl font-bold mb-4 text-gray-800">Edit Event</h3>
+                <form onSubmit={handleEditSubmit}>
+                  <label className="block text-gray-700 font-semibold mb-2">
+                    Title:
+                    <input
+                      type="text"
+                      defaultValue={selectedEvent.title}
+                      className="w-full px-3 py-2 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500"
+                    />
+                  </label>
+                  <label className="block text-gray-700 font-semibold mb-2">
+                    Professor:
+                    <input
+                      type="text"
+                      defaultValue={selectedEvent.extendedProps.professor}
+                      className="w-full px-3 py-2 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500"
+                    />
+                  </label>
+                  <label className="block text-gray-700 font-semibold mb-2">
+                    Room:
+                    <input
+                      type="text"
+                      defaultValue={selectedEvent.extendedProps.room}
+                      className="w-full px-3 py-2 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500"
+                    />
+                  </label>
+                  <div className="flex justify-end space-x-4 mt-4">
+                    <button
+                      type="button"
+                      onClick={closeEditModal}
+                      className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow hover:bg-gray-400 transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-sky-600 text-white rounded-lg shadow hover:bg-sky-700 transition"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>      
+      )}
       </div>
     </div>
   );

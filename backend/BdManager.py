@@ -30,7 +30,33 @@ def add_schedule(db,data,schedule):
     schedules.insert_one(schedule)
     data.append(schedule)
     return "Added Schedule successfully",200
-
+def edit_schedule_time(db,data,newSchedule):
+    schedules = db["schedules"]
+    prevSchedule=schedules.find({"subject":newSchedule["subject"],"class":newSchedule["class"],"room":newSchedule["room"],"time":newSchedule["id"],"teacher":newSchedule["teacher"]})
+    print(newSchedule)
+    prevSchedule = list(prevSchedule)
+    if len(prevSchedule)>1 or len(prevSchedule)==0:
+        return "Error occurred",400
+    prevSchedule=prevSchedule[0]
+    classSchedule = schedules.find({"class": newSchedule["class"], "day": newSchedule["day"]})
+    teacherSchedule = schedules.find({"teacher": newSchedule["teacher"], "day": newSchedule["day"]})
+    roomSchedule = schedules.find({"room": newSchedule["room"], "day": newSchedule["day"]})
+    for i in classSchedule:
+        if times_overlap(newSchedule["time"], i["time"]):
+            print(newSchedule["time"],i)
+            return "Class already have a session in that time", 400
+    for i in teacherSchedule:
+        if times_overlap(newSchedule["time"], i["time"]):
+            return "Teacher already works in that time", 400
+    for i in roomSchedule:
+        if times_overlap(newSchedule["time"], i["time"]):
+            return "Room already busy in that time", 400
+    prevSchedule["time"] = newSchedule["time"]
+    prevSchedule["day"] = newSchedule["day"]
+    schedules.update_one({"_id": prevSchedule["_id"]},{"$set":prevSchedule})
+    prevSchedule.pop("_id")
+    data[data.index(prevSchedule)]=prevSchedule
+    return "Edited successfully"
 def teachers_list(db,id=False):
     if id :
         return list(db["teachers_list"].find())
@@ -255,3 +281,17 @@ def times_overlap(time1, time2):
     start2, end2 = parse_time_range(time2)
 
     return max(start1, start2) < min(end1, end2)
+def time_config(time):
+    start,end=time.split(" - ")
+    hs,ms=start.split(":")
+    he,me=end.split(":")
+    if len(hs)!=2:
+        hs="0"+hs
+    if len(ms)!=2:
+        ms=ms+"0"
+    if len(he)!=2:
+        he="0"+he
+    if len(me)!=2:
+        me=me+"0"
+    t=hs+":"+ms+" - "+he+":"+me
+    return t

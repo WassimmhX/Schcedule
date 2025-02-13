@@ -12,7 +12,7 @@ def returnByTeacher():
         return jsonify({"error": "Missing 'class' parameter"}), 400  # Return 400 if missing
     teacher = request_data["class"]
     for i in data:
-        if i["teacher"]==teacher:
+        if i["teacher"].strip()==teacher.strip():
             s.append(i)
     print("function completed")
     return jsonify({"message": s}), 200
@@ -24,7 +24,7 @@ def returnByClass():
         return jsonify({"error": "Missing 'class' parameter"}), 400  # Return 400 if missing
     students = request_data["class"]
     for i in data:
-        if type(i["class"])!=float and   (i["class"] in students or students in i["class"]):
+        if type(i["class"])!=float and   (i["class"].strip() in students or students.strip() in i["class"].strip()):
             s.append(i)
     print("function completed")
     return jsonify({"message": s}), 200
@@ -36,7 +36,7 @@ def returnByRoom():
         return jsonify({"error": "Missing 'class' parameter"}), 400  # Return 400 if missing
     room = request_data["class"]
     for i in data:
-        if i["room"] == room:
+        if i["room"].strip() == room.strip():
             s.append(i)
     print("function completed")
     return jsonify({"message": s}), 200

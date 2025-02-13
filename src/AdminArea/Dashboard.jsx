@@ -36,7 +36,7 @@ const Dashboard = () => {
   };
 
   return (
-    <Layout setActivePage={setActivePage}>
+    <Layout setActivePage={setActivePage} activePage={activePage}>
       <div className="bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 shadow-lg rounded-2xl p-8 mt-6 max-w-4xl mx-auto">
         
         {/* Navigation Buttons */}

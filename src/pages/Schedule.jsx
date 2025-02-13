@@ -24,6 +24,7 @@ const Schedule = () => {
   const [showMySchedule, setMySchedule] = useState(
     localStorage.getItem('mySchedule') == name
   );
+  const days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
   const [response, setResponse] = useState([]);
   const filters = useState({ professor: '', class: '', room: '' });
   const { yourLocation } = location.state || {};
@@ -84,11 +85,9 @@ const Schedule = () => {
       if(x==null){
         x=getCurrent(mySchedule);
       }
-      console.log("x:"+x);
       const res = await axios.post('http://127.0.0.1:5000/returnBy' + x, {
         class: mySchedule,
       });
-      console.log(res.data.message)
       setResponse(res.data.message);
     } catch (error) {
       console.error('Error calling Python function', error);
@@ -117,9 +116,89 @@ const Schedule = () => {
   const closeEditModal = () => setEditModalOpen(false);
   const handleEditSubmit = (e) => {
     e.preventDefault();
-    // Handle editing logic here
+    const event=selectedEvent;
+    const start =
+      (event.start.getHours() + "").length == 2
+        ? event.start.getHours() + ""
+        : "0" + event.start.getHours();
+    const startMinutes =
+      (event.start.getMinutes() + "").length == 2
+        ? event.start.getMinutes() + ""
+        : "0" + event.start.getMinutes();
+    const end =
+      (event.end.getHours() + "").length == 2
+        ? event.end.getHours() + ""
+        : "0" + event.end.getHours();
+    const endMinutes =
+      (event.end.getMinutes() + "").length == 2
+        ? event.end.getMinutes() + ""
+        : "0" + event.end.getMinutes();
+    const time = `${start}:${startMinutes} - ${end}:${endMinutes}`;
+    const updatedEvent = {
+      id:event.id,
+      day: event.start.getDay(),
+      subject: event.title,
+      time:time,
+      teacher: event.extendedProps.professor,
+      "class": event.extendedProps.class,
+      room: event.extendedProps.room,
+    };
+    console.log(updatedEvent);
     closeEditModal();
   };
+
+  const handleDeleteEvent=async()=>{
+    const event=selectedEvent;
+    const start =
+      (event.start.getHours() + "").length == 2
+        ? event.start.getHours() + ""
+        : "0" + event.start.getHours();
+    const startMinutes =
+      (event.start.getMinutes() + "").length == 2
+        ? event.start.getMinutes() + ""
+        : "0" + event.start.getMinutes();
+    const end =
+      (event.end.getHours() + "").length == 2
+        ? event.end.getHours() + ""
+        : "0" + event.end.getHours();
+    const endMinutes =
+      (event.end.getMinutes() + "").length == 2
+        ? event.end.getMinutes() + ""
+        : "0" + event.end.getMinutes();
+    const time = `${start}:${startMinutes} - ${end}:${endMinutes}`;
+    const updatedEvent = {
+      id:event.id,
+      day: days[event.start.getDay()],
+      subject: event.title,
+      time:time,
+      teacher: event.extendedProps.professor,
+      "class": event.extendedProps.class,
+      room: event.extendedProps.room,
+    };
+    try {
+      // Send the event to the backend to delete/update the schedule
+      const res = await axios.post('http://127.0.0.1:5000/deleteSession', {
+        session: updatedEvent,
+        role: user.role,
+      });
+  
+      setEvents((prevEvents) => prevEvents.filter((e) => e.id !== event.id));
+  
+      toastr.success("Event deleted successfully", "Success", {
+        positionClass: "toast-top-right",
+        timeOut: 3000,
+        progressBar: true,
+      });
+    } catch (error) {
+      console.error("Error calling Python function", error);
+  
+      toastr.error("Failed to delete the event", "Error", {
+        positionClass: "toast-top-right",
+        timeOut: 3000,
+        progressBar: true,
+      });
+    }
+  }
 
   const convertToFullCalendarEvents = (backendData) => {
     return backendData.map((item) => {
@@ -146,7 +225,7 @@ const Schedule = () => {
         0
       );
       return {
-        id: `${item.class}-${item.room}-${item.time}`,
+        id: `${item.class}-${item.room}-${item.time}-${item.day}`,
         title: item.subject,
         start: startDateTime.toISOString(),
         end: endDateTime.toISOString(),
@@ -245,19 +324,26 @@ const Schedule = () => {
                 );
               }}
               eventDrop={async(info) => {
-                console.log(info.event.start.getHours())
-                console.log(info.event.start.getMinutes())
-                console.log(info.event.end.getHours())
-                console.log(info.event.end.getMinutes())
-                const start=((info.event.start.getHours()+"").length==2?(info.event.start.getHours()+""):("0"+info.event.start.getHours()))
-                            +":"+((info.event.start.getMinutes()+"").length==2?(info.event.start.getMinutes()+""):(info.event.start.getMinutes()+"0"))
-                const end=((info.event.end.getHours()+"").length==2?(info.event.end.getHours()+""):("0"+info.event.end.getHours()))
-                            +":"+((info.event.end.getMinutes()+"").length==2?(info.event.end.getMinutes()+""):(info.event.end.getMinutes()+"0"))
-                console.log(start+" - "+end)
-                const time=start+" - "+end
+                const start =
+                  (info.event.start.getHours() + "").length == 2
+                    ? info.event.start.getHours() + ""
+                    : "0" + info.event.start.getHours();
+                const startMinutes =
+                  (info.event.start.getMinutes() + "").length == 2
+                    ? info.event.start.getMinutes() + ""
+                    : "0" + info.event.start.getMinutes();
+                const end =
+                  (info.event.end.getHours() + "").length == 2
+                    ? info.event.end.getHours() + ""
+                    : "0" + info.event.end.getHours();
+                const endMinutes =
+                  (info.event.end.getMinutes() + "").length == 2
+                    ? info.event.end.getMinutes() + ""
+                    : "0" + info.event.end.getMinutes();
+                const time = `${start}:${startMinutes} - ${end}:${endMinutes}`;
                 const updatedEvent = {
                   id:info.event.id,
-                  day: info.event.start.getDay(),
+                  day: days[info.event.start.getDay()],
                   subject: info.event.title,
                   time:time,
                   teacher: info.event.extendedProps.professor,
@@ -267,21 +353,34 @@ const Schedule = () => {
 
                 // Save the updated event to the backend
                 try {
-                  const res = await axios.post('http://127.0.0.1:5000/saveEvent', {
+                  const res = await axios.post('http://127.0.0.1:5000/updateSession', {
                   "event": updatedEvent,
                   "resize":"false",
                   "role":user.role,
                   "change":"time"
                   });
-                  navigate(0)
-                  console.log(res.data.message)
                   toastr.success(res.data.message, "Success", {
                     positionClass: "toast-top-right",
                     timeOut: 3000,
                     progressBar: true,
                   });
+                  console.log(events)
+                  console.log(updatedEvent)
+                  setEvents((prevEvents) => {
+                    const updatedEvents = prevEvents.map((event) => 
+                      event.id === updatedEvent.id
+                        ? {
+                            ...event,
+                            start: info.event.start.toISOString(),
+                            end: info.event.end.toISOString(),
+                          }
+                        : event
+                    );
+                    return updatedEvents;
+                  });
+              
                 } catch (error) {
-                  toastr.error('', "Error Saving", {
+                  toastr.error('', error.response.data.error, {
                     positionClass: "toast-top-right",
                     timeOut: 3000,
                     progressBar: true,
@@ -292,19 +391,26 @@ const Schedule = () => {
                 }
               }}
               eventResize={async(info) => {
-                console.log(info.event.start.getHours())
-                console.log(info.event.start.getMinutes())
-                console.log(info.event.end.getHours())
-                console.log(info.event.end.getMinutes())
-                const start=((info.event.start.getHours()+"").length==2?(info.event.start.getHours()+""):("0"+info.event.start.getHours()))
-                            +":"+((info.event.start.getMinutes()+"").length==2?(info.event.start.getMinutes()+""):(info.event.start.getMinutes()+"0"))
-                const end=((info.event.end.getHours()+"").length==2?(info.event.end.getHours()+""):("0"+info.event.end.getHours()))
-                            +":"+((info.event.end.getMinutes()+"").length==2?(info.event.end.getMinutes()+""):(info.event.end.getMinutes()+"0"))
-                console.log(start+" - "+end)
-                const time=start+" - "+end
+                const start =
+                  (info.event.start.getHours() + "").length == 2
+                    ? info.event.start.getHours() + ""
+                    : "0" + info.event.start.getHours();
+                const startMinutes =
+                  (info.event.start.getMinutes() + "").length == 2
+                    ? info.event.start.getMinutes() + ""
+                    : "0" + info.event.start.getMinutes();
+                const end =
+                  (info.event.end.getHours() + "").length == 2
+                    ? info.event.end.getHours() + ""
+                    : "0" + info.event.end.getHours();
+                const endMinutes =
+                  (info.event.end.getMinutes() + "").length == 2
+                    ? info.event.end.getMinutes() + ""
+                    : "0" + info.event.end.getMinutes();
+                const time = `${start}:${startMinutes} - ${end}:${endMinutes}`;
                 const updatedEvent = {
                   id:info.event.id,
-                  day: info.event.start.getDay(),
+                  day: days[info.event.start.getDay()],
                   subject: info.event.title,
                   time:time,
                   teacher: info.event.extendedProps.professor,
@@ -314,24 +420,36 @@ const Schedule = () => {
 
                 // Save the updated event to the backend
                 try {
-                  const res = await axios.post('http://127.0.0.1:5000/saveEvent', 
+                  const res = await axios.post('http://127.0.0.1:5000/updateSession', 
                   {
                     "event": updatedEvent,
                     "resize": "true",
                     "role":user.role,
                     "change":"time"
                   });
-                  console.log(res.data.message)
-                  navigate(0)
                   toastr.success(res.data.message, "Success", {
                     positionClass: "toast-top-right",
                     timeOut: 3000,
                     progressBar: true,
                   });
+                  setEvents((prevEvents) => {
+                    const updatedEvents = prevEvents.map((event) => 
+                      event.id === updatedEvent.id
+                        ? {
+                            ...event,
+                            start: info.event.start.toISOString(),
+                            end: info.event.end.toISOString(),
+                            
+                          }
+                        : event
+                    );
+                    return updatedEvents;
+                  });
+              
                 } catch (error) {
                   console.error('Error saving resized event:', error);
                   info.revert();
-                  toastr.error('', "Error Saving", {
+                  toastr.error('', error.response.data.error, {
                     positionClass: "toast-top-right",
                     timeOut: 3000,
                     progressBar: true,
@@ -373,19 +491,24 @@ const Schedule = () => {
         
             <div className="flex w-full justify-between items-center mt-6">
               {/* Edit and Delete Buttons */}
+              {user.role=="admin"?
               <div className="flex space-x-2">
-                <button
-                  onClick={openEditModal}
-                  className="px-4 py-2 bg-sky-600 text-white font-semibold rounded-lg shadow-lg hover:bg-sky-900 transition"
-                >
-                  Edit
-                </button>
-                <button
-                  className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-lg hover:bg-red-600 transition"
-                >
-                  Delete
-                </button>
-              </div>
+              <button
+                onClick={openEditModal}
+                className="px-4 py-2 bg-sky-600 text-white font-semibold rounded-lg shadow-lg hover:bg-sky-900 transition"
+              >
+                Edit
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-lg hover:bg-red-600 transition"
+                onClick={handleDeleteEvent}
+              >
+                Delete
+              </button>
+            </div>
+            :
+              <div></div>}
+              
         
               {/* Close Button */}
               <button
@@ -404,7 +527,7 @@ const Schedule = () => {
                 <h3 className="text-xl font-bold mb-4 text-gray-800">Edit Event</h3>
                 <form onSubmit={handleEditSubmit}>
                   <label className="block text-gray-700 font-semibold mb-2">
-                    Title:
+                    Subject:
                     <input
                       type="text"
                       defaultValue={selectedEvent.title}

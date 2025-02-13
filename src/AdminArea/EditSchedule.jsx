@@ -73,6 +73,12 @@ const ClassSessionForm = () => {
       if (m>=60){
         m=m-60
         h+=1
+        if (m==0){
+          m="00"
+        }
+        else if (m<10){
+          m="0"+m
+        }
       }
       time2=h+":"+m
     }

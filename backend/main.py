@@ -33,7 +33,6 @@ def returnByClass():
         if type(i["class"])!=float and   (i["class"] in students or students in i["class"]):
             s.append(i)
     print("function completed")
-    print(s)
     return jsonify({"message": s}), 200
 @app.route('/returnByRoom', methods=['POST'])
 def returnByRoom():
@@ -165,7 +164,6 @@ def updateData():
     if name=="users":
         message,responseType=updateUser(db,data)
     if name=="teachers":
-        print(data)
         message,responseType=updateTeacher(db,data)
     return jsonify(message),responseType
 @app.route("/deleteData", methods=["POST"])
@@ -228,9 +226,8 @@ def changeSchedules():
         return jsonify({"message":'File uploaded and saved successfully'}), 200
     else:
         return jsonify({"errot":'No selected file'}), 400
-@app.route("/saveEvent",methods=["POST"])
-def saveEvent():
-    days=["Dimanche","Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
+@app.route("/updateSession",methods=["POST"])
+def updateSession():
     request_data = request.get_json()
     if not request_data or "event" not in request_data or "change" not in request_data or "role" not in request_data or "resize" not in request_data:
         return jsonify({"error": "Missing parameter"}), 400
@@ -241,8 +238,9 @@ def saveEvent():
     if change=="time":
         resize=request_data["resize"]
         event=request_data["event"]
-        event["day"]=days[event["day"]]
-        event["id"]=(event["id"].split("-"))[-2]+"-"+(event["id"].split("-"))[-1]
+        #event["day"]=days[event["day"]]
+        print(event)
+        event["id"]=(event["id"].split("-"))[-3]+"-"+(event["id"].split("-"))[-2]
         if len(event["id"])!=13:
             event["id"]=time_config(event["id"])
         if len(event["time"])!=13:
@@ -251,9 +249,26 @@ def saveEvent():
         if state==400:
             return jsonify({"error":message}),state
         return jsonify({"message":message}),200
+    elif change=="infos":
+        return jsonify({"error":"Permission denied"}), 400
     else:
         return jsonify({"error":"not supported"}), 400
+@app.route("/deleteSession",methods=["POST"])
+def deleteSession():
+    request_data = request.get_json()
+    if not request_data or not "session" in request_data or not "role" in request_data:
+        return jsonify({"error": "Missing parameter"}), 400
+    role=request_data["role"]
+    if role!="admin":
+        return jsonify({"error":"Permission denied"}), 400
+    session=request_data["session"]
+    message,state=delete_schedule(db,data,session)
+    if state==400:
+        return jsonify({"error":message}),state
+    else:
+        return jsonify({"message":message}),200
 if __name__ == '__main__':
+    days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
     db=get_db()
     data=schedules(db)
     app.run(debug=True)

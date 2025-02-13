@@ -1,12 +1,6 @@
 import shutil
-
-from bson import ObjectId
-from flask import Flask, render_template, request,jsonify
+from flask import Flask, request,jsonify
 from flask_cors import (CORS)
-import re
-
-# from streamlit import status
-
 from BdManager import *
 app = Flask(__name__)
 CORS(app)
@@ -46,16 +40,6 @@ def returnByRoom():
             s.append(i)
     print("function completed")
     return jsonify({"message": s}), 200
-
-def allTeachers():
-    return teachers_list(db)
-def allClasses():
-    return classes_list(db)
-def allRooms():
-    return rooms_list(db)
-def allUsers():
-    return users_list(db)
-
 @app.route('/getData', methods=['POST'])
 def getData():
     request_data = request.get_json()
@@ -90,7 +74,6 @@ def testLogin():
         return jsonify({"error":message}), 400
     else:
         return jsonify({"message":user}), 200
-
 @app.route("/testSignUp",methods=["POST"])
 def testSingUp():
     request_data = request.get_json()
@@ -104,8 +87,6 @@ def testSingUp():
         return jsonify(user), 200
     else:
         return jsonify({"error": message}), 400
-
-
 @app.route('/updateUserSchedule', methods=['POST'])
 def updateUserSchedule():
     request_data = request.get_json()
@@ -125,7 +106,6 @@ def getMySchedule():
     email=request_data["email"]
     schedule=getUserAttribute(db,email,"mySchedule")
     return jsonify({"schedule":schedule}), 200
-
 @app.route("/addData", methods=["POST"])
 def addData():
     request_data = request.get_json()
@@ -149,7 +129,6 @@ def addData():
         return jsonify({"message": message}), 200
     else:
         return jsonify({"error": message}), 400
-
 @app.route("/updateData", methods=["POST"])
 def updateData():
     request_data = request.get_json()
@@ -187,7 +166,6 @@ def deleteData():
         return jsonify({"error":message}),400
     else:
         return jsonify({"message":message}), 200
-
 @app.route("/nbData", methods=["POST"])
 def nbData():
     request_data = request.get_json()
@@ -204,8 +182,6 @@ def nbData():
         return jsonify({"nb":nb_room(db)}),200
     else:
         return jsonify({"error":"not supported"}), 400
-
-
 @app.route("/changeSchedules", methods=["POST"])
 def changeSchedules():
     if 'file' not in request.files:
@@ -271,6 +247,16 @@ def deleteSession():
         return jsonify({"error":message}),state
     else:
         return jsonify({"message":message}),200
+
+
+def allTeachers():
+    return teachers_list(db)
+def allClasses():
+    return classes_list(db)
+def allRooms():
+    return rooms_list(db)
+def allUsers():
+    return users_list(db)
 if __name__ == '__main__':
     days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
     db=get_db()

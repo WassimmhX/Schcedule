@@ -9,6 +9,8 @@ import axios from 'axios';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Aurora from './Aurora';
 import './SchedulesTable.css';
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 
 const Schedule = () => {
   const { name } = useParams();
@@ -270,10 +272,21 @@ const Schedule = () => {
                   "resize":"false",
                   "role":user.role,
                   "change":"time"
-                });
-                  console.log(res.data.message)
+                  });
                   navigate(0)
+                  console.log(res.data.message)
+                  toastr.success(res.data.message, "Success", {
+                    positionClass: "toast-top-right",
+                    timeOut: 3000,
+                    progressBar: true,
+                  });
                 } catch (error) {
+                  toastr.error('', "Error Saving", {
+                    positionClass: "toast-top-right",
+                    timeOut: 3000,
+                    progressBar: true,
+                  });
+
                   console.error('Error saving resized event:', error);
                     info.revert();
                 }
@@ -310,9 +323,19 @@ const Schedule = () => {
                   });
                   console.log(res.data.message)
                   navigate(0)
+                  toastr.success(res.data.message, "Success", {
+                    positionClass: "toast-top-right",
+                    timeOut: 3000,
+                    progressBar: true,
+                  });
                 } catch (error) {
                   console.error('Error saving resized event:', error);
-                    info.revert();
+                  info.revert();
+                  toastr.error('', "Error Saving", {
+                    positionClass: "toast-top-right",
+                    timeOut: 3000,
+                    progressBar: true,
+                  });
                 }
               }}
             />

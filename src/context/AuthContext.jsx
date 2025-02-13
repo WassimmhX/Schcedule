@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('users', JSON.stringify(await getList("users")));
       }
       //  add toast success
-      toastr.success(`Welcome, ${foundUser.name}!`, "Login Successful", {
+      toastr.success(`Welcome, ${foundUser.name}!`, "Logged In Successfully", {
         positionClass: "toast-top-right",
         timeOut: 3000,
         progressBar: true,
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await axios.post("http://localhost:5000/testSignUp",{user});
       //  add toast success
-      toastr.success(`Welcome, ${user.name}!`, "SignUp Successful", {
+      toastr.success(`Welcome, ${user.name}!`, "Signed Up Successfully", {
         positionClass: "toast-top-right",
         timeOut: 3000,
         progressBar: true,
@@ -121,7 +121,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     console.log("onLogOut:"+localStorage.getItem('user')+"\tstatus = "+localStorage.getItem('loggedIn'))
     //  add toast success
-    toastr.success(`GoodBye, ${user.name}!`, "LogOut Successful", {
+    toastr.success(`GoodBye, ${user.name}!`, "Logged Out Successfully", {
       positionClass: "toast-top-right",
       timeOut: 3000,
       progressBar: true,

@@ -87,12 +87,12 @@ const AuthForm = () => {
     setPasswordError('');
     setPhoneError('');
     setRoleError('');
-    setIsLogin(etat);
     setName('');
     setEmail('');
     setPassword('');
     setPhone('');
     setRole('');
+    setIsLogin(etat);
   };
 
   const [showPassword, setShowPassword] = useState(false);

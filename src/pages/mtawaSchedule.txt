@@ -11,81 +11,7 @@ import Aurora from './Aurora';
 import './SchedulesTable.css';
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
-
-const generateSchedulePDF = (filteredEvents) => {
-  const doc = new jsPDF();
-  doc.setFontSize(16);
-  doc.text("Weekly Schedule", 105, 10, { align: "center" });
-
-  // Define days and time slots
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-  const timeSlots = [
-    "08:00-09:00",
-    "09:00-10:00",
-    "10:00-11:00",
-    "11:00-12:00",
-    "12:00-13:00",
-    "13:00-14:00",
-    "14:00-15:00",
-    "15:00-16:00",
-    "16:00-17:00",
-  ];
-
-  // Create a 2D array for the timetable
-  const timetable = timeSlots.map((slot) => {
-    const row = [slot]; // First column is the time slot
-    for (let i = 0; i < 7; i++) {
-      // Filter events for the current day and time slot
-      const eventsForDayAndTime = filteredEvents.filter((event) => {
-        const eventStart = new Date(event.start);
-        const eventEnd = new Date(event.end);
-        const [startHour, startMinute] = slot.split("-")[0].split(":");
-        const [endHour, endMinute] = slot.split("-")[1].split(":");
-
-        const slotStart = new Date(eventStart);
-        slotStart.setHours(parseInt(startHour), parseInt(startMinute), 0);
-
-        const slotEnd = new Date(eventStart);
-        slotEnd.setHours(parseInt(endHour), parseInt(endMinute), 0);
-
-        // Adjust day matching logic
-        const eventDay = eventStart.getDay() === 0 ? 7 : eventStart.getDay(); // Sunday = 7
-        const targetDay = i + 1; // Monday = 1, ..., Sunday = 7
-        
-        return (
-          eventDay === targetDay &&
-          ((eventStart >= slotStart && eventStart < slotEnd) ||
-          (eventEnd > slotStart && eventEnd <= slotEnd) ||
-          (eventStart < slotStart && eventEnd > slotEnd))
-        );
-      });
-
-      // Extract event titles and join them into a single string
-      const eventTitles = eventsForDayAndTime.map((e) => e.title).join(", ");
-      row.push(eventTitles || "-"); // Use "-" if no events match
-    }
-    return row;
-  });
-
-  // Add table header
-  const tableHeader = ["Time", ...days];
-
-  // Generate the table
-  doc.autoTable({
-    head: [tableHeader],
-    body: timetable,
-    startY: 20,
-    styles: { fontSize: 10, cellPadding: 2 },
-    headStyles: { fillColor: [22, 160, 133] }, // Custom color for the header
-    alternateRowStyles: { fillColor: [240, 240, 240] },
-  });
-
-  // Save the PDF
-  doc.save("schedule_timetable.pdf");
-};
-
+import PrintableCalendarView from '../components/PrintableCalendarView';
 
 const Schedule = () => {
   const { name } = useParams();
@@ -349,6 +275,7 @@ const Schedule = () => {
       (!filters.class || event.class.includes(filters.class)) &&
       (!filters.room || event.room.includes(filters.room))
   );
+  console.log('events = '+JSON.stringify(filteredEvents))
   return (
     <div className="app min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
       <Aurora colorStops={['#ff00ff', '#00d8ff', '#7cff67']} amplitude={1.5} />
@@ -374,19 +301,6 @@ const Schedule = () => {
             </label>
           </div>
           <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-xl p-6 shadow-xl">
-            <button
-              onClick={() => window.print()}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 mb-4"
-            >
-              Print Schedule
-            </button>
-            <button
-              onClick={() => generateSchedulePDF(filteredEvents)}
-              className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 mb-4"
-            >
-              Download PDF
-            </button>
-            <div id="printable-area">
               <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="timeGridWeek"
@@ -575,7 +489,7 @@ const Schedule = () => {
                   }
                 }}
               />
-            </div>
+              <PrintableCalendarView events={filteredEvents} />
           </div>
         </div>
         {/* Popup */}
@@ -699,3 +613,85 @@ const Schedule = () => {
 };
 
 export default Schedule;
+
+
+
+@media print {
+    /* Reset all margins and paddings */
+    * {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+  
+    /* Hide everything except printable view */
+    body * {
+      visibility: hidden;
+    }
+    
+    .print\:block,
+    .print\:block * {
+      visibility: visible !important;
+    }
+  
+    /* Prevent any extra pages */
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  
+    /* Set exact A4 landscape dimensions */
+    @page {
+      size: A4 landscape;
+      margin: 10mm;
+    }
+  
+    .print\:block {
+      width: 100% !important;
+      height: 100% !important;
+      position: fixed !important;
+      top: 10mm !important;
+      left: 10mm !important;
+      right: 10mm !important;
+      bottom: 10mm !important;
+    }
+  
+    /* Force single page */
+    .grid {
+      page-break-after: always;
+      page-break-inside: avoid;
+      break-after: always;
+      break-inside: avoid;
+    }
+  
+    /* Ensure text prints clearly */
+    .text-sm {
+      font-size: 11px !important;
+      line-height: 1.2 !important;
+    }
+  
+    .text-xs {
+      font-size: 9px !important;
+    }
+  
+    /* Make time text stand out */
+    .text-red-500 {
+      color: #EF4444 !important;
+      font-weight: 700 !important;
+    }
+  
+    /* Make other text dark and clear */
+    .text-gray-900 {
+      color: #111827 !important;
+    }
+  
+    /* Ensure borders print clearly */
+    .border,
+    .border-b,
+    .border-r {
+      border-color: #000 !important;
+      border-width: 1px !important;
+    }
+  }

@@ -117,8 +117,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("user");
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("teachers");
-    localStorage.removeItem("classes");
-    localStorage.removeItem("rooms");
     localStorage.clear();
     setUser(null);
     console.log("onLogOut:"+localStorage.getItem('user')+"\tstatus = "+localStorage.getItem('loggedIn'))

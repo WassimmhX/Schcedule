@@ -1,3 +1,14 @@
+@media print {
+  button {
+    display: none !important; /* Hides all buttons when printing */
+  }
+  body {
+    background: white !important;
+  }
+  #schedule {
+    page-break-before: always;
+  }
+}
 
   .app {
     position: relative;

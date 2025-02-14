@@ -11,7 +11,6 @@ import Aurora from './Aurora';
 import './SchedulesTable.css';
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
-import PrintableCalendarView from '../components/PrintableCalendarView';
 
 const Schedule = () => {
   const { name } = useParams();
@@ -300,6 +299,13 @@ const Schedule = () => {
             </label>
           </div>
           <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-xl p-6 shadow-xl">
+            <button
+              onClick={() => window.print()}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 mb-4"
+            >
+              Print Schedule
+            </button>
+            <div id="printable-area">
               <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="timeGridWeek"
@@ -488,7 +494,7 @@ const Schedule = () => {
                   }
                 }}
               />
-              <PrintableCalendarView events={filteredEvents} />
+            </div>
           </div>
         </div>
         {/* Popup */}
@@ -612,3 +618,127 @@ const Schedule = () => {
 };
 
 export default Schedule;
+@media print {
+  /* Reset all base styles */
+  * {
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Hide everything except calendar */
+  body * {
+    visibility: hidden;
+  }
+  
+  /* Make calendar visible */
+  #printable-area,
+  #printable-area * {
+    visibility: visible;
+    overflow: visible !important;
+  }
+  
+  /* Position and size adjustments */
+  #printable-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+  }
+  
+  /* Calendar specific adjustments */
+  .fc {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+  }
+  
+  .fc-view-container {
+    width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+  }
+  
+  .fc-view,
+  .fc-view > table {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  /* Compress the header and toolbar */
+  .fc-toolbar {
+    margin-bottom: 0.5em !important;
+  }
+
+  .fc-toolbar h2 {
+    font-size: 1.2em !important;
+  }
+  
+  /* Ensure all events are visible */
+  .fc-time-grid-event {
+    min-height: 0 !important;
+    overflow: visible !important;
+    font-size: 8pt !important;
+  }
+
+  /* Compress time slots */
+  .fc-time-grid .fc-slats td {
+    height: 1.5em !important;
+  }
+  
+  /* Page settings */
+  @page {
+    size: landscape;
+    margin: 2mm;
+  }
+  .bg-gradient-to-r {
+    background: #e8e8e8 !important; /* Light gray background instead of gradient */
+  }
+  .fc-event {
+    border: 1px solid #333 !important;
+    box-shadow: none !important;
+  }
+  /* Remove backgrounds for cleaner print */
+  .bg-white,
+  .bg-gradient-to-r,
+  .bg-opacity-10,
+  .backdrop-filter {
+    background: none !important;
+    backdrop-filter: none !important;
+  }
+  
+  /* Ensure text is readable when printed */
+  .text-white,
+  .text-purple-100 {
+    color: #000 !important;
+    font-weight: 600 !important;
+  }
+  .fc-time-grid-event {
+    border: 1px solid #555 !important;
+  }
+  .fc-time-grid .fc-slats td {
+    border-top: 1px solid #aaa !important;
+  }
+  
+  /* More aggressive scale adjustment */
+  .fc-view-container {
+    transform: scale(0.7);
+    transform-origin: top left;
+  }
+
+  /* Compress event content */
+  .fc-event-container * {
+    font-size: 8pt !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Hide unnecessary elements */
+  .fc-day-grid-container {
+    height: auto !important;
+  }
+}

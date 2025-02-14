@@ -5,3 +5,20 @@
 .fc-timegrid-slot {
     height: 40px !important; /* Increase height of each time slot */
   }
+  @media print {
+    /* Hide everything except printable view */
+    body * {
+      visibility: hidden;
+    }
+    
+    .print\:block,
+    .print\:block * {
+      visibility: visible !important;
+    }
+    
+    /* Page settings */
+    @page {
+      size: portrait;
+      margin: 10mm;
+    }
+  }

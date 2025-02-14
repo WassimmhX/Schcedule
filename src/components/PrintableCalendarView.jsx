@@ -88,4 +88,4 @@ PrintableCalendarView.defaultProps = {
   events: []
 };
 
-export default PrintableCalendarView;
+export default PrintableCalendarView; 

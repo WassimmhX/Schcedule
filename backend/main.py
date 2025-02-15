@@ -2,7 +2,13 @@ import shutil
 from flask import Flask, request,jsonify
 from flask_cors import (CORS)
 from BdManager import *
+
+from flask_mail import Mail, Message
+import secrets
+from datetime import datetime, timedelta
+
 app = Flask(__name__)
+mail = Mail(app)
 CORS(app)
 @app.route('/returnByTeacher', methods=['POST'])
 def returnByTeacher():
@@ -247,6 +253,7 @@ def deleteSession():
         return jsonify({"error":message}),state
     else:
         return jsonify({"message":message}),200
+
 
 
 def allTeachers():

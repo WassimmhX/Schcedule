@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { User, Mail, Lock, Phone, UserCheck, EyeOff, Eye } from 'lucide-react';
+import { User, Mail, Lock, Phone, UserCheck, EyeOff, Eye, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -20,8 +22,14 @@ const AuthForm = () => {
   const [phoneError, setPhoneError] = useState('');
   const [roleError, setRoleError] = useState('');
 
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetEmailError, setResetEmailError] = useState('');
+  const [resetSuccess, setResetSuccess] = useState('');
+
   const { login } = useAuth();
   const { signUp } = useAuth();
+  const { resetPassword } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -82,6 +90,7 @@ const AuthForm = () => {
     }
   };
   const signUpLogin = (etat) => {
+    // event.preventDefault();
     setNameError('');
     setEmailError('');
     setPasswordError('');
@@ -93,6 +102,53 @@ const AuthForm = () => {
     setPhone('');
     setRole('');
     setIsLogin(etat);
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setResetEmailError('');
+    setResetSuccess('');
+
+    if (!resetEmail) {
+      setResetEmailError('Please enter your email address');
+      toastr.warning('Please enter your email address', "Warning", {
+        positionClass: "toast-top-center",
+        timeOut: 3000,
+        progressBar: true,
+      });
+      return;
+    }
+
+    try {
+      const result = await resetPassword(resetEmail);
+      if (result[0]) {
+        setResetSuccess('Password reset link has been sent to your email');
+        toastr.info('Password reset link has been sent to your email', "Success", {
+          positionClass: "toast-top-center",
+          timeOut: 3000,
+          progressBar: true,
+        });
+        setTimeout(() => {
+          setIsForgotPassword(false);
+          setResetEmail('');
+          setResetSuccess('');
+        }, 3000);
+      } else {
+        toastr.error(result[1], "Error", {
+          positionClass: "toast-top-center",
+          timeOut: 3000,
+          progressBar: true,
+        });
+        setResetEmailError(result[1]);
+      }
+    } catch (error) {
+      toastr.error('Failed to send reset email. Please try again.', "Error", {
+        positionClass: "toast-top-center",
+        timeOut: 3000,
+        progressBar: true,
+      });
+      setResetEmailError('Failed to send reset email. Please try again.');
+    }
   };
 
   const [showPassword, setShowPassword] = useState(false);
@@ -124,13 +180,70 @@ const AuthForm = () => {
 
         {/* Login Form */}
         <div className="w-1/2 p-10 relative z-10">
+          {/* Forgot Password Form */}
           <form
-            onSubmit={handleLogin}
+            onSubmit={handleForgotPassword}
             className={`transform transition-all duration-500 ${
-              isLogin
+              isForgotPassword
                 ? 'translate-x-0 opacity-100'
                 : 'translate-x-full opacity-0 absolute'
             }`}
+          >
+            <div className="flex items-center mb-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsForgotPassword(false)
+                  setResetEmail('')
+                  setResetEmailError('')
+                }}
+                className="text-gray-600 hover:text-black mr-2"
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <h2 className="text-2xl font-semibold">Reset Password</h2>
+            </div>
+
+            <p className="text-gray-600 mb-6">
+              Enter your email address and we'll send you a link to reset your password.
+            </p>
+
+            <div className="relative mb-4">
+              <input
+                type="email"
+                placeholder="Email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                className="w-full py-2 border-b border-gray-300 focus:border-black outline-none transition-colors duration-300"
+              />
+              <Mail
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600"
+                size={20}
+              />
+              {resetEmailError && (
+                <p className="text-red-500 text-xs font-mono mt-1">{resetEmailError}</p>
+              )}
+              {resetSuccess && (
+                <p className="text-green-500 text-xs font-mono mt-1">{resetSuccess}</p>
+              )}
+            </div>
+
+            <button
+              className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3 mt-6 transition-colors duration-300"
+              type="submit"
+            >
+              Send Reset Link
+            </button>
+          </form>
+
+          {/* Login Form (modified) */}
+          <form
+            onSubmit={handleLogin}
+            className={`transform transition-all duration-500 ${
+              isLogin && !isForgotPassword
+              ? 'translate-x-0 opacity-100'
+              : 'translate-x-full opacity-0 absolute'
+          }`}
           >
             <h2 className="text-2xl font-semibold mb-6">Login</h2>
             <div className="relative mb-4">
@@ -179,8 +292,18 @@ const AuthForm = () => {
               )}
             </div>
 
+            <div className="flex justify-between items-center mb-6">
+              <button
+                type="button"
+                onClick={() => setIsForgotPassword(true)}
+                className="text-sm text-gray-600 hover:text-black"
+              >
+                Forgot Password?
+              </button>
+            </div>
+
             <button
-              className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3 mt-6 transition-colors duration-300"
+              className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3 transition-colors duration-300"
               type="submit"
             >
               Login
@@ -188,7 +311,11 @@ const AuthForm = () => {
             <p className="text-center text-gray-600 mt-6">
               Don&apos;t have an account?{' '}
               <button
-                onClick={() => signUpLogin(false)}
+              type='button'
+                onClick={(e) => {
+                  e.preventDefault();
+                  signUpLogin(false);
+                }}
                 className="text-black font-semibold hover:underline"
               >
                 Sign Up
@@ -200,7 +327,7 @@ const AuthForm = () => {
           <form
             onSubmit={handleSignUp}
             className={`transform transition-all duration-500 ${
-              !isLogin
+              !isLogin && !isForgotPassword
                 ? 'translate-x-0 opacity-100'
                 : '-translate-x-full opacity-0 absolute'
             }`}
@@ -332,7 +459,11 @@ const AuthForm = () => {
             <p className="text-center text-gray-600 mt-4">
               Already have an account?{' '}
               <button
-                onClick={() => signUpLogin(true)}
+              type='button'
+                onClick={(e) => {
+                  e.preventDefault();
+                  signUpLogin(true);
+                }}
                 className="text-black font-semibold hover:underline"
               >
                 Login
@@ -352,13 +483,19 @@ const AuthForm = () => {
           >
             <div className="h-full flex items-center justify-center p-9">
               <div className="text-center max-w-[280px] ml-12 mt-8">
-                <h1 className="text-3xl font-bold mb-6 ">
-                  {isLogin ? 'WELCOME BACK!' : 'JOIN US!'}
+                <h1 className="text-3xl font-bold mb-6">
+                  {isForgotPassword
+                    ? 'RESET PASSWORD'
+                    : isLogin
+                    ? 'WELCOME BACK!'
+                    : 'JOIN US!'}
                 </h1>
                 <p className="text-base leading-relaxed opacity-80">
-                  {isLogin
-                    ? 'Do you have courses ? Come and Check the new Schedule Updates !  '
-                    : 'Start your journey with us Today and discover amazing possibilities !'}
+                  {isForgotPassword
+                    ? "Don't worry! It happens to the best of us. We'll help you reset your password."
+                    : isLogin
+                    ? 'Do you have courses? Come and Check the new Schedule Updates!'
+                    : 'Start your journey with us Today and discover amazing possibilities!'}
                 </p>
               </div>
             </div>

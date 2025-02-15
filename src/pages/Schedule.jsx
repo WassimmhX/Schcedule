@@ -16,31 +16,23 @@ import "jspdf-autotable";
 
 const generateSchedulePDF = (filteredEvents) => {
   const doc = new jsPDF();
-  doc.setFontSize(16);
+  doc.setFontSize(18);
   doc.text("Weekly Schedule", 105, 10, { align: "center" });
 
-  // Define days and time slots
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const timeSlots = [
-    "08:00-09:00",
-    "09:00-10:00",
-    "10:00-11:00",
-    "11:00-12:00",
-    "12:00-13:00",
-    "13:00-14:00",
-    "14:00-15:00",
-    "15:00-16:00",
-    "16:00-17:00",
+    "08:30-10:00", "10:15-11:45", "12:00-13:00", "13:00-14:30", "14:45-16:15", "16:30-18:00"
   ];
 
-  // Create a 2D array for the timetable
+  // Construct timetable
   const timetable = timeSlots.map((slot) => {
-    const row = [slot]; // First column is the time slot
-    for (let i = 0; i < 7; i++) {
-      // Filter events for the current day and time slot
-      const eventsForDayAndTime = filteredEvents.filter((event) => {
+    const row = [`${slot}`];
+    for (let i = 0; i < days.length; i++) {
+      const eventsForSlot = filteredEvents.filter((event) => {
         const eventStart = new Date(event.start);
         const eventEnd = new Date(event.end);
+        const eventDay = eventStart.getDay() === 0 ? 7 : eventStart.getDay();
+        const targetDay = i + 1;
         const [startHour, startMinute] = slot.split("-")[0].split(":");
         const [endHour, endMinute] = slot.split("-")[1].split(":");
 
@@ -50,41 +42,35 @@ const generateSchedulePDF = (filteredEvents) => {
         const slotEnd = new Date(eventStart);
         slotEnd.setHours(parseInt(endHour), parseInt(endMinute), 0);
 
-        // Adjust day matching logic
-        const eventDay = eventStart.getDay() === 0 ? 7 : eventStart.getDay(); // Sunday = 7
-        const targetDay = i + 1; // Monday = 1, ..., Sunday = 7
-        
         return (
           eventDay === targetDay &&
-          ((eventStart >= slotStart && eventStart < slotEnd) ||
-          (eventEnd > slotStart && eventEnd <= slotEnd) ||
-          (eventStart < slotStart && eventEnd > slotEnd))
+          eventEnd > slotStart &&
+          eventStart < slotEnd
         );
       });
 
-      // Extract event titles and join them into a single string
-      const eventTitles = eventsForDayAndTime.map((e) => e.title).join(", ");
-      row.push(eventTitles || "-"); // Use "-" if no events match
+      const cellContent = eventsForSlot.map((e) => {
+        return `${slot}\n${e.title}\nProf: ${e.professor}\nRoom: ${e.room}\nClass: ${e.class}`;
+      }).join("\n\n") || `${slot}\n-`;
+      row.push(cellContent);
     }
     return row;
   });
 
-  // Add table header
-  const tableHeader = ["Time", ...days];
-
-  // Generate the table
+  // Generate table
   doc.autoTable({
-    head: [tableHeader],
+    head: [["Time", ...days]],
     body: timetable,
     startY: 20,
-    styles: { fontSize: 10, cellPadding: 2 },
-    headStyles: { fillColor: [22, 160, 133] }, // Custom color for the header
-    alternateRowStyles: { fillColor: [240, 240, 240] },
+    styles: { fontSize: 10, cellPadding: 3, textColor: [0, 0, 0], lineColor: [200, 200, 200], lineWidth: 0.2 },
+    headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255], halign: 'center' },
+    bodyStyles: { valign: 'middle', fontStyle: 'normal' },
+    columnStyles: { 0: { halign: 'center', fontStyle: 'bold' } }
   });
 
-  // Save the PDF
   doc.save("schedule_timetable.pdf");
 };
+
 
 
 const Schedule = () => {

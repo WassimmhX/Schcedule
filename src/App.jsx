@@ -13,6 +13,7 @@ import TeachersSchedules from './pages/TeachersSchedules';
 import StudentsSchedules from './pages/StudentsSchedules';
 import Dashboard from './AdminArea/Dashboard';
 import RoomsSchedules from './pages/RoomsSchedules';
+import ResetPassword from './components/ResetPassword';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route path="schedules/teachers" element={<TeachersSchedules/>} />
         <Route path="schedules/rooms" element={<RoomsSchedules/>} />
         <Route path="/login"  element={<Login />}/>
+        <Route path="/resetPwd"  element={<ResetPassword />}/>
 
         <Route path="/permission-denied" element={<PermissionDenied />} />
       </Routes>

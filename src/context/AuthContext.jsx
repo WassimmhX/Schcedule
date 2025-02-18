@@ -128,28 +128,18 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
-  const resetPassword = async (email) => {
+  const resetPassword = async (userEmail) => {
     try {
-      // Make an API call to your backend reset password endpoint
-      const response = await fetch('/api/auth/reset-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        return [true, 'Password reset email sent successfully'];
-      } else {
-        return [false, data.message || 'Failed to send reset email'];
-      }
+        const response = await axios.post('/api/forgot-password', { email: userEmail });
+        if (response.data.message) {
+            return [true, response.data.message];
+        } else {
+            return [false, response.data.error || 'Failed to send reset email'];
+        }
     } catch (error) {
-      return [false, 'An error occurred while resetting password'];
+        return [false, error.response?.data?.error || 'An error occurred while resetting password'];
     }
-  };
+};
 
   
   return (

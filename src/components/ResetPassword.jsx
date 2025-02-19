@@ -36,20 +36,15 @@ const ResetPassword = () => {
 
     try {
       const response = await axios.post('http://localhost:5000/reset-password', {
-        token,
+        token:token,
         password: newPassword
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
+      console.log(window.location);
+      const data = await response.data;
         setSuccess(data.message);
         setTimeout(() => {
           navigate('/login');
-        }, 3000);
-      } else {
-        setError(data.message);
-      }
+        }, 1500);
     } catch (error) {
     //   setError('Error resetting password. Please try again.');
     const errorMessage = error.response?.data?.error || 'Failed to reset password';

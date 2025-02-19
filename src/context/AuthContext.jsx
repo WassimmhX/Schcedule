@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }) => {
 
   const resetPassword = async (userEmail) => {
     try {
-        const response = await axios.post('http://localhost:5000/forgot-password', { email: userEmail });
+        const response = await axios.post('http://localhost:5000/forgot-password', { email: userEmail,href:window.location.host });
         if (response.data.message) {
             return [true, response.data.message];
         } else {

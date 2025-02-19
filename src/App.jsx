@@ -38,7 +38,7 @@ function App() {
         <Route path="schedules/teachers" element={<TeachersSchedules/>} />
         <Route path="schedules/rooms" element={<RoomsSchedules/>} />
         <Route path="/login"  element={<Login />}/>
-        <Route path="/resetPwd"  element={<ResetPassword />}/>
+        <Route path="/reset-password"  element={<ResetPassword />}/>
 
         <Route path="/permission-denied" element={<PermissionDenied />} />
       </Routes>

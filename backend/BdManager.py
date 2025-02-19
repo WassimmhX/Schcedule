@@ -332,7 +332,7 @@ def initiate_password_reset(db, email):
     
     # Generate a random reset token
     reset_token = os.urandom(16).hex()
-    expiry_time = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+    expiry_time = datetime.datetime.now() + datetime.timedelta(hours=1)
     
     # Store the reset token and its expiry time
     users.update_one(
@@ -348,16 +348,10 @@ def reset_password_with_token(db, token, new_password):
     users = db["users"]
     user = users.find_one({
         "reset_token": token,
-        "reset_token_expiry": {"$gt": datetime.datetime.utcnow()}
+        "reset_token_expiry": {"$gt": datetime.datetime.now()}
     })
-    
     if not user:
         return False, "Invalid or expired reset token"
-    
-    if len(new_password.strip()) < 4:
-        return False, "Password must be more than 4 characters"
-    
-    # Update password and remove reset token
     hashed_password = hash_password(new_password)
     users.update_one(
         {"reset_token": token},

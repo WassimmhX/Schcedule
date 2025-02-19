@@ -50,8 +50,8 @@ const generateSchedulePDF = (filteredEvents) => {
       });
 
       const cellContent = eventsForSlot.map((e) => {
-        return `${slot}\n${e.title}\nProf: ${e.professor}\nRoom: ${e.room}\nClass: ${e.class}`;
-      }).join("\n\n") || `${slot}\n-`;
+        return `${e.times}\n${e.title}\nProf: ${e.professor}\nRoom: ${e.room}\nClass: ${e.class}`;
+      }).join("\n\n") || ``;
       row.push(cellContent);
     }
     return row;
@@ -323,6 +323,7 @@ const Schedule = () => {
         start: startDateTime.toISOString(),
         end: endDateTime.toISOString(),
         professor: item.teacher,
+        times: item.time,
         room: item.room,
         class: item.class,
       };

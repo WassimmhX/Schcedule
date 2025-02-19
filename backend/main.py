@@ -10,7 +10,13 @@ from datetime import datetime, timedelta
 
 
 app = Flask(__name__)
-# mail = Mail(app)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = 'ahmedmtawahg@gmail.com'  # Replace with your email
+app.config['MAIL_PASSWORD'] = 'wdiervjootstklaq'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+mail = Mail(app)
 CORS(app)
 @app.route('/returnByTeacher', methods=['POST'])
 def returnByTeacher():
@@ -256,20 +262,14 @@ def deleteSession():
     else:
         return jsonify({"message":message}),200
 
-# Configure Flask-Mail
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'mtawakjkj@gmail.com'  # Replace with your email
-app.config['MAIL_PASSWORD'] = 'wdiervjootstklaq'     # Replace with your app password
-mail = Mail(app)
-
 # Add these new routes to your existing main.py
 @app.route('/forgot-password', methods=['POST'])
 def forgot_password():
-    data = request.get_json()
-    email = data.get('email')
-    
+    request_data = request.get_json()
+    if not request_data or not "email" in request_data or not "href" in request_data:
+        return jsonify({"error": "Missing parameter"}), 400
+    email = request_data.get('email')
+    href=request_data.get("href")
     if not email:
         return jsonify({"error": "Email is required"}), 400
     
@@ -279,7 +279,7 @@ def forgot_password():
         return jsonify({"error": result}), 400
     
     # Send reset email
-    reset_link = f"http://localhost:3000/reset-password?token={result}"
+    reset_link = f"http://{href}/reset-password?token={result}"
     
     try:
         msg = Message(
@@ -298,8 +298,20 @@ If you did not make this request, please ignore this email.
     except Exception as e:
         print(f"Email sending error: {e}")  # More detailed logging
         return jsonify({"error": f"Failed to send reset email: {str(e)}"}), 500
-
-
+@app.route("/reset-password", methods=['POST'])
+def reset_password():
+    request_data = request.get_json()
+    if "token" not in request_data or "password" not in request_data:
+        return jsonify({"error": "Missing parameter"}), 400
+    token = request_data["token"]
+    password = request_data["password"]
+    if len(password.strip()) < 6:
+        return jsonify({"error": "Password is too short"}), 400
+    state,message=reset_password_with_token(db, token, password)
+    if not state:
+        return jsonify({"error":message}), 400
+    else:
+        return jsonify({"message":message}), 200
 
 def allTeachers():
     return teachers_list(db)

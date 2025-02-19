@@ -7,8 +7,10 @@ from flask_mail import Mail, Message
 import secrets
 from datetime import datetime, timedelta
 
+
+
 app = Flask(__name__)
-mail = Mail(app)
+# mail = Mail(app)
 CORS(app)
 @app.route('/returnByTeacher', methods=['POST'])
 def returnByTeacher():
@@ -254,6 +256,49 @@ def deleteSession():
     else:
         return jsonify({"message":message}),200
 
+# Configure Flask-Mail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'mtawakjkj@gmail.com'  # Replace with your email
+app.config['MAIL_PASSWORD'] = 'wdiervjootstklaq'     # Replace with your app password
+mail = Mail(app)
+
+# Add these new routes to your existing main.py
+@app.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.get_json()
+    email = data.get('email')
+    
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+    
+    success, result = initiate_password_reset(db, email)
+    
+    if not success:
+        return jsonify({"error": result}), 400
+    
+    # Send reset email
+    reset_link = f"http://localhost:3000/reset-password?token={result}"
+    
+    try:
+        msg = Message(
+            'Password Reset Request',
+            sender=app.config['MAIL_USERNAME'],
+            recipients=[email]
+        )
+        msg.body = f'''To reset your password, visit the following link:
+{reset_link}
+
+If you did not make this request, please ignore this email.
+'''
+        mail.send(msg)
+
+        return jsonify({"message": "Reset link sent successfully"}), 200
+    except Exception as e:
+        print(f"Email sending error: {e}")  # More detailed logging
+        return jsonify({"error": f"Failed to send reset email: {str(e)}"}), 500
+
 
 
 def allTeachers():
@@ -267,5 +312,8 @@ def allUsers():
 if __name__ == '__main__':
     days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
     db=get_db()
+    if "reset_tokens" not in db.list_collection_names():
+        db.create_collection("reset_tokens")
+        db.reset_tokens.create_index("expires_at", expireAfterSeconds=3600)  # Automatically delete after 1 hour
     data=schedules(db)
     app.run(debug=True)

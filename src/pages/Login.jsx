@@ -292,22 +292,21 @@ const AuthForm = () => {
               )}
             </div>
 
-            <div className="flex justify-between items-center mb-6">
-              <button
-                type="button"
-                onClick={() => setIsForgotPassword(true)}
-                className="text-sm text-gray-600 hover:text-black"
-              >
-                Forgot Password?
-              </button>
-            </div>
-
             <button
               className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3 transition-colors duration-300"
               type="submit"
             >
               Login
             </button>
+
+            <button
+                type="button"
+                onClick={() => setIsForgotPassword(true)}
+                className="w-full pt-4 text-sm text-gray-600 hover:text-black"
+              >
+                Forgot Password?
+              </button>
+            
             <p className="text-center text-gray-600 mt-6">
               Don&apos;t have an account?{' '}
               <button

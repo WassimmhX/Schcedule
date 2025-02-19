@@ -1,1 +1,1 @@
-days
+reset-password

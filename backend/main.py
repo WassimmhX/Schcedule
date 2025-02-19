@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 
 
 app = Flask(__name__)
-mail = Mail(app)
+# mail = Mail(app)
 CORS(app)
 @app.route('/returnByTeacher', methods=['POST'])
 def returnByTeacher():
@@ -256,18 +256,16 @@ def deleteSession():
     else:
         return jsonify({"message":message}),200
 
-
-
 # Configure Flask-Mail
-app.config['MAIL_SERVER'] = 'university.gmail.com'
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'ahmedmtawahg@gmail.com'  # Replace with your email
-app.config['MAIL_PASSWORD'] = 'azerty1230'     # Replace with your app password
+app.config['MAIL_USERNAME'] = 'mtawakjkj@gmail.com'  # Replace with your email
+app.config['MAIL_PASSWORD'] = 'wdiervjootstklaq'     # Replace with your app password
 mail = Mail(app)
 
 # Add these new routes to your existing main.py
-@app.route('/api/forgot-password', methods=['POST'])
+@app.route('/forgot-password', methods=['POST'])
 def forgot_password():
     data = request.get_json()
     email = data.get('email')
@@ -275,7 +273,6 @@ def forgot_password():
     if not email:
         return jsonify({"error": "Email is required"}), 400
     
-    db = get_db()
     success, result = initiate_password_reset(db, email)
     
     if not success:
@@ -296,10 +293,11 @@ def forgot_password():
 If you did not make this request, please ignore this email.
 '''
         mail.send(msg)
+
         return jsonify({"message": "Reset link sent successfully"}), 200
     except Exception as e:
-        print(e)
-        return jsonify({"error": "Failed to send reset email"}), 500
+        print(f"Email sending error: {e}")  # More detailed logging
+        return jsonify({"error": f"Failed to send reset email: {str(e)}"}), 500
 
 
 

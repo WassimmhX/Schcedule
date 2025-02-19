@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }) => {
 
   const resetPassword = async (userEmail) => {
     try {
-        const response = await axios.post('/api/forgot-password', { email: userEmail });
+        const response = await axios.post('http://localhost:5000/forgot-password', { email: userEmail });
         if (response.data.message) {
             return [true, response.data.message];
         } else {
@@ -139,7 +139,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
         return [false, error.response?.data?.error || 'An error occurred while resetting password'];
     }
-};
+  };
 
   
   return (

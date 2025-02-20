@@ -313,6 +313,62 @@ def reset_password():
     else:
         return jsonify({"message":message}), 200
 
+@app.route('/notifyUsers', methods=['POST'])
+def notify_users():
+    request_data = request.get_json()
+    print(request_data)
+    if not request_data or "scheduleName" not in request_data or "message" not in request_data or "changedBy" not in request_data:
+        return jsonify({"success": False, "message": "Missing required parameters"}), 400
+    
+    schedule_name = request_data["scheduleName"]
+    changed_by = request_data["changedBy"]
+    
+    try:
+        # Get all users associated with this schedule
+        users_to_notify = get_users_by_schedule(db, schedule_name)
+        
+        if not users_to_notify:
+            return jsonify({"success": True, "message": "No users found for this schedule"}), 200
+        
+        # Send email notifications
+        notification_count = 0
+        for user in users_to_notify:
+            email = user["email"]
+            try:
+                msg = Message(
+                    f'Schedule Update: {schedule_name}',
+                    sender=app.config['MAIL_USERNAME'],
+                    recipients=[email]
+                )
+                
+                msg.body = f'''
+Hello,
+
+The schedule for {schedule_name} has been updated.
+
+This change was made by: {changed_by}
+Time of update: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+You are receiving this notification because this schedule is part of your account preferences.
+
+Regards,
+School Administration System
+'''
+                mail.send(msg)
+                notification_count += 1
+            except Exception as e:
+                print(f"Failed to send email to {email}: {str(e)}")
+        
+        return jsonify({
+            "success": True,
+            "message": f"Notifications sent to {notification_count} users"
+        }), 200
+        
+    except Exception as e:
+        print(f"Notification error: {str(e)}")
+        return jsonify({"success": False, "message": f"Error sending notifications: {str(e)}"}), 500
+
+
 def allTeachers():
     return teachers_list(db)
 def allClasses():
@@ -324,8 +380,5 @@ def allUsers():
 if __name__ == '__main__':
     days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
     db=get_db()
-    if "reset_tokens" not in db.list_collection_names():
-        db.create_collection("reset_tokens")
-        db.reset_tokens.create_index("expires_at", expireAfterSeconds=3600)  # Automatically delete after 1 hour
     data=schedules(db)
     app.run(debug=True)

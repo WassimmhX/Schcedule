@@ -192,7 +192,7 @@ def add_user(db,user):
             return i+" is empty",400
     if not re.match(r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', user["email"]):
         return "invalid email",400
-    if len(user["phone Number"])!=8:
+    if len(user["phoneNumber"])!=8:
         return "Invalid phone number",400
     if not re.match(r"^[a-zA-Z\s'-]+$",user["name"]):
         return "Invalid name",400
@@ -332,7 +332,7 @@ def initiate_password_reset(db, email):
     
     # Generate a random reset token
     reset_token = os.urandom(16).hex()
-    expiry_time = datetime.datetime.now() + datetime.timedelta(hours=1)
+    expiry_time = datetime.datetime.now() + datetime.timedelta(minutes=5)
     
     # Store the reset token and its expiry time
     users.update_one(
@@ -361,3 +361,20 @@ def reset_password_with_token(db, token, new_password):
         }
     )
     return True, "Password reset successful"
+
+def get_users_by_schedule(db, schedule_name):
+    """Get users who should be notified about this schedule"""
+    # Get all users
+    all_users = users_list(db)
+    users_to_notify = []
+    if schedule_name == 'All':
+        for user in all_users:
+            users_to_notify.append(user)
+    else :
+        for user in all_users:
+            # Check if this is their selected schedule
+            if "mySchedule" in user and user["mySchedule"] == schedule_name:
+                users_to_notify.append(user)
+                continue
+    
+    return users_to_notify

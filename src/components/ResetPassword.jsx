@@ -42,6 +42,11 @@ const ResetPassword = () => {
       console.log(window.location);
       const data = await response.data;
         setSuccess(data.message);
+        toastr.success(data.message, "Success", {
+          positionClass: "toast-top-center",
+          timeOut: 3000,
+          progressBar: true,
+        });
         setTimeout(() => {
           navigate('/login');
         }, 1500);

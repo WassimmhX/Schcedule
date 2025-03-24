@@ -13,8 +13,13 @@ import {
   ClipboardList,
   LogIn,
   ChevronDown,
+  BellRing,
 } from 'lucide-react';
 import isimmLogo from "/src/assets/isimmLogo.png";
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
+import axios from 'axios';
+import { use } from 'react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,6 +62,39 @@ const Navbar = () => {
     { path: '/schedules/teachers', label: 'Teachers' },
     { path: '/schedules/rooms', label: 'Rooms' },
   ];
+
+  const notifyAllUser = async () => {
+    try {
+      // Call the backend to send notifications
+      const response = await axios.post('http://127.0.0.1:5000/notifyUsers', {
+        scheduleName: 'All',
+        message: `Schedule update`,
+        changedBy: JSON.parse(user).email
+      });
+      
+      if (response.data.success) {
+        toastr.success('Notifications sent successfully', 'Success', {
+          positionClass: 'toast-top-right',
+          timeOut: 3000,
+          progressBar: true
+        });
+      } else {
+        toastr.warning(response.data.message, 'Warning', {
+          positionClass: 'toast-top-right',
+          timeOut: 3000,
+          progressBar: true
+        });
+      }
+    } catch (error) {
+      console.error('Error sending notifications:', error);
+      toastr.error('Failed to send notifications', 'Error', {
+        positionClass: 'toast-top-right',
+        timeOut: 3000,
+        progressBar: true
+      });
+    }
+  }
+
 
   const navLinks = [
     { path: '/', label: 'Home', icon: Home },
@@ -133,6 +171,12 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:space-x-2">
+              {role == 'admin' ? <button
+                  onClick={() => notifyAllUser()} // Replace with your notification function
+                  className="ml-auto flex items-center gap-2 px-3 py-2 rounded-full text-white font-medium bg-gradient-to-r from-yellow-500 to-orange-500 shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg text-sm"
+                >
+                  <BellRing className="w-4 h-4" /> 
+                </button> :<></>}
             {navLinks.map((link) => {
               const Icon = link.icon;
               return (

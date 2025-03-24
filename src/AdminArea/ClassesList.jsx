@@ -29,6 +29,7 @@ const ClassesList = () => {
       const updatedClasses = [...classes, classe];
       setClasses(updatedClasses);
       setNewClassName('');
+      setError('')
     } catch (err) {
       setError(err.response?.data?.error || 'Server not reachable');
       Swal.fire(

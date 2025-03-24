@@ -27,6 +27,8 @@ const AuthForm = () => {
   const [resetEmailError, setResetEmailError] = useState('');
   const [resetSuccess, setResetSuccess] = useState('');
 
+  const [loading, setLoading] = useState('');
+
   const { login } = useAuth();
   const { signUp } = useAuth();
   const { resetPassword } = useAuth();
@@ -108,6 +110,7 @@ const AuthForm = () => {
     e.preventDefault();
     setResetEmailError('');
     setResetSuccess('');
+    setLoading(true); // Start loading animation
 
     if (!resetEmail) {
       setResetEmailError('Please enter your email address');
@@ -116,6 +119,7 @@ const AuthForm = () => {
         timeOut: 3000,
         progressBar: true,
       });
+      setLoading(false); // Stop loading if there's an error
       return;
     }
 
@@ -123,7 +127,7 @@ const AuthForm = () => {
       const result = await resetPassword(resetEmail);
       if (result[0]) {
         setResetSuccess('Password reset link has been sent to your email');
-        toastr.info('Password reset link has been sent to your email', "Success", {
+        toastr.success('Password reset link has been sent to your email', "Success", {
           positionClass: "toast-top-center",
           timeOut: 3000,
           progressBar: true,
@@ -148,8 +152,12 @@ const AuthForm = () => {
         progressBar: true,
       });
       setResetEmailError('Failed to send reset email. Please try again.');
+    } finally {
+      setLoading(false); // Stop loading when request is finished
     }
   };
+
+
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -229,11 +237,19 @@ const AuthForm = () => {
             </div>
 
             <button
-              className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3 mt-6 transition-colors duration-300"
-              type="submit"
-            >
-              Send Reset Link
-            </button>
+  className="w-full bg-black hover:bg-gray-800 text-white rounded-full py-3 mt-6 transition-colors duration-300 flex items-center justify-center"
+  type="submit"
+  disabled={loading} // Disable when loading
+>
+  {loading ? (
+    <div className="flex items-center gap-2">
+      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+      Sending...
+    </div>
+  ) : (
+    "Send Reset Link"
+  )}
+</button>
           </form>
 
           {/* Login Form (modified) */}

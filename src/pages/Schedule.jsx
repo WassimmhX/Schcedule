@@ -9,19 +9,32 @@ import axios from 'axios';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 import Aurora from './Aurora';
 import './SchedulesTable.css';
-import toastr from "toastr";
-import "toastr/build/toastr.min.css";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { BellRing, ClipboardList, NotepadTextIcon } from 'lucide-react';
 
 const generateSchedulePDF = (filteredEvents) => {
   const doc = new jsPDF();
   doc.setFontSize(18);
-  doc.text("Weekly Schedule", 105, 10, { align: "center" });
+  doc.text('Weekly Schedule', 105, 10, { align: 'center' });
 
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const days = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
   const timeSlots = [
-    "08:30-10:00", "10:15-11:45", "12:00-13:00", "13:00-14:30", "14:45-16:15", "16:30-18:00"
+    '08:30-10:00',
+    '10:15-11:45',
+    '12:00-13:00',
+    '13:00-14:30',
+    '14:45-16:15',
+    '16:30-18:00',
   ];
 
   // Construct timetable
@@ -33,8 +46,8 @@ const generateSchedulePDF = (filteredEvents) => {
         const eventEnd = new Date(event.end);
         const eventDay = eventStart.getDay() === 0 ? 7 : eventStart.getDay();
         const targetDay = i + 1;
-        const [startHour, startMinute] = slot.split("-")[0].split(":");
-        const [endHour, endMinute] = slot.split("-")[1].split(":");
+        const [startHour, startMinute] = slot.split('-')[0].split(':');
+        const [endHour, endMinute] = slot.split('-')[1].split(':');
 
         const slotStart = new Date(eventStart);
         slotStart.setHours(parseInt(startHour), parseInt(startMinute), 0);
@@ -43,15 +56,16 @@ const generateSchedulePDF = (filteredEvents) => {
         slotEnd.setHours(parseInt(endHour), parseInt(endMinute), 0);
 
         return (
-          eventDay === targetDay &&
-          eventEnd > slotStart &&
-          eventStart < slotEnd
+          eventDay === targetDay && eventEnd > slotStart && eventStart < slotEnd
         );
       });
 
-      const cellContent = eventsForSlot.map((e) => {
-        return `${e.times}\n${e.title}\nProf: ${e.professor}\nRoom: ${e.room}\nClass: ${e.class}`;
-      }).join("\n\n") || ``;
+      const cellContent =
+        eventsForSlot
+          .map((e) => {
+            return `${e.times}\n${e.title}\nProf: ${e.professor}\nRoom: ${e.room}\nClass: ${e.class}`;
+          })
+          .join('\n\n') || ``;
       row.push(cellContent);
     }
     return row;
@@ -59,19 +73,27 @@ const generateSchedulePDF = (filteredEvents) => {
 
   // Generate table
   doc.autoTable({
-    head: [["Time", ...days]],
+    head: [['Time', ...days]],
     body: timetable,
     startY: 20,
-    styles: { fontSize: 10, cellPadding: 3, textColor: [0, 0, 0], lineColor: [200, 200, 200], lineWidth: 0.2 },
-    headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255], halign: 'center' },
+    styles: {
+      fontSize: 10,
+      cellPadding: 3,
+      textColor: [0, 0, 0],
+      lineColor: [200, 200, 200],
+      lineWidth: 0.2,
+    },
+    headStyles: {
+      fillColor: [41, 128, 185],
+      textColor: [255, 255, 255],
+      halign: 'center',
+    },
     bodyStyles: { valign: 'middle', fontStyle: 'normal' },
-    columnStyles: { 0: { halign: 'center', fontStyle: 'bold' } }
+    columnStyles: { 0: { halign: 'center', fontStyle: 'bold' } },
   });
 
-  doc.save("schedule_timetable.pdf");
+  doc.save('schedule_timetable.pdf');
 };
-
-
 
 const Schedule = () => {
   const { name } = useParams();
@@ -80,39 +102,56 @@ const Schedule = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const mySchedule = name ? name : '';
-  const user=JSON.parse(localStorage.getItem('user'));
+  const user = JSON.parse(localStorage.getItem('user'));
   const [showMySchedule, setMySchedule] = useState(
     localStorage.getItem('mySchedule') == name
   );
-  const days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+  const days = [
+    'Dimanche',
+    'Lundi',
+    'Mardi',
+    'Mercredi',
+    'Jeudi',
+    'Vendredi',
+    'Samedi',
+  ];
   const [response, setResponse] = useState([]);
   const filters = useState({ professor: '', class: '', room: '' });
   const { yourLocation } = location.state || {};
-  
+
   useEffect(() => {
     callPythonFunction();
   }, []);
   useEffect(() => {
     setEvents(convertToFullCalendarEvents(response));
   }, [response]);
-  const getCurrent=(name)=>{
-    for(let i=0;i< JSON.parse(localStorage.getItem("classes")).length;i++) {
-      if(JSON.parse(localStorage.getItem("classes"))[i].name==name) {
-        return "Class";
+
+  const getCurrent = (name) => {
+    for (
+      let i = 0;
+      i < JSON.parse(localStorage.getItem('classes')).length;
+      i++
+    ) {
+      if (JSON.parse(localStorage.getItem('classes'))[i].name == name) {
+        return 'Class';
       }
     }
-    
-    for(let i=0;i< JSON.parse(localStorage.getItem("teachers")).length;i++) {
-      if(JSON.parse(localStorage.getItem("teachers"))[i].name==name) {
-        return "Teacher";
+
+    for (
+      let i = 0;
+      i < JSON.parse(localStorage.getItem('teachers')).length;
+      i++
+    ) {
+      if (JSON.parse(localStorage.getItem('teachers'))[i].name == name) {
+        return 'Teacher';
       }
     }
-    for(let i=0;i< JSON.parse(localStorage.getItem("rooms")).length;i++) {
-      if(JSON.parse(localStorage.getItem("rooms"))[i].name==name) {
-        return "Room";
+    for (let i = 0; i < JSON.parse(localStorage.getItem('rooms')).length; i++) {
+      if (JSON.parse(localStorage.getItem('rooms'))[i].name == name) {
+        return 'Room';
       }
     }
-  }
+  };
   const myScheduleChecked = async (e) => {
     setMySchedule(e.target.checked);
     const user = JSON.parse(localStorage.getItem('user'));
@@ -142,8 +181,8 @@ const Schedule = () => {
       } else {
         x = localStorage.getItem('currentSchedule');
       }
-      if(x==null){
-        x=getCurrent(mySchedule);
+      if (x == null) {
+        x = getCurrent(mySchedule);
       }
       const res = await axios.post('http://127.0.0.1:5000/returnBy' + x, {
         class: mySchedule,
@@ -174,98 +213,100 @@ const Schedule = () => {
   };
   const openEditModal = () => setEditModalOpen(true);
   const closeEditModal = () => setEditModalOpen(false);
-  const handleEditSubmit = async(e) => {
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const event=selectedEvent;
+    const event = selectedEvent;
     const start =
-      (event.start.getHours() + "").length == 2
-        ? event.start.getHours() + ""
-        : "0" + event.start.getHours();
+      (event.start.getHours() + '').length == 2
+        ? event.start.getHours() + ''
+        : '0' + event.start.getHours();
     const startMinutes =
-      (event.start.getMinutes() + "").length == 2
-        ? event.start.getMinutes() + ""
-        : "0" + event.start.getMinutes();
+      (event.start.getMinutes() + '').length == 2
+        ? event.start.getMinutes() + ''
+        : '0' + event.start.getMinutes();
     const end =
-      (event.end.getHours() + "").length == 2
-        ? event.end.getHours() + ""
-        : "0" + event.end.getHours();
+      (event.end.getHours() + '').length == 2
+        ? event.end.getHours() + ''
+        : '0' + event.end.getHours();
     const endMinutes =
-      (event.end.getMinutes() + "").length == 2
-        ? event.end.getMinutes() + ""
-        : "0" + event.end.getMinutes();
+      (event.end.getMinutes() + '').length == 2
+        ? event.end.getMinutes() + ''
+        : '0' + event.end.getMinutes();
     const time = `${start}:${startMinutes} - ${end}:${endMinutes}`;
     const updatedEvent = {
-      id:event.id,
+      id: event.id,
       day: days[event.start.getDay()],
       subject: formData.get('subject'),
-      time:time,
+      time: time,
       teacher: formData.get('professor'),
-      "class": event.extendedProps.class,
-      room:formData.get('room'),
+      class: event.extendedProps.class,
+      room: formData.get('room'),
     };
     try {
       const res = await axios.post('http://127.0.0.1:5000/updateSession', {
         event: updatedEvent,
         role: user.role,
-        change:"infos",
-        resize:"false"
+        change: 'infos',
+        resize: 'false',
       });
-  
+
       setEvents((prevEvents) =>
         prevEvents.map((event) =>
-          event.id === selectedEvent.id ? { ...event,
-             teacher: formData.get('professor'),
-             room:formData.get('room'),
-             title:formData.get('subject'),
-          } : event
+          event.id === selectedEvent.id
+            ? {
+                ...event,
+                teacher: formData.get('professor'),
+                room: formData.get('room'),
+                title: formData.get('subject'),
+              }
+            : event
         )
       );
-  
-      toastr.success("Event deleted successfully", "Success", {
-        positionClass: "toast-top-right",
+
+      toastr.success('Event deleted successfully', 'Success', {
+        positionClass: 'toast-top-right',
         timeOut: 3000,
         progressBar: true,
       });
       closeEditModal();
     } catch (error) {
-      console.error("Error calling Python function", error);
-  
-      toastr.error("Failed to delete the event", "Error", {
-        positionClass: "toast-top-right",
+      console.error('Error calling Python function', error);
+
+      toastr.error('Failed to delete the event', 'Error', {
+        positionClass: 'toast-top-right',
         timeOut: 3000,
         progressBar: true,
       });
     }
-    
   };
 
-  const handleDeleteEvent=async()=>{
-    const event=selectedEvent;
+  const handleDeleteEvent = async () => {
+    const event = selectedEvent;
     const start =
-      (event.start.getHours() + "").length == 2
-        ? event.start.getHours() + ""
-        : "0" + event.start.getHours();
+      (event.start.getHours() + '').length == 2
+        ? event.start.getHours() + ''
+        : '0' + event.start.getHours();
     const startMinutes =
-      (event.start.getMinutes() + "").length == 2
-        ? event.start.getMinutes() + ""
-        : "0" + event.start.getMinutes();
+      (event.start.getMinutes() + '').length == 2
+        ? event.start.getMinutes() + ''
+        : '0' + event.start.getMinutes();
     const end =
-      (event.end.getHours() + "").length == 2
-        ? event.end.getHours() + ""
-        : "0" + event.end.getHours();
+      (event.end.getHours() + '').length == 2
+        ? event.end.getHours() + ''
+        : '0' + event.end.getHours();
     const endMinutes =
-      (event.end.getMinutes() + "").length == 2
-        ? event.end.getMinutes() + ""
-        : "0" + event.end.getMinutes();
+      (event.end.getMinutes() + '').length == 2
+        ? event.end.getMinutes() + ''
+        : '0' + event.end.getMinutes();
     const time = `${start}:${startMinutes} - ${end}:${endMinutes}`;
     const updatedEvent = {
-      id:event.id,
+      id: event.id,
       day: days[event.start.getDay()],
       subject: event.title,
-      time:time,
+      time: time,
       teacher: event.extendedProps.professor,
-      "class": event.extendedProps.class,
+      class: event.extendedProps.class,
       room: event.extendedProps.room,
     };
     try {
@@ -273,25 +314,25 @@ const Schedule = () => {
         session: updatedEvent,
         role: user.role,
       });
-  
+
       setEvents((prevEvents) => prevEvents.filter((e) => e.id !== event.id));
-  
-      toastr.success("Event deleted successfully", "Success", {
-        positionClass: "toast-top-right",
+
+      toastr.success('Event deleted successfully', 'Success', {
+        positionClass: 'toast-top-right',
         timeOut: 3000,
         progressBar: true,
       });
       closePopup();
     } catch (error) {
-      console.error("Error calling Python function", error);
-  
-      toastr.error("Failed to delete the event", "Error", {
-        positionClass: "toast-top-right",
+      console.error('Error calling Python function', error);
+
+      toastr.error('Failed to delete the event', 'Error', {
+        positionClass: 'toast-top-right',
         timeOut: 3000,
         progressBar: true,
       });
     }
-  }
+  };
 
   const convertToFullCalendarEvents = (backendData) => {
     return backendData.map((item) => {
@@ -336,6 +377,45 @@ const Schedule = () => {
       (!filters.class || event.class.includes(filters.class)) &&
       (!filters.room || event.room.includes(filters.room))
   );
+
+  const notifyUser = async () => {
+    try {
+      // Get the current schedule name
+      const scheduleName = name;
+      
+      // Determine if it's a class, teacher, or room schedule
+      // const scheduleType = getCurrent(scheduleName);
+      
+      // Call the backend to send notifications
+      const response = await axios.post('http://127.0.0.1:5000/notifyUsers', {
+        scheduleName: scheduleName,
+        message: `Schedule update for ${scheduleName}`,
+        changedBy: user.email
+      });
+      
+      if (response.data.success) {
+        toastr.success('Notifications sent successfully', 'Success', {
+          positionClass: 'toast-top-right',
+          timeOut: 3000,
+          progressBar: true
+        });
+      } else {
+        toastr.warning(response.data.message, 'Warning', {
+          positionClass: 'toast-top-right',
+          timeOut: 3000,
+          progressBar: true
+        });
+      }
+    } catch (error) {
+      console.error('Error sending notifications:', error);
+      toastr.error('Failed to send notifications', 'Error', {
+        positionClass: 'toast-top-right',
+        timeOut: 3000,
+        progressBar: true
+      });
+    }
+  }
+
   return (
     <div className="app min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
       <Aurora colorStops={['#ff00ff', '#00d8ff', '#7cff67']} amplitude={1.5} />
@@ -361,18 +441,29 @@ const Schedule = () => {
             </label>
           </div>
           <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-xl p-6 shadow-xl">
-            <button
-              onClick={() => window.print()}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 mb-4"
-            >
-              Print Schedule
-            </button>
-            <button
-              onClick={() => generateSchedulePDF(filteredEvents)}
-              className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 mb-4"
-            >
-              Download PDF
-            </button>
+            <div className="flex gap-4 mb-4 justify-center items-center">
+              <button
+                onClick={() => window.print()}
+                className="relative overflow-hidden px-6 py-3 rounded-full text-white font-semibold bg-gradient-to-r from-purple-500 to-indigo-600 shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl"
+              >
+                Print Schedule
+              </button>
+
+              <button
+                onClick={() => generateSchedulePDF(filteredEvents)}
+                className="relative overflow-hidden px-6 py-3 rounded-full text-white font-semibold bg-gradient-to-r from-green-500 to-teal-500 shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl"
+              >
+                Download PDF
+              </button>
+
+              {user.role == 'admin' ? <button
+                onClick={() => notifyUser()} // Replace with your notification function
+                className="ml-auto flex items-center gap-2 px-3.5 py-2 rounded-full text-white font-medium bg-gradient-to-r from-yellow-500 to-orange-500 shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg text-sm"
+              >
+                <BellRing className="w-4 h-4" /> Notify
+              </button> :<></>}
+            </div>
+
             <div id="printable-area">
               <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -380,8 +471,8 @@ const Schedule = () => {
                 events={filteredEvents}
                 slotMinTime="08:00:00"
                 slotMaxTime="19:00:00"
-                slotDuration={"00:30:00"}
-                snapDuration={"00:15:00"}
+                slotDuration={'00:30:00'}
+                snapDuration={'00:15:00'}
                 allDaySlot={false}
                 hiddenDays={[0]}
                 eventClick={handleEventClick}
@@ -390,13 +481,16 @@ const Schedule = () => {
                   center: 'title',
                   right: 'dayGridMonth,timeGridWeek,timeGridDay',
                 }}
-                editable={user.role=="admin"?true:false}
+                editable={user.role == 'admin' ? true : false}
                 selectable={true}
                 eventContent={(eventInfo) => {
-                  const startTime = eventInfo.event.start.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  });
+                  const startTime = eventInfo.event.start.toLocaleTimeString(
+                    [],
+                    {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }
+                  );
                   const endTime = eventInfo.event.end.toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
@@ -430,49 +524,52 @@ const Schedule = () => {
                     </div>
                   );
                 }}
-                eventDrop={async(info) => {
+                eventDrop={async (info) => {
                   const start =
-                    (info.event.start.getHours() + "").length == 2
-                      ? info.event.start.getHours() + ""
-                      : "0" + info.event.start.getHours();
+                    (info.event.start.getHours() + '').length == 2
+                      ? info.event.start.getHours() + ''
+                      : '0' + info.event.start.getHours();
                   const startMinutes =
-                    (info.event.start.getMinutes() + "").length == 2
-                      ? info.event.start.getMinutes() + ""
-                      : "0" + info.event.start.getMinutes();
+                    (info.event.start.getMinutes() + '').length == 2
+                      ? info.event.start.getMinutes() + ''
+                      : '0' + info.event.start.getMinutes();
                   const end =
-                    (info.event.end.getHours() + "").length == 2
-                      ? info.event.end.getHours() + ""
-                      : "0" + info.event.end.getHours();
+                    (info.event.end.getHours() + '').length == 2
+                      ? info.event.end.getHours() + ''
+                      : '0' + info.event.end.getHours();
                   const endMinutes =
-                    (info.event.end.getMinutes() + "").length == 2
-                      ? info.event.end.getMinutes() + ""
-                      : "0" + info.event.end.getMinutes();
+                    (info.event.end.getMinutes() + '').length == 2
+                      ? info.event.end.getMinutes() + ''
+                      : '0' + info.event.end.getMinutes();
                   const time = `${start}:${startMinutes} - ${end}:${endMinutes}`;
                   const updatedEvent = {
-                    id:info.event.id,
+                    id: info.event.id,
                     day: days[info.event.start.getDay()],
                     subject: info.event.title,
-                    time:time,
+                    time: time,
                     teacher: info.event.extendedProps.professor,
-                    "class": info.event.extendedProps.class,
+                    class: info.event.extendedProps.class,
                     room: info.event.extendedProps.room,
                   };
 
                   // Save the updated event to the backend
                   try {
-                    const res = await axios.post('http://127.0.0.1:5000/updateSession', {
-                    "event": updatedEvent,
-                    "resize":"false",
-                    "role":user.role,
-                    "change":"time"
-                    });
-                    toastr.success(res.data.message, "Success", {
-                      positionClass: "toast-top-right",
+                    const res = await axios.post(
+                      'http://127.0.0.1:5000/updateSession',
+                      {
+                        event: updatedEvent,
+                        resize: 'false',
+                        role: user.role,
+                        change: 'time',
+                      }
+                    );
+                    toastr.success(res.data.message, 'Success', {
+                      positionClass: 'toast-top-right',
                       timeOut: 3000,
                       progressBar: true,
                     });
                     setEvents((prevEvents) => {
-                      const updatedEvents = prevEvents.map((event) => 
+                      const updatedEvents = prevEvents.map((event) =>
                         event.id === updatedEvent.id
                           ? {
                               ...event,
@@ -483,79 +580,78 @@ const Schedule = () => {
                       );
                       return updatedEvents;
                     });
-                
                   } catch (error) {
                     toastr.error('', error.response.data.error, {
-                      positionClass: "toast-top-right",
+                      positionClass: 'toast-top-right',
                       timeOut: 3000,
                       progressBar: true,
                     });
 
                     console.error('Error saving resized event:', error);
-                      info.revert();
+                    info.revert();
                   }
                 }}
-                eventResize={async(info) => {
+                eventResize={async (info) => {
                   const start =
-                    (info.event.start.getHours() + "").length == 2
-                      ? info.event.start.getHours() + ""
-                      : "0" + info.event.start.getHours();
+                    (info.event.start.getHours() + '').length == 2
+                      ? info.event.start.getHours() + ''
+                      : '0' + info.event.start.getHours();
                   const startMinutes =
-                    (info.event.start.getMinutes() + "").length == 2
-                      ? info.event.start.getMinutes() + ""
-                      : "0" + info.event.start.getMinutes();
+                    (info.event.start.getMinutes() + '').length == 2
+                      ? info.event.start.getMinutes() + ''
+                      : '0' + info.event.start.getMinutes();
                   const end =
-                    (info.event.end.getHours() + "").length == 2
-                      ? info.event.end.getHours() + ""
-                      : "0" + info.event.end.getHours();
+                    (info.event.end.getHours() + '').length == 2
+                      ? info.event.end.getHours() + ''
+                      : '0' + info.event.end.getHours();
                   const endMinutes =
-                    (info.event.end.getMinutes() + "").length == 2
-                      ? info.event.end.getMinutes() + ""
-                      : "0" + info.event.end.getMinutes();
+                    (info.event.end.getMinutes() + '').length == 2
+                      ? info.event.end.getMinutes() + ''
+                      : '0' + info.event.end.getMinutes();
                   const time = `${start}:${startMinutes} - ${end}:${endMinutes}`;
                   const updatedEvent = {
-                    id:info.event.id,
+                    id: info.event.id,
                     day: days[info.event.start.getDay()],
                     subject: info.event.title,
-                    time:time,
+                    time: time,
                     teacher: info.event.extendedProps.professor,
-                    "class": info.event.extendedProps.class,
+                    class: info.event.extendedProps.class,
                     room: info.event.extendedProps.room,
                   };
 
                   // Save the updated event to the backend
                   try {
-                    const res = await axios.post('http://127.0.0.1:5000/updateSession', 
-                    {
-                      "event": updatedEvent,
-                      "resize": "true",
-                      "role":user.role,
-                      "change":"time"
-                    });
-                    toastr.success(res.data.message, "Success", {
-                      positionClass: "toast-top-right",
+                    const res = await axios.post(
+                      'http://127.0.0.1:5000/updateSession',
+                      {
+                        event: updatedEvent,
+                        resize: 'true',
+                        role: user.role,
+                        change: 'time',
+                      }
+                    );
+                    toastr.success(res.data.message, 'Success', {
+                      positionClass: 'toast-top-right',
                       timeOut: 3000,
                       progressBar: true,
                     });
                     setEvents((prevEvents) => {
-                      const updatedEvents = prevEvents.map((event) => 
+                      const updatedEvents = prevEvents.map((event) =>
                         event.id === updatedEvent.id
                           ? {
                               ...event,
                               start: info.event.start.toISOString(),
                               end: info.event.end.toISOString(),
-                              
                             }
                           : event
                       );
                       return updatedEvents;
                     });
-                
                   } catch (error) {
                     console.error('Error saving resized event:', error);
                     info.revert();
                     toastr.error('', error.response.data.error, {
-                      positionClass: "toast-top-right",
+                      positionClass: 'toast-top-right',
                       timeOut: 3000,
                       progressBar: true,
                     });
@@ -568,118 +664,127 @@ const Schedule = () => {
         {/* Popup */}
         {showPopup && selectedEvent && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
-          <div className="bg-white/90 rounded-2xl shadow-2xl p-6 max-w-md w-full transition-transform transform scale-105 hover:scale-100">
-            {/* Event Title */}
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">{selectedEvent.title}</h2>
-            
-            {/* Event Details */}
-            <p className="text-gray-700">
-              <strong className="font-semibold text-gray-900">Professor:</strong> {selectedEvent.extendedProps.professor}
-            </p>
-            <p className="text-gray-700">
-              <strong className="font-semibold text-gray-900">Room:</strong> {selectedEvent.extendedProps.room}
-            </p>
-            <p className="text-gray-700">
-              <strong className="font-semibold text-gray-900">Class:</strong> {selectedEvent.extendedProps.class}
-            </p>
-            <p className="text-gray-700">
-              <strong className="font-semibold text-gray-900">Time:</strong>{' '}
-              {selectedEvent.start.toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}{' '}
-              -{' '}
-              {selectedEvent.end.toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </p>
-        
-            <div className="flex w-full justify-between items-center mt-6">
-              {/* Edit and Delete Buttons */}
-              {user.role=="admin"?
-              <div className="flex space-x-2">
-              <button
-                onClick={openEditModal}
-                className="px-4 py-2 bg-sky-600 text-white font-semibold rounded-lg shadow-lg hover:bg-sky-900 transition"
-              >
-                Edit
-              </button>
-              <button
-                className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-lg hover:bg-red-600 transition"
-                onClick={handleDeleteEvent}
-              >
-                Delete
-              </button>
-            </div>
-            :
-              <div></div>}
-              
-        
-              {/* Close Button */}
-              <button
-                onClick={closePopup}
-                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-semibold rounded-lg shadow-lg hover:from-purple-600 hover:to-indigo-600 transition"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        
-          {/* Edit Modal (Hidden by Default) */}
-          {isEditModalOpen && ( /* Conditional rendering for the edit modal */
-            <div className="fixed inset-0 z-60 flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm">
-              <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
-                <h3 className="text-xl font-bold mb-4 text-gray-800">Edit Event</h3>
-                <form onSubmit={handleEditSubmit}>
-                  <label className="block text-gray-700 font-semibold mb-2">
-                    Subject:
-                    <input
-                      name="subject"
-                      type="text"
-                      defaultValue={selectedEvent.title}
-                      className="w-full px-3 py-2 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500"
-                    />
-                  </label>
-                  <label className="block text-gray-700 font-semibold mb-2">
-                    Professor:
-                    <input
-                      name="professor"
-                      type="text"
-                      defaultValue={selectedEvent.extendedProps.professor}
-                      className="w-full px-3 py-2 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500"
-                    />
-                  </label>
-                  <label className="block text-gray-700 font-semibold mb-2">
-                    Room:
-                    <input
-                      type="text"
-                      name="room"
-                      defaultValue={selectedEvent.extendedProps.room}
-                      className="w-full px-3 py-2 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500"
-                    />
-                  </label>
-                  <div className="flex justify-end space-x-4 mt-4">
+            <div className="bg-white/90 rounded-2xl shadow-2xl p-6 max-w-md w-full transition-transform transform scale-105 hover:scale-100">
+              {/* Event Title */}
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">
+                {selectedEvent.title}
+              </h2>
+
+              {/* Event Details */}
+              <p className="text-gray-700">
+                <strong className="font-semibold text-gray-900">
+                  Professor:
+                </strong>{' '}
+                {selectedEvent.extendedProps.professor}
+              </p>
+              <p className="text-gray-700">
+                <strong className="font-semibold text-gray-900">Room:</strong>{' '}
+                {selectedEvent.extendedProps.room}
+              </p>
+              <p className="text-gray-700">
+                <strong className="font-semibold text-gray-900">Class:</strong>{' '}
+                {selectedEvent.extendedProps.class}
+              </p>
+              <p className="text-gray-700">
+                <strong className="font-semibold text-gray-900">Time:</strong>{' '}
+                {selectedEvent.start.toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}{' '}
+                -{' '}
+                {selectedEvent.end.toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </p>
+
+              <div className="flex w-full justify-between items-center mt-6">
+                {/* Edit and Delete Buttons */}
+                {user.role == 'admin' ? (
+                  <div className="flex space-x-2">
                     <button
-                      type="button"
-                      onClick={closeEditModal}
-                      className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow hover:bg-gray-400 transition"
+                      onClick={openEditModal}
+                      className="px-4 py-2 bg-sky-600 text-white font-semibold rounded-lg shadow-lg hover:bg-sky-900 transition"
                     >
-                      Cancel
+                      Edit
                     </button>
                     <button
-                      type="submit"
-                      className="px-4 py-2 bg-sky-600 text-white rounded-lg shadow hover:bg-sky-700 transition"
+                      className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-lg hover:bg-red-600 transition"
+                      onClick={handleDeleteEvent}
                     >
-                      Save
+                      Delete
                     </button>
                   </div>
-                </form>
+                ) : (
+                  <div></div>
+                )}
+
+                {/* Close Button */}
+                <button
+                  onClick={closePopup}
+                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-semibold rounded-lg shadow-lg hover:from-purple-600 hover:to-indigo-600 transition"
+                >
+                  Close
+                </button>
               </div>
             </div>
-          )}
-        </div>      
-      )}
+
+            {/* Edit Modal (Hidden by Default) */}
+            {isEditModalOpen /* Conditional rendering for the edit modal */ && (
+              <div className="fixed inset-0 z-60 flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm">
+                <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
+                  <h3 className="text-xl font-bold mb-4 text-gray-800">
+                    Edit Event
+                  </h3>
+                  <form onSubmit={handleEditSubmit}>
+                    <label className="block text-gray-700 font-semibold mb-2">
+                      Subject:
+                      <input
+                        name="subject"
+                        type="text"
+                        defaultValue={selectedEvent.title}
+                        className="w-full px-3 py-2 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500"
+                      />
+                    </label>
+                    <label className="block text-gray-700 font-semibold mb-2">
+                      Professor:
+                      <input
+                        name="professor"
+                        type="text"
+                        defaultValue={selectedEvent.extendedProps.professor}
+                        className="w-full px-3 py-2 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500"
+                      />
+                    </label>
+                    <label className="block text-gray-700 font-semibold mb-2">
+                      Room:
+                      <input
+                        type="text"
+                        name="room"
+                        defaultValue={selectedEvent.extendedProps.room}
+                        className="w-full px-3 py-2 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500"
+                      />
+                    </label>
+                    <div className="flex justify-end space-x-4 mt-4">
+                      <button
+                        type="button"
+                        onClick={closeEditModal}
+                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow hover:bg-gray-400 transition"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-4 py-2 bg-sky-600 text-white rounded-lg shadow hover:bg-sky-700 transition"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

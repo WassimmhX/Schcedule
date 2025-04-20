@@ -36,15 +36,18 @@ def add_session(db,data,session):
     return "Added Schedule successfully",200
 def getScheduleType(name):
     classes=classes_list(get_db())
-    if name in classes:
-        return "Class"
+    for c in classes:
+        if c["name"]==name:
+            return "Class"
     teachers=teachers_list(get_db())
-    if name in teachers:
-        return "Teacher"
+    for t in teachers:
+        if t["name"]==name:
+            return "Teacher"
     rooms=rooms_list(get_db())
-    if name in rooms:
-        return "Room"
-    return ""
+    for r in rooms:
+        if r["name"]==name:
+            return "Room"
+    return None
 def find_day_of_schedule(data,schedule,day,schedule_type):
     if schedule_type=="Class":
         results = [i for i in data if isinstance(i["class"], str) and (i["class"].strip() in schedule or schedule.strip() in i["class"].strip()) and i["day"]==day]

@@ -4,7 +4,7 @@ from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import AIMessage,HumanMessage
 from langchain.callbacks.base import BaseCallbackHandler
-from ai.Tools import AiTools
+from backend.ai.Tools import AiTools
 from typing import AsyncGenerator, Dict, Any, List
 import logging
 import asyncio
@@ -114,33 +114,21 @@ class AIAgent:
         
         # Initialize agent prompt
         self.agent_prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are a helpful assistant with access to tools. Analyze requests carefully before deciding which tools to use and in what order.
+            ("system", """You are a helpful assistant with access to tools. Analyze user requests carefully before deciding which tools to use and in what order.
+                **KEY RULES:**
 
-            **IMPORTANT GUIDELINES:
+                1. TOOL USAGE STRATEGY:
+                - Break down complex tasks into sub-steps and execute tools in sequence.
+                - Never combine multiple operations in one tool call.
+                - Use tool outputs as inputs for later steps if needed.
+                - Only use tools when the request involves data retrieval or schedule-specific logic.
 
-            1. SEQUENTIAL TOOL USAGE:
-            - For complex tasks requiring multiple steps, break the problem into logical sub-tasks
-            - Execute tools in sequence, using the output of one tool as input to the next when appropriate
-            - Never combine multiple operations into a single tool call - each distinct operation needs its own tool call
-            - Keep track of intermediate results and use them in subsequent tool calls
-
-            2. GENERAL TOOL USAGE:
-            - Only use tools when the request requires data retrieval
-            - For general knowledge questions or conversational responses, answer directly without using tools
-            - Be efficient - use tools only when necessary and appropriate
-            - After using tools, provide a concise response incorporating all relevant outputs
-
-            3. REASONING PROCESS:
-            - Think step-by-step about what tools are needed and in what order
-            - Identify dependencies between operations and sequence tool calls accordingly
-            - For complex queries, outline your approach before making tool calls
-            - Review final results for accuracy and completeness
-
-            4. COMMON SCENARIOS:
-            - Data retrieval and transformation: First retrieve data, then transform as needed
-            - Compound research questions: Break into sub-questions and build comprehensive answers
-
-            Your goal is to be helpful and efficient, using tools in a logical sequence to accurately complete complex tasks while providing clear explanations of your process.
+                2. REASONING APPROACH:
+                - Think step-by-step about the required tools and their execution order.
+                - Identify dependencies between tool outputs.
+                - Review results before responding and summarize them clearly.
+             
+                Be accurate, concise, and helpful. Guide the user clearly if information is missing.
              """),
             MessagesPlaceholder(variable_name="chat_history"),
             ("user", "{input}"),

@@ -5,9 +5,9 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pydantic import BaseModel, EmailStr
-from BdManager import *
+from backend.BdManager import *
 
-from ai.agentV2 import AIAgent
+from backend.ai.agentV2 import AIAgent
 
 # App & Mail config
 app = FastAPI()

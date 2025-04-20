@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from BdManager import *
+from backend.BdManager import *
 from datetime import datetime
 import pytz  
 
@@ -149,9 +149,17 @@ class AiTools:
     @staticmethod
     @tool
     def search_for_user_schedule(userEmail:str)->dict|None:
-        """ Get the user's schedule information (name and type) using their email.
-            If the result is None, the agent should ask the user directly for their schedule details.
-            Note: This tool can only be used if the user's email is known.
+        """
+            Get the user's schedule information (name and type) using their email.
+
+            *** Use this ONLY if ***:
+                - The user explicitly refers to **their own schedule** (e.g., "my schedule")
+                - And the user's email is available.
+                - DO NOT use this tool if the query is about another person's schedule (like a teacher or group).
+                - DO NOT use this tool if the schedule name is already provided or implied.
+
+            Returns:
+            A dictionary with the user's schedule name and type, or None if not found.
         """
         schedule=getUserAttribute(get_db(),userEmail,"mySchedule")
         return schedule
@@ -159,20 +167,23 @@ class AiTools:
     @staticmethod
     @tool
     def get_schedule_type(schedule_name:str)->str:
-        """Retrieve the type of a schedule by providing its name."""
+        """Retrieve the type of a schedule by providing its name. The name can be a teacher name, a room or a class."""
         return getScheduleType(schedule_name)
     @staticmethod
     @tool
-    def search_day_informations(schedule_name:str,schedule_type:str,day:str)->list:
+    def search_informations(schedule:str,schedule_type:str,day:str)->list:
         """ Get detailed information for a specific day in a schedule.
             Returns session begin time and end time, teacher, room, and subject for the given day.
             Parameters:
-                - schedule_name: The name of the schedule.
-                - schedule_type: The type of the schedule.
+                - schedule: The name of the schedule (can be a class's name, a teacher's name or a room's name).
+                - schedule_type: The type of the schedule it can be only one of these three and written exactly like that:
+                    1-Class
+                    2-Teacher
+                    3-Room
                 - day: The day to search for (e.g., "Monday").
         """
         day=AiTools.translate_day_to_french(day)
-        return find_day_of_schedule(AiTools.data,schedule_name,day,schedule_type)
+        return find_day_of_schedule(AiTools.data,schedule,day,schedule_type)
         
     def translate_day_to_french(day:str):
         day=day.lower()
@@ -196,5 +207,5 @@ class AiTools:
             AiTools.find_subject_sessions,
             AiTools.search_for_user_schedule, 
             AiTools.get_schedule_type, 
-            AiTools.search_day_informations
+            AiTools.search_informations
         ]

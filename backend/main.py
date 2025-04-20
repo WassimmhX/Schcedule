@@ -8,7 +8,8 @@ from pydantic import BaseModel, EmailStr
 from backend.BdManager import *
 
 from backend.ai.agentV2 import AIAgent
-
+from dotenv import load_dotenv
+load_dotenv()
 # App & Mail config
 app = FastAPI()
 
@@ -21,9 +22,9 @@ app.add_middleware(
 )
 
 conf = ConnectionConfig(
-    MAIL_USERNAME='ahmedmtawahg@gmail.com',
-    MAIL_PASSWORD='wdiervjootstklaq',
-    MAIL_FROM='ahmedmtawahg@gmail.com',
+    MAIL_USERNAME=os.environ["MAIL_USERNAME"],
+    MAIL_PASSWORD=os.environ["MAIL_PASSWORD"],
+    MAIL_FROM=os.environ["MAIL_FROM"],
     MAIL_PORT=587,
     MAIL_SERVER='smtp.gmail.com',
     MAIL_STARTTLS=True,       # use this instead of MAIL_TLS

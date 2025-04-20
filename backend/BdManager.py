@@ -5,10 +5,11 @@ import numpy as np
 import bcrypt
 import re
 import datetime
-
+from dotenv import load_dotenv
+load_dotenv()
 def get_db():
-    client = MongoClient("mongodb://localhost:27017/")
-    db = client["SchcedulePrj"]
+    client = MongoClient(os.environ["MONGODB_URL"])
+    db = client[os.environ["BD_NAME"]]
     return db
 def schedules(db,id=False):
     if id :

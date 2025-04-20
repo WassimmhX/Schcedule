@@ -13,7 +13,7 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { BellRing, ClipboardList, NotepadTextIcon } from 'lucide-react';
+import { BellRing } from 'lucide-react';
 
 const generateSchedulePDF = (filteredEvents) => {
   const doc = new jsPDF();
@@ -127,38 +127,32 @@ const Schedule = () => {
   }, [response]);
 
   const getCurrent = (name) => {
-    for (
-      let i = 0;
-      i < JSON.parse(localStorage.getItem('classes')).length;
-      i++
-    ) {
-      if (JSON.parse(localStorage.getItem('classes'))[i].name == name) {
-        return 'Class';
-      }
+    const classes=JSON.parse(localStorage.getItem('classes'));
+    if (classes.find((classe)=>name==classe.name)){
+      return "Class";
     }
-
-    for (
-      let i = 0;
-      i < JSON.parse(localStorage.getItem('teachers')).length;
-      i++
-    ) {
-      if (JSON.parse(localStorage.getItem('teachers'))[i].name == name) {
-        return 'Teacher';
-      }
+    const teachers=JSON.parse(localStorage.getItem('teachers'));
+    if (teachers.find((teacher)=>name==teacher.name)){
+      return "Teacher";
     }
-    for (let i = 0; i < JSON.parse(localStorage.getItem('rooms')).length; i++) {
-      if (JSON.parse(localStorage.getItem('rooms'))[i].name == name) {
-        return 'Room';
-      }
+    const rooms=JSON.parse(localStorage.getItem('rooms'));
+    if (rooms.find((room)=>name==room.name)){
+      return "Teacher";
     }
+    return null;
   };
   const myScheduleChecked = async (e) => {
     setMySchedule(e.target.checked);
     const user = JSON.parse(localStorage.getItem('user'));
-    const schedule = e.target.checked ? mySchedule : '';
+    const schedule = e.target.checked ? mySchedule : null;
+    let totalInfo=null;
+    if (schedule){
+      let x=getCurrent(schedule);
+      totalInfo={name:schedule,type:x};
+    }
     try {
       const res = await axios.post('http://127.0.0.1:5000/updateUserSchedule', {
-        schedule: schedule,
+        schedule: totalInfo,
         email: user.email,
       });
       localStorage.removeItem('mySchedule');

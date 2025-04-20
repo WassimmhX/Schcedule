@@ -55,7 +55,6 @@ const Navbar = () => {
     navigate('/');
     logout();
   };
-
   const mySchedule = localStorage.getItem("mySchedule");
   const scheduleOptions = [
     { path: '/schedules/students', label: 'Students' },

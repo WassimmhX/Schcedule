@@ -1,7 +1,7 @@
 import { Calendar, BookOpen, Users, ArrowRight, Facebook, Twitter, Linkedin, Mail, Phone, MapPin, LogIn } from 'lucide-react';
 import bgImage from "../assets/CSWMDNJbDZvpQPAQozGF.png"
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect} from 'react';
 const Home = () => {
   const user = localStorage.getItem('user');
   const getList=async(value)=>{
@@ -33,7 +33,7 @@ const Home = () => {
             Welcome to Our University
           </h1>
           <p className="mt-6 text-xl md:text-2xl text-blue-100">
-            Empowering minds, shaping futures, and fostering innovation for tomorrow's leaders.
+            Empowering minds, shaping futures, and fostering innovation for tomorrow{"'"}s leaders.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
           {user ? (

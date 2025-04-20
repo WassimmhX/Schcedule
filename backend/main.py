@@ -1,384 +1,259 @@
-import shutil
-from flask import Flask, request,jsonify
-from flask_cors import (CORS)
+import shutil, os, json, asyncio
+from datetime import datetime
+from fastapi import FastAPI, Request, UploadFile, File
+from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+from pydantic import BaseModel, EmailStr
 from BdManager import *
 
-from flask_mail import Mail, Message
-import secrets
-from datetime import datetime, timedelta
+from ai.agentV2 import AIAgent
+
+# App & Mail config
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Set to your frontend origin if needed
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+conf = ConnectionConfig(
+    MAIL_USERNAME='ahmedmtawahg@gmail.com',
+    MAIL_PASSWORD='wdiervjootstklaq',
+    MAIL_FROM='ahmedmtawahg@gmail.com',
+    MAIL_PORT=587,
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_STARTTLS=True,       # use this instead of MAIL_TLS
+    MAIL_SSL_TLS=False,       # use this instead of MAIL_SSL
+    USE_CREDENTIALS=True
+)
+
+fm = FastMail(conf)
+
+# Init DB & Data
+db = get_db()
+data = schedules(db)
+
+# --------------------------- MODELS ---------------------------
+class EmailResetRequest(BaseModel):
+    email: EmailStr
+    href: str
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    password: str
+
+# --------------------------- ROUTES ---------------------------
+
+@app.get("/chat")
+async def chat(message: str):
+    user_message = message
+
+    async def event_stream():
+        queue = asyncio.Queue()
+        agent = AIAgent(queue=queue)
+        async for item in agent.generate_response(user_message):
+            yield f"data: {json.dumps(item)}\n\n"
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
 
 
+@app.post("/testLogin")
+async def test_login(request: Request):
+    data = await request.json()
+    email = data.get("email")
+    password = data.get("password")
+    if not email or not password:
+        return JSONResponse({"error": "Missing 'email' or 'password'"}, status_code=400)
 
-app = Flask(__name__)
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 'ahmedmtawahg@gmail.com'  # Replace with your email
-app.config['MAIL_PASSWORD'] = 'wdiervjootstklaq'
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-mail = Mail(app)
-CORS(app)
-@app.route('/returnByTeacher', methods=['POST'])
-def returnByTeacher():
-    s = []
-    request_data = request.get_json()
-    if not request_data or "class" not in request_data:
-        return jsonify({"error": "Missing 'class' parameter"}), 400  # Return 400 if missing
-    teacher = request_data["class"]
-    for i in data:
-        if i["teacher"].strip()==teacher.strip():
-            s.append(i)
-    print("function completed")
-    return jsonify({"message": s}), 200
-@app.route('/returnByClass', methods=['POST'])
-def returnByClass():
-    s=[]
-    request_data = request.get_json()
-    if not request_data or "class" not in request_data:
-        return jsonify({"error": "Missing 'class' parameter"}), 400  # Return 400 if missing
-    students = request_data["class"]
-    for i in data:
-        if type(i["class"])!=float and   (i["class"].strip() in students or students.strip() in i["class"].strip()):
-            s.append(i)
-    print("function completed")
-    return jsonify({"message": s}), 200
-@app.route('/returnByRoom', methods=['POST'])
-def returnByRoom():
-    s = []
-    request_data = request.get_json()
-    if not request_data or "class" not in request_data:
-        return jsonify({"error": "Missing 'class' parameter"}), 400  # Return 400 if missing
-    room = request_data["class"]
-    for i in data:
-        if i["room"].strip() == room.strip():
-            s.append(i)
-    print("function completed")
-    return jsonify({"message": s}), 200
-@app.route('/getData', methods=['POST'])
-def getData():
-    request_data = request.get_json()
-    if not request_data or "name" not in request_data:
-        return jsonify({"error": "Missing 'class' parameter"}), 400  # Return 400 if missing
-    name = request_data["name"]
-    if name=="teachers":
-        print("function completed")
-        return jsonify({"message": allTeachers()}), 200
-    if name=="rooms":
-        print("function completed")
-        return jsonify({"message": allRooms()}), 200
-    if name=="classes":
-        print("function completed")
-        return jsonify({"message": allClasses()}), 200
-    if name=="users":
-        print("function completed")
-        return jsonify({"message": allUsers()}), 200
-    else:
-        return jsonify({"error":"not supported"}), 400
-@app.route("/testLogin", methods=['POST'])
-def testLogin():
-    request_data = request.get_json()
-    if not request_data or "email" not in request_data:
-        return jsonify({"error": "Missing 'email' parameter"}), 400 # Return 400 if missing
-    if not request_data or "password" not in request_data:
-        return jsonify({"error": "Missing 'password' parameter"}), 400  # Return 400 if missing
-    email = request_data["email"]
-    password = request_data["password"]
-    message,user= verifLogin(db, email, password)
-    if user==None:
-        return jsonify({"error":message}), 400
-    else:
-        return jsonify({"message":user}), 200
-@app.route("/testSignUp",methods=["POST"])
-def testSingUp():
-    request_data = request.get_json()
-    if not request_data or "user" not in request_data:
-        return jsonify({"error": "Missing 'user' parameter"}), 400
-    user=request_data["user"]
-    message,state=add_user(db,user)
-    if state==200:
-        user.pop("password")
-        user.pop("_id")
-        return jsonify(user), 200
-    else:
-        return jsonify({"error": message}), 400
-@app.route('/updateUserSchedule', methods=['POST'])
-def updateUserSchedule():
-    request_data = request.get_json()
-    if not request_data or "schedule" not in request_data:
-        return jsonify({"error": "Missing 'schedule' parameter"}), 400
-    if not "email" in request_data:
-        return jsonify({"error": "Missing 'email' parameter"}), 400
-    schedule = request_data["schedule"]
-    email=request_data["email"]
-    update_MySchedule(db,email,schedule)
-    return jsonify({"message": "User schedule updated successfully"}), 200
-@app.route("/getMySchedule", methods=["GET"])
-def getMySchedule():
-    request_data = request.get_json()
-    if not "email" in request_data:
-        return jsonify({"error": "Missing 'email' parameter"}), 400
-    email=request_data["email"]
-    schedule=getUserAttribute(db,email,"mySchedule")
-    return jsonify({"schedule":schedule}), 200
-@app.route("/addData", methods=["POST"])
-def addData():
-    request_data = request.get_json()
-    if not request_data or "data" not in request_data or "name" not in request_data:
-        return jsonify({"error": "Missing a parameter"}), 400
-    data_=request_data["data"]
-    name=request_data["name"]
-    if name=="teachers":
-        message,status=add_teacher(db,data_)
-    elif name=="rooms":
-        message,status=add_room(db,data_)
-    elif name=="users":
-        message,status=add_user(db,data_)
-    elif name=="classes":
-        message,status=add_class(db,data_)
-    elif name=="schedule":
-        message,status= add_session(db, data, data_)
-    else:
-        return jsonify({"error": "adding is not supported"}), 400
-    if status==200:
-        return jsonify({"message": message}), 200
-    else:
-        return jsonify({"error": message}), 400
-@app.route("/updateData", methods=["POST"])
-def updateData():
-    request_data = request.get_json()
-    if not request_data and "name" not in request_data:
-        return jsonify({"error": "Missing 'name' parameter"}), 400
-    if not "data" in request_data:
-        return jsonify({"error": "Missing 'data' parameter"}), 400
-    name = request_data["name"]
-    data = request_data["data"]
-    message={"error":"error occured"}
-    responseType=400
-    if name=="users":
-        message,responseType=updateUser(db,data)
-    if name=="teachers":
-        message,responseType=updateTeacher(db,data)
-    return jsonify(message),responseType
-@app.route("/deleteData", methods=["POST"])
-def deleteData():
-    request_data = request.get_json()
-    if not request_data or "name" not in request_data or "key" not in request_data:
-        return jsonify({"error": "Missing 'data' parameter"}), 400
-    key = request_data["key"]
-    name = request_data["name"]
-    if name=="users":
-        message, status=deleteUser(db,key)
-    elif name=="teachers":
-        message, status=deleteTeacher(db,key)
-    elif name=="rooms":
-        message, status=deleteRoom(db,key)
-    elif name=="classes":
-        message, status=deleteClass(db,key)
-    else:
-        return  jsonify({"error":"delete is not supported"}), 400
-    if status==400:
-        return jsonify({"error":message}),400
-    else:
-        return jsonify({"message":message}), 200
-@app.route("/nbData", methods=["POST"])
-def nbData():
-    request_data = request.get_json()
-    if not request_data or "name" not in request_data:
-        return jsonify({"error": "Missing 'name' parameter"}), 400
-    name = request_data["name"]
-    if name=="teachers":
-        return jsonify({"nb":nb_teacher(db)}),200
-    if name=="users":
-        return jsonify({"nb":nb_user(db)}),200
-    if name=="classes":
-        return jsonify({"nb":nb_class(db)}),200
-    if name=="rooms":
-        return jsonify({"nb":nb_room(db)}),200
-    else:
-        return jsonify({"error":"not supported"}), 400
-@app.route("/changeSchedules", methods=["POST"])
-def changeSchedules():
-    if 'file' not in request.files:
-        return jsonify({"error", 'No file part'}), 400
+    message, user = verifLogin(db, email, password)
+    return JSONResponse({"message": user} if user else {"error": message}, status_code=200 if user else 400)
 
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"errot":'No selected file'}), 400
-    if file:
-        data_path = "data/"
-        shutil.rmtree(data_path)
-        os.makedirs(data_path)
-        file_path=os.path.join(data_path, file.filename)
-        file.save(file_path)
-        message,status=readData(db,data_path)
-        print(message)
-        print(f"File saved to {file_path}")
-        return jsonify({"message":'File uploaded and saved successfully'}), 200
-    else:
-        return jsonify({"errot":'No selected file'}), 400
-@app.route("/updateSession",methods=["POST"])
-def updateSession():
-    request_data = request.get_json()
-    if not request_data or "event" not in request_data or "change" not in request_data or "role" not in request_data or "resize" not in request_data:
-        return jsonify({"error": "Missing parameter"}), 400
-    role=request_data["role"]
-    if role!="admin":
-        return jsonify({"error":"Permission denied"}), 400
-    change=request_data["change"]
-    event = request_data["event"]
-    event["id"] = (event["id"].split("-"))[-3] + "-" + (event["id"].split("-"))[-2]
-    if change=="time":
-        resize=request_data["resize"]
-        if len(event["id"])!=13:
-            event["id"]=time_config(event["id"])
-        if len(event["time"])!=13:
-            event["time"]=time_config(event["time"])
-        message,state= edit_session_time(db, data, event, resize == "true")
-        if state==400:
-            return jsonify({"error":message}),state
-        return jsonify({"message":message}),200
-    elif change=="infos":
-        event.pop("id")
-        print(event)
-        message,state=edit_session_infos(db,data,event)
-        if state==400:
-            return jsonify({"error":message}),state
-        else:
-            return jsonify({"message":message}),200
-    else:
-        return jsonify({"error":"not supported"}), 400
-@app.route("/deleteSession",methods=["POST"])
-def deleteSession():
-    request_data = request.get_json()
-    if not request_data or not "session" in request_data or not "role" in request_data:
-        return jsonify({"error": "Missing parameter"}), 400
-    role=request_data["role"]
-    if role!="admin":
-        return jsonify({"error":"Permission denied"}), 400
-    session=request_data["session"]
-    message,state= delete_session(db, data, session)
-    if state==400:
-        return jsonify({"error":message}),state
-    else:
-        return jsonify({"message":message}),200
 
-# Add these new routes to your existing main.py
-@app.route('/forgot-password', methods=['POST'])
-def forgot_password():
-    request_data = request.get_json()
-    if not request_data or not "email" in request_data or not "href" in request_data:
-        return jsonify({"error": "Missing parameter"}), 400
-    email = request_data.get('email')
-    href=request_data.get("href")
+@app.post("/testSignUp")
+async def test_signup(request: Request):
+    data = await request.json()
+    user = data.get("user")
+    if not user:
+        return JSONResponse({"error": "Missing 'user'"}, status_code=400)
+    message, status = add_user(db, user)
+    if status == 200:
+        user.pop("password", None)
+        user.pop("_id", None)
+        return JSONResponse(user)
+    return JSONResponse({"error": message}, status_code=400)
+
+
+@app.post("/getMySchedule")
+async def get_my_schedule(request: Request):
+    data = await request.json()
+    email = data.get("email")
     if not email:
-        return jsonify({"error": "Email is required"}), 400
-    
-    success, result = initiate_password_reset(db, email)
-    
+        return JSONResponse({"error": "Missing 'email'"}, status_code=400)
+    schedule = getUserAttribute(db, email, "mySchedule")
+    return JSONResponse({"schedule": schedule})
+
+
+@app.post("/updateUserSchedule")
+async def update_user_schedule(request: Request):
+    data = await request.json()
+    email = data.get("email")
+    schedule = data.get("schedule")
+    if not email or not schedule:
+        return JSONResponse({"error": "Missing 'email' or 'schedule'"}, status_code=400)
+    update_MySchedule(db, email, schedule)
+    return JSONResponse({"message": "User schedule updated successfully"})
+
+
+@app.post("/getData")
+async def get_data(request: Request):
+    data = await request.json()
+    name = data.get("name")
+    if name == "teachers":
+        return JSONResponse({"message": allTeachers()})
+    elif name == "classes":
+        return JSONResponse({"message": allClasses()})
+    elif name == "rooms":
+        return JSONResponse({"message": allRooms()})
+    elif name == "users":
+        return JSONResponse({"message": allUsers()})
+    return JSONResponse({"error": "not supported"}, status_code=400)
+
+
+@app.post("/returnByTeacher")
+async def return_by_teacher(request: Request):
+    body = await request.json()
+    teacher = body.get("class")
+    if not teacher:
+        return JSONResponse({"error": "Missing 'class'"}, status_code=400)
+    results = [i for i in data if i["teacher"].strip() == teacher.strip()]
+    return JSONResponse({"message": results})
+
+
+@app.post("/returnByClass")
+async def return_by_class(request: Request):
+    body = await request.json()
+    students = body.get("class")
+    if not students:
+        return JSONResponse({"error": "Missing 'class'"}, status_code=400)
+    results = [i for i in data if isinstance(i["class"], str) and (i["class"].strip() in students or students.strip() in i["class"].strip())]
+    return JSONResponse({"message": results})
+
+
+@app.post("/returnByRoom")
+async def return_by_room(request: Request):
+    body = await request.json()
+    room = body.get("class")
+    if not room:
+        return JSONResponse({"error": "Missing 'class'"}, status_code=400)
+    results = [i for i in data if i["room"].strip() == room.strip()]
+    return JSONResponse({"message": results})
+
+
+@app.post("/addData")
+async def add_data(request: Request):
+    body = await request.json()
+    name = body.get("name")
+    data_ = body.get("data")
+    if not name or not data_:
+        return JSONResponse({"error": "Missing data or name"}, status_code=400)
+
+    handlers = {
+        "teachers": add_teacher,
+        "rooms": add_room,
+        "users": add_user,
+        "classes": add_class,
+        "schedule": lambda db, data: add_session(db, data, data_)
+    }
+
+    if name in handlers:
+        message, status = handlers[name](db, data_)
+        return JSONResponse({"message": message} if status == 200 else {"error": message}, status_code=status)
+
+    return JSONResponse({"error": "adding is not supported"}, status_code=400)
+
+
+@app.post("/changeSchedules")
+async def change_schedules(file: UploadFile = File(...)):
+    data_path = "data/"
+    shutil.rmtree(data_path, ignore_errors=True)
+    os.makedirs(data_path, exist_ok=True)
+    file_path = os.path.join(data_path, file.filename)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    message, status = readData(db, data_path)
+    return JSONResponse({"message": message}, status_code=status)
+
+
+@app.post("/forgot-password")
+async def forgot_password(body: EmailResetRequest):
+    success, token = initiate_password_reset(db, body.email)
     if not success:
-        return jsonify({"error": result}), 400
-    
-    # Send reset email
-    reset_link = f"http://{href}/reset-password?token={result}"
-    
+        return JSONResponse({"error": token}, status_code=400)
+
+    reset_link = f"http://{body.href}/reset-password?token={token}"
+    message = MessageSchema(
+        subject="Password Reset Request",
+        recipients=[body.email],
+        body=f"Reset your password using this link:\n{reset_link}",
+        subtype="plain"
+    )
     try:
-        msg = Message(
-            'Password Reset Request',
-            sender=app.config['MAIL_USERNAME'],
-            recipients=[email]
-        )
-        msg.body = f'''To reset your password, visit the following link:
-{reset_link}
-
-If you did not make this request, please ignore this email.
-'''
-        mail.send(msg)
-
-        return jsonify({"message": "Reset link sent successfully"}), 200
+        await fm.send_message(message)
+        return JSONResponse({"message": "Reset link sent successfully"})
     except Exception as e:
-        print(f"Email sending error: {e}")  # More detailed logging
-        return jsonify({"error": f"Failed to send reset email: {str(e)}"}), 500
-@app.route("/reset-password", methods=['POST'])
-def reset_password():
-    request_data = request.get_json()
-    if "token" not in request_data or "password" not in request_data:
-        return jsonify({"error": "Missing parameter"}), 400
-    token = request_data["token"]
-    password = request_data["password"]
-    if len(password.strip()) < 6:
-        return jsonify({"error": "Password is too short"}), 400
-    state,message=reset_password_with_token(db, token, password)
-    if not state:
-        return jsonify({"error":message}), 400
-    else:
-        return jsonify({"message":message}), 200
-
-@app.route('/notifyUsers', methods=['POST'])
-def notify_users():
-    request_data = request.get_json()
-    print(request_data)
-    if not request_data or "scheduleName" not in request_data or "message" not in request_data or "changedBy" not in request_data:
-        return jsonify({"success": False, "message": "Missing required parameters"}), 400
-    
-    schedule_name = request_data["scheduleName"]
-    changed_by = request_data["changedBy"]
-    
-    try:
-        # Get all users associated with this schedule
-        users_to_notify = get_users_by_schedule(db, schedule_name)
-        
-        if not users_to_notify:
-            return jsonify({"success": True, "message": "No users found for this schedule"}), 200
-        
-        # Send email notifications
-        notification_count = 0
-        for user in users_to_notify:
-            email = user["email"]
-            try:
-                msg = Message(
-                    f'Schedule Update: {schedule_name}',
-                    sender=app.config['MAIL_USERNAME'],
-                    recipients=[email]
-                )
-                
-                msg.body = f'''
-Hello,
-
-The schedule for {schedule_name} has been updated.
-
-This change was made by: {changed_by}
-Time of update: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-
-You are receiving this notification because this schedule is part of your account preferences.
-
-Regards,
-School Administration System
-'''
-                mail.send(msg)
-                notification_count += 1
-            except Exception as e:
-                print(f"Failed to send email to {email}: {str(e)}")
-        
-        return jsonify({
-            "success": True,
-            "message": f"Notifications sent to {notification_count} users"
-        }), 200
-        
-    except Exception as e:
-        print(f"Notification error: {str(e)}")
-        return jsonify({"success": False, "message": f"Error sending notifications: {str(e)}"}), 500
+        return JSONResponse({"error": f"Failed to send email: {str(e)}"}, status_code=500)
 
 
+@app.post("/reset-password")
+async def reset_password(body: ResetPasswordRequest):
+    if len(body.password.strip()) < 6:
+        return JSONResponse({"error": "Password is too short"}, status_code=400)
+    state, message = reset_password_with_token(db, body.token, body.password)
+    return JSONResponse({"message": message} if state else {"error": message}, status_code=200 if state else 400)
+
+
+@app.post("/notifyUsers")
+async def notify_users(request: Request):
+    body = await request.json()
+    schedule_name = body.get("scheduleName")
+    changed_by = body.get("changedBy")
+    if not schedule_name or not changed_by:
+        return JSONResponse({"error": "Missing parameters"}, status_code=400)
+
+    users = get_users_by_schedule(db, schedule_name)
+    if not users:
+        return JSONResponse({"message": "No users to notify"})
+
+    count = 0
+    for user in users:
+        try:
+            message = MessageSchema(
+                subject=f"Schedule Update: {schedule_name}",
+                recipients=[user["email"]],
+                body=f"The schedule '{schedule_name}' has been updated by {changed_by}.",
+                subtype="plain"
+            )
+            await fm.send_message(message)
+            count += 1
+        except Exception as e:
+            print(f"Email failed to {user['email']}: {str(e)}")
+
+    return JSONResponse({"message": f"Notified {count} users"})
+
+
+# --------------------------- HELPERS ---------------------------
 def allTeachers():
     return teachers_list(db)
+
 def allClasses():
     return classes_list(db)
+
 def allRooms():
     return rooms_list(db)
+
 def allUsers():
     return users_list(db)
-if __name__ == '__main__':
-    days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
-    db=get_db()
-    data=schedules(db)
-    app.run(debug=True)

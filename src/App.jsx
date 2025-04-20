@@ -14,6 +14,7 @@ import StudentsSchedules from './pages/StudentsSchedules';
 import Dashboard from './AdminArea/Dashboard';
 import RoomsSchedules from './pages/RoomsSchedules';
 import ResetPassword from './components/ResetPassword';
+import AIChat from './components/AiChat';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
 
         <Route path="/permission-denied" element={<PermissionDenied />} />
       </Routes>
+      <AIChat/>
     </Router>
   );
 }

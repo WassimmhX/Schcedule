@@ -34,6 +34,26 @@ def add_session(db,data,session):
         session.pop("_id")
     data.append(session)
     return "Added Schedule successfully",200
+def getScheduleType(name):
+    classes=classes_list(get_db())
+    if name in classes:
+        return "Class"
+    teachers=teachers_list(get_db())
+    if name in teachers:
+        return "Teacher"
+    rooms=rooms_list(get_db())
+    if name in rooms:
+        return "Room"
+    return ""
+def find_day_of_schedule(data,schedule,day,schedule_type):
+    if schedule_type=="Class":
+        results = [i for i in data if isinstance(i["class"], str) and (i["class"].strip() in schedule or schedule.strip() in i["class"].strip()) and i["day"]==day]
+    elif schedule_type=="Teacher":
+        results = [i for i in data if i["teacher"].strip() == schedule.strip() and i["day"]==day]
+    else:
+        results = [i for i in data if i["room"].strip() == schedule.strip() and i["day"]==day]
+    return results
+
 def edit_session_time(db,data,newSchedule,resize=False):
     schedules = db["schedules"]
     prevSchedule=schedules.find({"subject":newSchedule["subject"],"class":newSchedule["class"],"room":newSchedule["room"],"time":newSchedule["id"],"teacher":newSchedule["teacher"]})

@@ -7,7 +7,7 @@ from pymongo import MongoClient
 times=["08:30 - 10:00","10:15 - 11:45","12:00 - 13:30","13:00 - 14:30","14:45 - 16:15","16:30 - 18:00"]
 days=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"]
 def readData():
-    execls = "excels/"
+    execls = "backend/excels/"
     for file in os.listdir(execls):
         df = pd.read_excel(execls + file, header=None)
     df = df.values
@@ -55,5 +55,26 @@ print(test)
 print(test.pop("id"))
 print(test)
 client = MongoClient("mongodb://localhost:27017/")
-db = client["SchcedulePrj"]
-db["schedules"].insert_many(readData())
+db = client["Schedules"]
+data=readData()
+db["schedules"].insert_many(data)
+table=db["rooms_list"]
+rooms=set()
+for i in data:
+    rooms.add(i["room"])
+
+table.insert_many([{"name":i} for i in rooms])
+table=db["teachers_list"]
+teachers=set()
+for i in data:
+    teachers.add(i["teacher"])
+table.insert_many([{"name":i} for i in teachers])
+table=db["teachers_list"]
+teachers=table.find()
+for i,user in enumerate(teachers):
+    table.update_one({"_id":user["_id"]},{"$set":{"email":"teacher"+str(i+1)+"@gmail.com"}})
+table=db["classes_list"]
+classes=set()
+for i in data:
+    classes.add(i["class"])
+table.insert_many([{"name":i} for i in classes])

@@ -288,6 +288,7 @@ def readData(db,path):
     for file in os.listdir(execls):
         df = pd.read_excel(execls + file, header=None)
     df = df.values
+    print(df)
     data = []
     for i in range(2, len(df), 3):
         for j in range(1, len(df[i])):
@@ -313,6 +314,7 @@ def readData(db,path):
             if not rooms.find_one({"name":case["room"]}):
                 return "room '"+case["room"]+"' does not exist",400
             data.append(case)
+    print("tzest")
     db["schedules"].insert_many(data)
     print(db["schedules"])
     print("read data completed")

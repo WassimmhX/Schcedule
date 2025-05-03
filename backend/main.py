@@ -180,15 +180,29 @@ async def add_data(request: Request):
 @app.post("/changeSchedules")
 async def change_schedules(file: UploadFile = File(...)):
     data_path = "data/"
+    print(file)
     shutil.rmtree(data_path, ignore_errors=True)
     os.makedirs(data_path, exist_ok=True)
     file_path = os.path.join(data_path, file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
+    print("hhh")
     message, status = readData(db, data_path)
     return JSONResponse({"message": message}, status_code=status)
 
-
+@app.post("/nbData")
+async def nb_data(request: Request):
+    body = await request.json()
+    name = body.get("name")
+    if name == "teachers":
+        return JSONResponse({"message": len(allTeachers())})
+    elif name == "rooms":
+        return JSONResponse({"message": len(allRooms())})
+    elif name == "users":
+        return JSONResponse({"message": len(allUsers())})
+    elif name == "classes":
+        return JSONResponse({"message": len(allClasses())})
+    return JSONResponse({"error": "not supported"}, status_code=400)
 @app.post("/forgot-password")
 async def forgot_password(body: EmailResetRequest):
     success, token = initiate_password_reset(db, body.email)

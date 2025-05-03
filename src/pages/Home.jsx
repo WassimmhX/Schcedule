@@ -9,6 +9,7 @@ const Home = () => {
         const res = await axios.post('http://127.0.0.1:5000/getData', {
           name:value
         });
+        console.log(res)
         return(res.data.message);
       } catch (error) {
         console.error('Error calling Python function', error);

@@ -8,36 +8,20 @@ class AiTools:
     @staticmethod
     @tool
     def get_current_day() -> str:
-        """Returns the current day (today) in English."""
+        """
+        Returns the current day of the week in English.
+        
+        This tool uses the Tunisia timezone (Africa/Tunis) to determine the current day.
+        It returns the full English name of the day (Monday, Tuesday, etc.).
+        
+        Returns:
+            str: The current day of the week in English (e.g., "Monday", "Tuesday").
+        """
         # Using Tunisia timezone
         tz = pytz.timezone('Africa/Tunis')
         now = datetime.now(tz)
         days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
         return days[now.weekday()]
-
-    @staticmethod
-    @tool
-    def search_by_time(schedule_name: str, schedule_type: str, day: str, target_time: str) -> list:
-        """
-        Find what sessions are happening at a specific time on a given day.
-        Parameters:
-            - schedule_name: The name of the schedule
-            - schedule_type: The type of schedule
-            - day: The day to search (e.g., "Monday")
-            - target_time: The time to search for, types of time authorized : (HH:MM e.g., 10:30), (HHhMM e.g., 10h30), (HHh e.g., 10h), (HH:MMAM e.g., 10:30AM), (HH:MMPM e.g., 2:30PM)
-        """
-        # Convert time format if needed (handle both 12h and 24h formats)
-        target_time = AiTools.normalize_time_format(target_time)
-        day=AiTools.translate_day_to_french(day)
-        day_schedule = find_day_of_schedule(AiTools.data,schedule_name,day,schedule_type)
-        matching_sessions = []
-        
-        for session in day_schedule:
-            start_time, end_time = session['time'].split(' - ')
-            if AiTools.is_time_within_session(target_time, start_time, end_time):
-                matching_sessions.append(session)
-        
-        return matching_sessions
 
     def normalize_time_format(time_str: str) -> str:
         """Convert various time formats to 24-hour format (HH:MM)"""
@@ -148,18 +132,30 @@ class AiTools:
         return results
     @staticmethod
     @tool
-    def search_for_user_schedule(userEmail:str)->dict|None:
+    def search_for_user_schedule_information(userEmail:str)->dict|None:
         """
-            Get the user's schedule information (name and type) using their email.
-
-            *** Use this ONLY if ***:
-                - The user explicitly refers to **their own schedule** (e.g., "my schedule")
-                - And the user's email is available.
-                - DO NOT use this tool if the query is about another person's schedule (like a teacher or group).
-                - DO NOT use this tool if the schedule name is already provided or implied.
-
-            Returns:
-            A dictionary with the user's schedule name and type, or None if not found.
+        Retrieves a user's schedule information based on their email address.
+        
+        This tool looks up a user in the database and returns their associated schedule
+        information, including the schedule name and type.
+        
+        IMPORTANT USAGE GUIDELINES:
+        - Use ONLY when the user explicitly refers to their own schedule
+        - Use ONLY when the user's email is available in the conversation context
+        - DO NOT use for queries about another person's schedule (teachers, other students, etc.)
+        - DO NOT use if the schedule name is already provided or clearly implied
+        
+        Parameters:
+            userEmail (str): Email address of the user requesting schedule information
+        
+        Returns:
+            dict or None: A dictionary containing:
+                          - 'name': The name/identifier of the user's schedule
+                          - 'type': The type of schedule (typically "Class" for students)
+                          Returns None if no schedule information is found for the user.
+        
+        Example return value:
+            {'name': 'Group-3A21', 'type': 'Class'}
         """
         schedule=getUserAttribute(get_db(),userEmail,"mySchedule")
         return schedule
@@ -167,23 +163,62 @@ class AiTools:
     @staticmethod
     @tool
     def get_schedule_type(schedule_name:str)->str:
-        """Retrieve the type of a schedule by providing its name. The name can be a teacher name, a room or a class."""
+        """
+        Determines the type of a schedule based on its name or identifier.
+        
+        This tool queries the database to identify whether a schedule name refers
+        to a class (student group), a teacher, or a room. Use this tool when you 
+        need to determine the schedule type before using other schedule-related tools.
+        
+        Parameters:
+            schedule_name (str): The name or identifier of the schedule to check
+                                (could be a class name, teacher name, or room name)
+        
+        Returns:
+            str: The type of schedule, one of: "Class", "Teacher", or "Room"
+                 Returns an error message if the schedule is not found.
+        
+        Example:
+            - get_schedule_type("Prof. Johnson") might return "Teacher"
+            - get_schedule_type("Group-3A21") might return "Class"
+            - get_schedule_type("Room-204") might return "Room"
+        """
         return getScheduleType(schedule_name)
     @staticmethod
     @tool
-    def search_informations(schedule:str,schedule_type:str,day:str)->list:
-        """ Get detailed information for a specific day in a schedule.
-            Returns session begin time and end time, teacher, room, and subject for the given day.
-            Parameters:
-                - schedule: The name of the schedule (can be a class's name, a teacher's name or a room's name).
-                - schedule_type: The type of the schedule it can be only one of these three and written exactly like that:
-                    1-Class
-                    2-Teacher
-                    3-Room
-                - day: The day to search for (e.g., "Monday").
+    def retrieve_schedule_information(schedule_name:str,schedule_type:str)->list:
         """
-        day=AiTools.translate_day_to_french(day)
-        return find_day_of_schedule(AiTools.data,schedule,day,schedule_type)
+        Retrieves the complete weekly schedule for a specified class, teacher, or room.
+        
+        This tool returns all sessions in the schedule across all days of the week.
+        It provides comprehensive information about each session including subject,
+        time, teacher, and room.
+        
+        Parameters:
+            schedule_name (str): The name or identifier of the schedule to retrieve
+                                (could be a class name, teacher name, or room name)
+            schedule_type (str): Type of schedule - must be exactly one of:
+                                "Class", "Teacher", or "Room"
+                                (Use the get_schedule_type tool if uncertain)
+        
+        Returns:
+            list: A list of schedule entries organized by day, where each entry contains:
+                  - 'day': Day of the week in French (e.g., "Lundi", "Mardi")
+                  - 'subject': Name of the subject
+                  - 'time': Time slot in "HH:MM - HH:MM" format
+                  - 'teacher': Name of the teacher
+                  - 'room': Room identifier
+        
+        Example return value:
+            [
+                {"day": "Lundi", "subject": "Mathematics", "time": "10:00 - 12:00", "teacher": "Dr. Smith", "room": "A101"},
+                {"day": "Lundi", "subject": "Physics", "time": "14:00 - 16:00", "teacher": "Dr. Brown", "room": "Lab2"},
+                {"day": "Mardi", "subject": "English", "time": "08:00 - 10:00", "teacher": "Ms. Jones", "room": "B205"}
+            ]
+        """
+        #day=AiTools.translate_day_to_french(day)
+        #return find_day_of_schedule(AiTools.data,schedule_name,day,schedule_type)
+        return find_schedule(AiTools.data,schedule_name,schedule_type)
         
     def translate_day_to_french(day:str):
         day=day.lower()
@@ -201,11 +236,8 @@ class AiTools:
     @staticmethod
     def tools():
         return [
+            AiTools.search_for_user_schedule_information, 
             AiTools.get_current_day,
-            AiTools.search_by_time, 
-            AiTools.check_free_time,
-            AiTools.find_subject_sessions,
-            AiTools.search_for_user_schedule, 
             AiTools.get_schedule_type, 
-            AiTools.search_informations
+            AiTools.retrieve_schedule_information,
         ]

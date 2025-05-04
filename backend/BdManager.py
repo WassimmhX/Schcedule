@@ -6,6 +6,7 @@ import bcrypt
 import re
 import datetime
 from dotenv import load_dotenv
+import copy
 load_dotenv()
 def get_db():
     client = MongoClient(os.environ["MONGODB_URL"])
@@ -17,10 +18,10 @@ def schedules(db,id=False):
     else:
         return list(db["schedules"].find({},{"_id":0}))
 def add_session(db,data,session):
-    schedules=db["schedules"]
-    classSchedule=schedules.find({"class":session["class"],"day":session["day"]})
-    teacherSchedule=schedules.find({"teacher":session["teacher"],"day":session["day"]})
-    roomSchedule=schedules.find({"room":session["room"],"day":session["day"]})
+    schs=db["schedules"]
+    classSchedule=schs.find({"class":session["class"],"day":session["day"]})
+    teacherSchedule=schs.find({"teacher":session["teacher"],"day":session["day"]})
+    roomSchedule=schs.find({"room":session["room"],"day":session["day"]})
     for i in classSchedule:
         if times_overlap(session["time"],i["time"]):
             return "Classe already study in that time",400
@@ -30,7 +31,7 @@ def add_session(db,data,session):
     for i in roomSchedule:
         if times_overlap(session["time"],i["time"]):
             return "Room already busy in that time",400
-    schedules.insert_one(session)
+    schs.insert_one(session)
     if "_id" in session:
         session.pop("_id")
     data.append(session)
@@ -57,19 +58,26 @@ def find_day_of_schedule(data,schedule,day,schedule_type):
     else:
         results = [i for i in data if i["room"].strip() == schedule.strip() and i["day"]==day]
     return results
-
+def find_schedule(data,schedule,schedule_type):
+    if schedule_type=="Class":
+        results = [i for i in data if isinstance(i["class"], str) and (i["class"].strip() in schedule or schedule.strip() in i["class"].strip())]
+    elif schedule_type=="Teacher":
+        results = [i for i in data if i["teacher"].strip() == schedule.strip()]
+    else:
+        results = [i for i in data if i["room"].strip() == schedule.strip()]
+    return results
 def edit_session_time(db,data,newSchedule,resize=False):
-    schedules = db["schedules"]
-    prevSchedule=schedules.find({"subject":newSchedule["subject"],"class":newSchedule["class"],"room":newSchedule["room"],"time":newSchedule["id"],"teacher":newSchedule["teacher"]})
+    schs = db["schedules"]
+    prevSchedule=schs.find({"subject":newSchedule["subject"],"class":newSchedule["class"],"room":newSchedule["room"],"time":newSchedule["id"],"teacher":newSchedule["teacher"]})
     prevSchedule = list(prevSchedule)
     if len(prevSchedule)!=1:
         return "Reload the page if the error persist",400
     prevSchedule=prevSchedule[0]
     if resize:
-        schedules.delete_one({"_id":prevSchedule["_id"]})
-    classSchedule = schedules.find({"class": newSchedule["class"], "day": newSchedule["day"]})
-    teacherSchedule = schedules.find({"teacher": newSchedule["teacher"], "day": newSchedule["day"]})
-    roomSchedule = schedules.find({"room": newSchedule["room"], "day": newSchedule["day"]})
+        schs.delete_one({"_id":prevSchedule["_id"]})
+    classSchedule = schs.find({"class": newSchedule["class"], "day": newSchedule["day"]})
+    teacherSchedule = schs.find({"teacher": newSchedule["teacher"], "day": newSchedule["day"]})
+    roomSchedule = schs.find({"room": newSchedule["room"], "day": newSchedule["day"]})
     for i in classSchedule:
         if times_overlap(newSchedule["time"], i["time"]) and not resize:
             print(newSchedule["time"],i)
@@ -84,25 +92,29 @@ def edit_session_time(db,data,newSchedule,resize=False):
     index=data.index(filtered_data)
     prevSchedule["time"] = newSchedule["time"]
     prevSchedule["day"] = newSchedule["day"]
-    schedules.update_one({"_id": prevSchedule["_id"]},{"$set":prevSchedule},upsert=True)
+    schs.update_one({"_id": prevSchedule["_id"]},{"$set":prevSchedule},upsert=True)
     prevSchedule.pop("_id")
     data[index]=prevSchedule
     return "Edited successfully",200
 def edit_session_infos(db,data,newSession):
-    schedules = db["schedules"]
-    prevSession=list(schedules.find({"time":newSession["time"],"day":newSession["day"],"class":newSession["class"]}))
+    schs = db["schedules"]
+    prevSession=list(schs.find({"time":newSession["time"],"day":newSession["day"],"class":newSession["class"]}))
     if len(prevSession)!=1:
         return "Reload the page if the error persist",400
     prevSession=prevSession[0]
 
-    schedules.update_one({"_id":prevSession["_id"]},{"$set":newSession})
+    schs.update_one({"_id":prevSession["_id"]},{"$set":newSession})
     return "Updated successfully",200
 def delete_session(db,data,schedule):
-    schedules=db["schedules"]
+    schs=db["schedules"]
+    print(schedule)
     schedule.pop("id")
+    print(schedule)
     try :
         data.remove(schedule)
-        schedules.delete_one(schedule)
+        print("hi")
+        schs.delete_one(schedule)
+        print("heijfz")
         return "Deleted successfully",200
     except:
         return "failed to delete",400
@@ -288,7 +300,6 @@ def readData(db,path):
     for file in os.listdir(execls):
         df = pd.read_excel(execls + file, header=None)
     df = df.values
-    print(df)
     data = []
     for i in range(2, len(df), 3):
         for j in range(1, len(df[i])):
@@ -314,7 +325,26 @@ def readData(db,path):
             if not rooms.find_one({"name":case["room"]}):
                 return "room '"+case["room"]+"' does not exist",400
             data.append(case)
-    print("tzest")
+    db["classes_schedule"].drop()
+    t_schedule=db["classes_schedule"]
+    data=readData()
+    collection=db["classes_list"]
+    times={"Lundi":[""],"Mardi":[""],"Mercredi":[""],"Jeudi":[""],"Vendredi":[""],"Samedi":[""]}
+    all={}
+    for i in collection:
+        all[i]=copy.deepcopy(times)
+    for i in data:
+        t=False
+        for j in collection:
+            if i["class"] in j or j in i["class"] :
+                t=True
+                break
+        if t:
+            all[j][i["day"]].append(i["time"])
+
+    for key,value in all.items():
+        print(key,value)
+        t_schedule.insert_one({"name":key,"schedule":value})
     db["schedules"].insert_many(data)
     print(db["schedules"])
     print("read data completed")

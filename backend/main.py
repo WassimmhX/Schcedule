@@ -140,7 +140,7 @@ async def return_by_class(request: Request):
     students = body.get("class")
     if not students:
         return JSONResponse({"error": "Missing 'class'"}, status_code=400)
-    results = [i for i in data if isinstance(i["class"], str) and (i["class"].strip() in students or students.strip() in i["class"].strip())]
+    results = [i for i in data if i["class"].strip() in students.strip() or students.strip() in i["class"].strip()]
     return JSONResponse({"message": results})
 
 
@@ -161,32 +161,29 @@ async def add_data(request: Request):
     data_ = body.get("data")
     if not name or not data_:
         return JSONResponse({"error": "Missing data or name"}, status_code=400)
-
-    handlers = {
-        "teachers": add_teacher,
-        "rooms": add_room,
-        "users": add_user,
-        "classes": add_class,
-        "schedule": lambda db, data: add_session(db, data, data_)
-    }
-
-    if name in handlers:
-        message, status = handlers[name](db, data_)
-        return JSONResponse({"message": message} if status == 200 else {"error": message}, status_code=status)
-
-    return JSONResponse({"error": "adding is not supported"}, status_code=400)
+    if name == "teachers":
+        message, status = add_teacher(db, data_)
+    elif name == "rooms":
+        message, status = add_room(db, data_)
+    elif name == "users":
+        message, status = add_user(db, data_)
+    elif name == "classes":
+        message, status = add_class(db, data_)
+    elif name == "schedule":
+        message, status = add_session(db,data, data_)
+    else:
+        return JSONResponse({"error": "not supported"}, status_code=400)
+    return JSONResponse({"message": message}, status_code=status)
 
 
 @app.post("/changeSchedules")
 async def change_schedules(file: UploadFile = File(...)):
     data_path = "data/"
-    print(file)
     shutil.rmtree(data_path, ignore_errors=True)
     os.makedirs(data_path, exist_ok=True)
     file_path = os.path.join(data_path, file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-    print("hhh")
     message, status = readData(db, data_path)
     return JSONResponse({"message": message}, status_code=status)
 
@@ -258,7 +255,66 @@ async def notify_users(request: Request):
             print(f"Email failed to {user['email']}: {str(e)}")
 
     return JSONResponse({"message": f"Notified {count} users"})
+@app.post("/deleteData")
+async def delete_data(request: Request):
+    body = await request.json()
+    name= body.get("name")
+    key= body.get("key")
+    if not name or not key:
+        return JSONResponse({"error": "Missing 'name' or 'key'"}, status_code=400)
+    if name == "teachers":
+        message,status=deleteTeacher(db,key)
+    elif name == "rooms":
+        message,status=deleteRoom(db,key)
+    elif name == "users":
+        message,status=deleteUser(db,key)
+    elif name == "classes":
+        message,status=deleteClass(db,key)
+    else:
+        return JSONResponse({"error": "not supported"}, status_code=400)
+    return JSONResponse({"message": message}, status_code=status)
 
+@app.post("/deleteSession")
+async def delete_session_route(request: Request):
+    body = await request.json()
+    role = body.get("role")
+    if role != "admin":
+        return JSONResponse({"error": "Unauthorized"}, status_code=403)
+    session = body.get("session")
+    if not session:
+        return JSONResponse({"error": "Missing 'session'"}, status_code=400)
+    message, status = delete_session(db,data, session)
+    return JSONResponse({"message": message}, status_code=status)
+
+@app.post("/updateSession")
+async def update_session(request: Request):
+    body = await request.json()
+    role = body.get("role")
+    if role != "admin":
+        return JSONResponse({"error": "Unauthorized"}, status_code=403)
+    event = body.get("event")
+    change = body.get("change")
+    event["id"] = (event["id"].split("-"))[-3] + "-" + (event["id"].split("-"))[-2]
+    if change == "time":
+        resize = body.get("resize")
+        if len(event["id"]) != 13:
+            event["id"] = time_config(event["id"])
+        if len(event["time"]) != 13:
+            event["time"] = time_config(event["time"])
+        message, state = edit_session_time(db, data, event, resize == "true")
+        if state == 400:
+            return JSONResponse({"error": message}, status_code=400)
+        return JSONResponse({"message": message}, status_code=200)
+    elif change == "infos":
+        event.pop("id")
+        print(event)
+        message, state = edit_session_infos(db, data, event)
+        if state == 400:
+            return JSONResponse({"error": message}, status_code=400)
+        else:
+            return JSONResponse({"message": message}, status_code=200)
+    else:
+        return JSONResponse({"error": "not supported"}, status_code=400)
 
 # --------------------------- HELPERS ---------------------------
 def allTeachers():

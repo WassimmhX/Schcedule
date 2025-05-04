@@ -57,13 +57,16 @@ print(test)
 client = MongoClient("mongodb://localhost:27017/")
 db = client["Schedules"]
 data=readData()
+db["schedules"].drop()
 db["schedules"].insert_many(data)
+db["rooms_list"].drop()
 table=db["rooms_list"]
 rooms=set()
 for i in data:
     rooms.add(i["room"])
 
 table.insert_many([{"name":i} for i in rooms])
+db["teachers_list"].drop()
 table=db["teachers_list"]
 teachers=set()
 for i in data:
@@ -73,8 +76,43 @@ table=db["teachers_list"]
 teachers=table.find()
 for i,user in enumerate(teachers):
     table.update_one({"_id":user["_id"]},{"$set":{"email":"teacher"+str(i+1)+"@gmail.com"}})
+db["classes_list"].drop()
 table=db["classes_list"]
 classes=set()
 for i in data:
-    classes.add(i["class"])
+    t=False
+    print("class::::",i["class"])
+    for j in classes:
+        print("j:",j)
+        if i["class"] in j or j in i["class"]:
+            print(1)
+            if len(i["class"])<len(j):
+                classes.remove(j)
+                classes.add(i["class"])
+            t=True
+            break
+    if not t:
+        classes.add(i["class"])
+print(classes)
 table.insert_many([{"name":i} for i in classes])
+import copy
+
+collection = [i["name"] for i in list(db["classes_list"].find({},{"_id": 0}))]
+db["classes_schedule"].drop()
+t_schedule=db["classes_schedule"]
+data=readData()
+times={"Lundi":[""],"Mardi":[""],"Mercredi":[""],"Jeudi":[""],"Vendredi":[""],"Samedi":[""]}
+all={}
+for i in collection:
+    all[i]=copy.deepcopy(times)
+for i in data:
+    t=False
+    for j in collection:
+        if i["class"] in j or j in i["class"] :
+            t=True
+            break
+    if t:
+        all[j][i["day"]].append(i["time"])
+
+for key,value in all.items():
+    t_schedule.insert_one({"name":key,"schedule":value})
